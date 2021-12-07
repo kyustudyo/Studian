@@ -59,6 +59,7 @@ class EditHedeaderProfileViewController : UIViewController,UIAnimatable{
         //print(UIApplication.topViewController())
         navigationController?.popViewController(animated: true)
         dismiss(animated: true, completion: nil)
+        delegate?.completeTwoTexts(vm: headerModel!)
         //print(UIApplication.topViewController())
         //dismiss(animated: true, completion: nil)
     }
@@ -142,6 +143,7 @@ extension EditHedeaderProfileViewController {
     }
     override func viewDidDisappear(_ animated: Bool) {
         delegate?.completeTwoTexts(vm: headerModel!)
+        //delegate?.completeMainPicture(vm: headerModel!)
     }
     @objc func textDidChange(sender: UITextField){
         if sender == FirstTextField {
@@ -159,26 +161,29 @@ extension EditHedeaderProfileViewController : UIImagePickerControllerDelegate & 
     
     @objc func handleSelectPhoto() {//처음 누를때
         print("select")
+        showLoadingAnimation()
         let imagePickerController = UIImagePickerController()
         imagePickerController.delegate = self
-        present(imagePickerController, animated: true, completion: nil)
+        present(imagePickerController, animated: true, completion: hideLoadingAnimation)
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        showLoadingAnimation()
         let image = info[.originalImage] as? UIImage
         //profileImage = image//프사 변수에 저장.
         let fixedImage = image?.fixOrientation()//90도 회전하는 것 방지하는 코드.
         
-        showLoadingAnimation()
+        //showLoadingAnimation()//  안먹힘
         plusPhotoButton.setImage(fixedImage?.withRenderingMode(.alwaysOriginal), for: .normal)
         headerModel?.headerImage = fixedImage!.pngData()
-        ImageFileManager.saveImageInDocumentDirectory(image: fixedImage!, fileName: "PurposePicture.png")
-        hideLoadingAnimation()
+//        ImageFileManager.saveImageInDocumentDirectory(image: fixedImage!, fileName: "PurposePicture.png")
+        //hideLoadingAnimation()
         
         plusPhotoButton.layer.borderColor = UIColor.white.cgColor
         plusPhotoButton.layer.borderWidth = 3.0
         plusPhotoButton.layer.cornerRadius = 50
         dismiss(animated: true, completion: nil)
+        hideLoadingAnimation()
         delegate?.completeMainPicture(vm: headerModel!)
         //사진저장하기.
     }

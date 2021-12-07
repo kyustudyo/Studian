@@ -19,7 +19,8 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
     
     @Published private var bigTextView = CustomTextView()
     @Published private var smallTextView = CustomTextView()
-    var purposeAndImage : PurposeAndImage!
+    //var purposeAndImage : PurposeAndImage!//사용안함.
+    var purpose : Purpose?//여기에 변경사항 저장.
     var viewModel : PurposesViewModel!
     var index : Int!
     weak var delegate : PurposeDetailVIewControllerDelegate?
@@ -66,6 +67,16 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         print("dididid")
         observeForm()
     }
+    override func viewDidDisappear(_ animated: Bool) {
+//        delegate?.completeTwoTexts(vm: headerModel!)
+        guard let purpose = purpose else {
+            return
+        }
+
+        viewModel.updatePurpose(purpose)
+        self.delegate?.changeDetail()
+    }
+    
     func observeForm(){
         NotificationCenter.default.publisher(for: UITextView.textDidChangeNotification, object: smallTextView).compactMap {
             ($0.object as? UITextView)?.text
@@ -77,9 +88,10 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
                   let index = self?.index else {return}
             let purpose = Purpose(id:viewModel.purposes[index].id , name: text, oneSenetence: bigTextView.text)
             print(purpose)
+            self?.purpose = purpose
             //self?.showLoadingAnimation()
-            viewModel.updatePurpose(purpose)
-            self?.delegate?.changeDetail()
+            //viewModel.updatePurpose(purpose)
+            //self?.delegate?.changeDetail()
             //self?.hideLoadingAnimation()
             //print("\(text)")
             
@@ -99,9 +111,13 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
                   let index = self?.index else {return}
             let purpose = Purpose(id:viewModel.purposes[index].id , name: smallTextView.text, oneSenetence: text)
             print(purpose)
+            self?.purpose = purpose
+            
             //self?.showLoadingAnimation()
-            viewModel.updatePurpose(purpose)
-            self?.delegate?.changeDetail()
+            
+            //viewModel.updatePurpose(purpose)
+
+            //self?.delegate?.changeDetail()
             //self?.hideLoadingAnimation()
 //            let purpose = Purpose(id: (self?.purposeAndImage.index)!, name: smallTextView.text ?? "", oneSenetence: text)
 //            self?.purposeAndImage.purpose = purpose
@@ -111,9 +127,9 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
     func textViewDone(){
         self.bigTextView.addDoneButton(title: "Done", target: self, selector: #selector(tapDone(sender:)))
         self.smallTextView.addDoneButton(title: "Done", target: self, selector: #selector(tapDone(sender:)))
-        
     }
     @objc func tapDone(sender: Any) {
+            //print("done!!")
             self.view.endEditing(true)
         }
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
@@ -138,7 +154,9 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
                          paddingLeft: 16)//이 코드를 써야 여러종에도 맞게 코딩된다.
         
        //iconImage.image = purposeAndImage?.image
-        let image = viewModel.images[index]
+        let image = viewModel.images[index]//수정전 코드.
+        //guard let image = purposeAndImage.image else {return}//수정후 코드
+        
         let fixedImage = image.fixOrientation()//90도 회전하는 것 방지하는 코드.
         showLoadingAnimation()
         plusPhotoButton.setImage(fixedImage.withRenderingMode(.alwaysOriginal), for: .normal)
@@ -157,14 +175,16 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
                              paddingTop: 16,
                              paddingLeft: 16,
                              paddingRight: 16)
-        smallTextView.text = purposeAndImage?.purpose?.name
+        smallTextView.text = viewModel.purposes[index].name//수정후 코드
+//        smallTextView.text = purposeAndImage?.purpose?.name//수정전 코드
         smallTextView.isEditable = true
         
         //smallTextView.setDimensions(height: 100, width: 100)
         view.addSubview(bigTextView)
         bigTextView.anchor(top:plusPhotoButton.bottomAnchor,left: view.safeAreaLayoutGuide.leftAnchor,bottom: view.safeAreaLayoutGuide.bottomAnchor,right: view.safeAreaLayoutGuide.rightAnchor,paddingTop: 32,paddingLeft: 16,paddingBottom: 200,paddingRight: 16)
         bigTextView.anchor(top:smallTextView.bottomAnchor,paddingTop: 32)
-        bigTextView.text = purposeAndImage?.purpose?.oneSenetence
+        bigTextView.text = viewModel.purposes[index].oneSenetence//수정후 코드
+        //bigTextView.text = purposeAndImage?.purpose?.oneSenetence//수정전코드
         bigTextView.isEditable = true
         
     }
@@ -184,9 +204,10 @@ extension PurposeDetailVIewController : UIImagePickerControllerDelegate & UINavi
     
     @objc func handleSelectPhoto() {//처음 누를때
         print("select")
+        showLoadingAnimation()
         let imagePickerController = UIImagePickerController()
         imagePickerController.delegate = self
-        present(imagePickerController, animated: true, completion: nil)
+        present(imagePickerController, animated: true, completion: hideLoadingAnimation)
     }
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         let image = info[.originalImage] as? UIImage
@@ -195,6 +216,7 @@ extension PurposeDetailVIewController : UIImagePickerControllerDelegate & UINavi
         //viewModel?.headerImage = fixedImage!.pngData()
         
         showLoadingAnimation()
+        
         viewModel.updateImage(purpose: viewModel.purposes[index], image: fixedImage!, index: index){
             hideLoadingAnimation()
         }

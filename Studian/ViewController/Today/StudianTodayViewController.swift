@@ -38,13 +38,26 @@ class StudianTodayViewController: UIViewController, tmpDelegate,UIAnimatable {
     lazy var editButton: UIButton = {
       let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
       button.setTitle("Edit", for: .normal)
-        button.setTitleColor(.blue, for: .normal)
+      button.setTitleColor(.blue, for: .normal)
 //      button.backgroundColor = UIColor(white: 0.5, alpha: 0.5)
       button.translatesAutoresizingMaskIntoConstraints = false
       button.layer.cornerRadius = 7
       button.addTarget(self, action: #selector(editSelector), for: .touchUpInside)
       return button
     }()
+    
+    lazy var saveButton: UIButton = {
+        let button = UIButton(type: .system)
+      button.setTitle("Save", for: .normal)
+      button.setTitleColor(.blue, for: .normal)
+//      button.backgroundColor = UIColor(white: 0.5, alpha: 0.5)
+        button.titleLabel?.font = .systemFont(ofSize: 17, weight: .regular)
+      button.translatesAutoresizingMaskIntoConstraints = false
+      button.layer.cornerRadius = 7
+      button.addTarget(self, action: #selector(saveSelector), for: .touchUpInside)
+      return button
+    }()
+    
     
     func reloadCell(){
         print("reload")
@@ -71,6 +84,15 @@ class StudianTodayViewController: UIViewController, tmpDelegate,UIAnimatable {
         
     }//네비게이션 바 버튼
     
+    @objc func saveSelector(_ sender: UIButton){
+//        print(sender.isSelected)
+//
+//        sender.setTitleColor(.red, for: .selected)
+        showLoadingAnimation()
+        self.todayViewModel.saveTodays()
+        hideLoadingAnimation()
+        
+    }
     @objc func editSelector(_ sender: UIButton) {
         if sender.isSelected == true {
             let baseColor = DefaultStyle.Colors.tint
@@ -161,8 +183,8 @@ class StudianTodayViewController: UIViewController, tmpDelegate,UIAnimatable {
     var todayViewModel = TodayViewModel()
     
     func updateTintColor() {
-        editButton.setTitleColor(DefaultStyle.Colors.tint, for: .normal)
-        
+        editButton.setTitleColor(DefaultStyle.Colors.tint, for: .normal)//dark mode
+        saveButton.setTitleColor(DefaultStyle.Colors.tint, for: .normal)
         //editButton.tintColor = DefaultStyle.Colors.tint
         //editButton.backgroundColor = DefaultStyle.Colors.tint
         
@@ -173,10 +195,11 @@ class StudianTodayViewController: UIViewController, tmpDelegate,UIAnimatable {
         super.viewDidLoad()
         //configureButton()//custom 버튼 일단 쓰지말자.
         //showLoadingAnimation()
+        startIndicator()
         updateTintColor()
         observer()
         
-        
+        collectionview.alwaysBounceVertical = false
         
         
         
@@ -185,7 +208,7 @@ class StudianTodayViewController: UIViewController, tmpDelegate,UIAnimatable {
         editButtonHidden()//많으면 추가 못하게.
         
 //        collectionview.frame = CGRect(x: collectionview.frame.origin.x, y: collectionview.frame.origin.y, width: collectionview.frame.size.width, height: collectionview.frame.size.height)
-        
+        collectionview.alwaysBounceVertical = false
         //헤더뷰 내리는 코드 그러나 쓸일 없다.
         guard let navBarH = navigationController?.navigationBar.frame.height else {
                 //print(navBarH)
@@ -195,15 +218,23 @@ class StudianTodayViewController: UIViewController, tmpDelegate,UIAnimatable {
         collectionview.contentInsetAdjustmentBehavior = .never
         //버튼위치옮기는 코드 그러나 쓸 수 없다..
         //sendMailButton.transform = CGAffineTransform(translationX: 0, y: navBarH)
-        navigationController?.navigationBar.topItem?.title = "Today..."
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: editButton)
-        //navigationItem.leftBarButtonItem = UIBarButtonItem(customView: deleteButton)//제거 바 버튼
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.navigationItem.largeTitleDisplayMode = .automatic
+        
         
         //purposeViewModel.loadPurposes2()
         
-        todayViewModel.loadPurposes2()
+        todayViewModel.loadPurposes2(completion:
+                                        
+                                        { [weak self] in
+            //self?.hideLoadingAnimation()
+            self?.navigationController?.navigationBar.topItem?.title = "Today..."
+            self?.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: self?.saveButton ?? UIButton())
+            self?.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: self?.editButton ?? UIButton())
+            //navigationItem.leftBarButtonItem = UIBarButtonItem(customView: deleteButton)//제거 바 버튼
+            self?.navigationController?.navigationBar.prefersLargeTitles = true
+            self?.navigationController?.navigationItem.largeTitleDisplayMode = .automatic
+            
+            self?.stopIndicator()
+            self?.collectionview.reloadData()})
         //hideLoadingAnimation()
 
         
@@ -234,10 +265,14 @@ class StudianTodayViewController: UIViewController, tmpDelegate,UIAnimatable {
     
     
     
+    
 //    @objc func Edit() {
 //        print("edit")
 //        print("qwe")
 //    }
+    override func viewDidDisappear(_ animated: Bool) {
+        print("bybybyby")
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         //print("home")
@@ -253,7 +288,22 @@ class StudianTodayViewController: UIViewController, tmpDelegate,UIAnimatable {
         menuButton.anchor(left:view.safeAreaLayoutGuide.leftAnchor,bottom:view.safeAreaLayoutGuide.bottomAnchor,paddingLeft: 15,paddingBottom: 10)
         menuButton.translatesAutoresizingMaskIntoConstraints = false
     }
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        
+//        let height = scrollView.frame.size.height
+//        let contentYoffset = scrollView.contentOffset.y
+//        let distanceFromBottom = scrollView.contentSize.height - contentYoffset
+//        if distanceFromBottom < height {
+//
+//            scrollView.alwaysBounceVertical = true
+//            print(" you reached end of the table")
+//        }
+        
+        
+    }
 }
+
 
 extension StudianTodayViewController : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -274,22 +324,27 @@ extension StudianTodayViewController : UICollectionViewDataSource {
             
             //let purpose = purposeViewModel.purposes[indexPath.item]
             let today = todayViewModel.todays[indexPath.item]
-            
+            print("count:",todayViewModel.images.count)
 //            let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
             //cell.addGestureRecognizer(tap)
             
             
             
             //cell.updateUI(purpose: purpose)
+            print(indexPath.row)
             cell.yPosition = Int(cell.layer.position.y)
-            
-            cell.updateUI(today: today)
+            let image = todayViewModel.images[indexPath.row]
+            cell.updateUI(today: today,image: image)
             cell.today = today
             
             cell.viewModel = todayViewModel
             cell.tmpDelegate = self
             cell.deleteButtonTapHandler = {
+                print("d:",indexPath.row)
                 self.todayViewModel.deleteToday(today)
+                self.todayViewModel.deleteImage(index: indexPath.row)
+                self.todayViewModel.deleteImage(index: indexPath.row+1)
+                print("d:,",self.todayViewModel.images.count)
                 self.editButtonHidden()
                 self.collectionview.reloadData()
             }
@@ -490,6 +545,9 @@ extension StudianTodayViewController: UICollectionViewDelegateFlowLayout {
         //let margin: CGFloat = 20
         //let width = (collectionView.bounds.width - itemspacing - 2*margin)/2
         //let height = width + 60  //고정높이
+        
+        
+        
         if indexPath.row % 2 == 0 {
             let width: CGFloat = (collectionView.bounds.width - (20 * 2))
             let height: CGFloat = width/2.5

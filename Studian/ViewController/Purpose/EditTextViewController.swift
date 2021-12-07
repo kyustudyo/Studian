@@ -31,12 +31,14 @@ class EditTextViewController : UIViewController, UITextViewDelegate{
     func textViewDone(){
         self.textView.addDoneButton(title: "Done", target: self, selector: #selector(tapDone(sender:)))
     }
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
          self.view.endEditing(true)
    }//텍스트뷰말고 다른곳 클릭시 키보드내려감.
     @objc func tapDone(sender: Any) {
             self.view.endEditing(true)
-        }  
+        }
+    
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if(text == "\n") {
                     textView.resignFirstResponder()

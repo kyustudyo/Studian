@@ -20,10 +20,22 @@ extension UIAnimatable { //protocol을 여기서 선언해서 사용도하네.
         }
         
     }
+    
     func hideLoadingAnimation(){
         DispatchQueue.main.async {//main에서만 작동하도록.
             MBProgressHUD.hide(for: self.view, animated: true)
         }
         
     }
+    
+//    func showLoadingAnimation2(){
+//        DispatchQueue.global().async {
+//            MBProgressHUD.showAdded(to: self.view, animated: true)
+//        }
+//    }
+//    func hideLoadingAnimation2(){
+//        DispatchQueue.global().async {//main에서만 작동하도록.
+//            MBProgressHUD.hide(for: self.view, animated: true)
+//        }
+//    }
 }

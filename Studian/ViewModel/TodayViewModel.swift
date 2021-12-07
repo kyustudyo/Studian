@@ -15,14 +15,17 @@ class TodayViewModel {
     var images : [UIImage] {
         return manager.images
     }
-    func loadPurposes2(){
-        manager.retrieveTodo()
+    func loadPurposes2(completion:@escaping ()->Void){//escaping안하면안된다.
+        manager.retrieveTodo(completion2: completion)
     }
     func addToday(_ today: Today){
         manager.addToday(today)
     }
     func deleteToday(_ today:Today){
         manager.deleteToday(today)
+    }
+    func deleteImage(index: Int){
+        manager.deleteImage(index:index)
     }
     func deleteTodo(today:Today, todo:Todo){
         manager.deleteTodo(today:today, todo:todo)
@@ -42,6 +45,10 @@ class TodayViewModel {
     func getTodo(today:Today,index:Int)->Todo {
         manager.getTodo(today: today, index: index)
     }
+    func saveTodays(){
+        manager.saveTodays()
+        
+    }
 //    func updateTodo(_ today:Today){
 //        guard let index = todays.firstIndex(of: today) else {retrun}
 //        todays[index]
@@ -59,37 +66,63 @@ class TodayManager {
     var todays: [Today] = []
     var images: [UIImage] = []
      
-    func retrieveTodo() {//cell들에 할것
+    func retrieveTodo(completion2: @escaping ()->Void) {//cell들에 할것
         //var images : [UIImage]?
-        todays = retrive("todays.json", from: .documents, as: [Today].self) ?? []
-        print("몇개",todays.count)
-        if todays.count != 0{
-            todays.forEach{
-                let image = ImageFileManager.loadImageFromDocumentDirectory(fileName: "\($0.id).png") ?? UIImage(systemName: "circle")!
-                images.append(image)
-            }
-        }
-        let lastId = todays.last?.id ?? 0
-        var LastIdDict = Dictionary<Int,Int>()
-        var todoIds = Array<Int>()
-        for i in 0..<todays.count {
-            let id = todays[i].id
+        retrive("todays.json", from: .documents, as: [Today].self,completion: { [weak self] todays in
             
-            for todo in todays[i].todos{
-                todoIds.append(todo.id)
+            self?.todays = todays
+            print("몇개@@",todays.count)// 곱하기 2 되어서 나온다.
+            print("몇개",todays)
+            if todays.count != 0{
+                todays.forEach{
+                    
+    //                guard let image = ImageFileManager.loadImageFromDocumentDirectory(fileName: "\($0.id).png") else {return}
+                    print($0.imageData.description)
+                    //if $0.imageData.description != "30242712 bytes" {
+                        let image = UIImage(data: $0.imageData) ?? UIImage(systemName: "circle")!
+                    self?.images.append(image)
+                    //}
+                    
+    //                images.append(image)
+                }
+                print("총몇개 d:\(self?.images.count)")
             }
-            let lastId = todoIds.max() ?? 0
-            let numberOfTodo = todays[i].todos.count
             
-//            LastIdDict.updateValue(numberOfTodo, forKey: id)
-            LastIdDict.updateValue(lastId, forKey: id)
-        }
-        TodayManager.lastId = lastId
-        TodayManager.tableCellLastIdDict = LastIdDict
+            let lastId = todays.last?.id ?? 0
+            var LastIdDict = Dictionary<Int,Int>()
+            var todoIds = Array<Int>()
+            for i in 0..<todays.count {
+                let id = todays[i].id
+                
+                for todo in todays[i].todos{
+                    todoIds.append(todo.id)
+                }
+                let lastId = todoIds.max() ?? 0
+                let numberOfTodo = todays[i].todos.count
+                
+    //            LastIdDict.updateValue(numberOfTodo, forKey: id)
+                LastIdDict.updateValue(lastId, forKey: id)
+            }
+            TodayManager.lastId = lastId
+            TodayManager.tableCellLastIdDict = LastIdDict
+            
+            DispatchQueue.main.async {
+                completion2()
+            }
+            
+
+            
+        })
+        
+        
+    }
+    func deleteImage(index:Int){
+        images.remove(at: index/2)
+        
     }
     
     func createIndexAndData(image: UIImage) -> Today {
-    // [x] TODO: create로직 추가
+    
     let nextId = TodayManager.lastId + 2 //인덱스 하나 추가해야하므로
         TodayManager.lastId = nextId
     let imageData = image.pngData()!
@@ -118,7 +151,7 @@ class TodayManager {
         guard let index = todays.firstIndex(of: today) else {return}
         todays[index].add(todo: todo)
         todays[index].add(todo: Todo(id: todo.id + 1, todoName: "", todoDetail: "",doOrNot: false))
-        saveTodays()
+        //saveTodays()
         print("update:\(TodayManager.shared.todays)")
     }
     func deleteTodo(today:Today,todo:Todo){
@@ -127,7 +160,7 @@ class TodayManager {
         print(todays)
         todays[index].remove(todo: Todo(id: todo.id+1, todoName: "", todoDetail: "",doOrNot: false))
         print(todays)
-        saveTodays()
+        //saveTodays()
         //print("update:\(TodayManager.shared.todays)")
     }
     func updateTodo(today:Today,todo: Todo){
@@ -137,7 +170,10 @@ class TodayManager {
         }) else {return}
         
         todays[todayIndex].todos[todoIndex].update(todoName: todo.todoName, todoDetail: todo.todoDetail,doOrNot: todo.doOrNot)
-        saveTodays()
+        
+            //saveTodays()
+        
+        
     }
 //
 //    func createTableCell(today:Today)->Today{
@@ -148,13 +184,20 @@ class TodayManager {
         todays.append(today)
         todays.append(Today(id: today.id + 1, imageData: Data(),todos: today.todos))
         guard let image = UIImage(data: today.imageData) else {return}
-        //images.append(image)
+        images.append(image)
+        images.append(UIImage(systemName: "circle")!)
+        
         saveTodays()
         //saveImages()
     }
     
     func saveTodays() {
-        store(todays, to: .documents, as: "todays.json")
+        //DispatchQueue.global(qos: .background).async {
+        
+            store(self.todays, to: .documents, as: "todays.json")
+        //}
+        
+        
     }
     func getIndex(_ today : Today) -> Int {
          return todays.firstIndex(of: today) ?? 0
@@ -169,12 +212,13 @@ class TodayManager {
     func deleteToday(_ today : Today) {
         // [x] TODO: delete 로직 추가
         todays = todays.filter { $0.id != today.id && $0.id != today.id + 1 }
+//        images = images.filter{ UIImage(data: today.imageData) != $0 }
         //두개를 지우기위해.
 //        if let index = todos.firstIndex(of: todo) {
 //            todos.remove(at: index)
 //        }
         
-        saveTodays()
+        //saveTodays()
         
     }
     

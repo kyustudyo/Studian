@@ -22,6 +22,7 @@ class PurposeHeaderView : UICollectionReusableView {
             textView.isEditable = false
 //            textView.isEditable = editMode//edit누르면 수정가능
             profilePlusButton.isHidden = !editMode
+            print("header editmode:\(editMode)")
             TextPlusButton.isHidden = !editMode
         }
     }
@@ -29,6 +30,13 @@ class PurposeHeaderView : UICollectionReusableView {
 //        guard let textViewContents = textView.text, textViewContents.isEmpty == false else {return }
 //        saveFile(text: textViewContents)
 //    }
+    func configure(img:UIImage){
+        purposeImageView?.image = img
+    }
+    
+    func configure2(data: Data){
+        purposeImageView?.image = UIImage(data: data)
+    }
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -42,7 +50,9 @@ class PurposeHeaderView : UICollectionReusableView {
         
     func updateForMainPage(){
         //self.purpose = purpose//없애야할듯.
-        let PurposePicture:UIImage? = ImageFileManager.loadImageFromDocumentDirectory(fileName: "PurposePicture.png") ?? UIImage(systemName: "photo.fill")
+        let PurposePicture:UIImage? = ImageFileManager.loadImageFromDocumentDirectory(fileName: "PurposePicture.png",completion: {_ in
+            print("hi")
+        }) ?? UIImage(systemName: "photo.fill")
         self.purposeImageView?.image = PurposePicture
         //self.purposeImageView.rotate
         

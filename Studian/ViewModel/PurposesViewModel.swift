@@ -69,9 +69,7 @@ class PurposesViewModel {
         return result
     }
     
-    func updatePurpose(_ purpose: Purpose) {
-        manager.updatePurpose(purpose)
-    }
+    
     func addPurpose(_ purpose: Purpose) {
         manager.addPurpose(purpose)
     }
@@ -84,13 +82,18 @@ class PurposesViewModel {
     func deleteImage(_ purpose: Purpose, index : Int){
         manager.deleteImage(purpose,index: index)
     }
-    func loadPurposes2(){
-        manager.retrieveTodo()
+    func loadPurposes2(completion:@escaping ()->Void){
+        manager.retrieveTodo(completion: completion)
     }
+    
     func updateImage(purpose:Purpose,image:UIImage,index: Int,completion:()->Void){
         manager.updateImage(purpose: purpose, image:image, index: index)
         completion()
     }
+    func updatePurpose(_ purpose: Purpose) {
+        manager.updatePurpose(purpose)
+    }
+    
     
     func purposeAndImage(id: Int) -> PurposeAndImage{
         return manager.purposeAndImage(id: id)
@@ -158,6 +161,7 @@ class PurposeManager {
         
     }
     func deleteImage(_ purpose:Purpose,index : Int){
+        
         print("\(purpose.id).png")
         print(images.count)
         print("\(index)")
@@ -180,25 +184,53 @@ class PurposeManager {
     }
     
     
-    func retrieveTodo() {//cell들에 할것
+    func retrieveTodo(completion:@escaping ()->Void) {//cell들에 할것
 //        var images : [UIImage]?
-        purposes = retrive("purposes.json", from: .documents, as: [Purpose].self) ?? []
+        retrive("purposes.json", from: .documents, as: [Purpose].self, completion: { [weak self] purposes in
+            
+            print("hi")
+            self?.purposes = purposes
+            print("hi",purposes.count)
+            if purposes.count != 0{
+    //            for index in 1...purposes.count {
+    //                let image = ImageFileManager.loadImageFromDocumentDirectory(fileName: "\(index).png") ?? UIImage(systemName: "circle")!
+    //    //            let image2 = UIImage(systemName: "circle")!
+    //                images.append(image)
+    //            }
+                
+                
+                    purposes.forEach{
+                        let image = ImageFileManager.loadImageFromDocumentDirectory(fileName: "\($0.id).png",completion: {_ in
+                            print("hi")
+                        }) ?? UIImage(systemName: "circle")!
+                        self?.images.append(image)
+                        print(self?.images.count)
+                        print("몇개",self?.purposes.count)
+                    }
+                
+                DispatchQueue.main.async {
+                    completion()
+                }
+                
+                    
+                
+                
+                
+            }
+//            else {//무조건있으므로 필요없다
+//                DispatchQueue.main.async {
+//                    completion()
+//                }
+//            }
+            
+            
+            
+        })
         
-        print("몇개",purposes.count)
+        
         //현재 0 일때 안된다.
         
-        if purposes.count != 0{
-//            for index in 1...purposes.count {
-//                let image = ImageFileManager.loadImageFromDocumentDirectory(fileName: "\(index).png") ?? UIImage(systemName: "circle")!
-//    //            let image2 = UIImage(systemName: "circle")!
-//                images.append(image)
-//            }
-            purposes.forEach{
-                let image = ImageFileManager.loadImageFromDocumentDirectory(fileName: "\($0.id).png") ?? UIImage(systemName: "circle")!
-                images.append(image)
-            }
-            
-        }
+        
             
         
         

@@ -8,6 +8,121 @@
 import UIKit
 import MBProgressHUD
 
+extension StudianMainPageViewController {
+//    func startIndicator()
+//    {
+//        let bc = UIView()
+//        bc.backgroundColor = .black
+//        let uiimageview = UIImageView()
+//        uiimageview.contentMode = .scaleAspectFill//없으면 찌그러져 보인다.
+//        uiimageview.image = UIImage(named: "1024")
+//        bc.addSubview(uiimageview)
+//        //uiimageview.setDimensions(height: 200, width: 100)
+//        uiimageview.centerX(inView: bc)
+//        uiimageview.centerY(inView: bc)
+//        uiimageview.setWidth(width: 200)
+//        uiimageview.setHeight(height: 50)
+//
+//
+//        //creating view to background while displaying indicator
+////        let container: UIView = UIView()
+////        container.frame = self.view.frame
+////        container.center = self.view.center
+////        container.center.y = self.view.center.y / 2
+////        container.backgroundColor = container.backgroundColor
+//
+//
+//
+//        //creating view to display lable and indicator
+//        let loadingView: UIView = UIView()
+//        bc.addSubview(loadingView)
+//        loadingView.setWidth(width: 118)
+//        loadingView.setHeight(height: 80)
+//        loadingView.anchor(top: uiimageview.bottomAnchor,paddingTop: 0)
+//        loadingView.centerX(inView: bc)
+//        loadingView.backgroundColor = .black
+//        loadingView.clipsToBounds = true
+//        loadingView.layer.cornerRadius = 10
+//////
+////        loadingView.frame = CGRect(x: 0, y: 0, width: 118, height: 80)
+//////        bc.addSubview(loadingView)
+////////        loadingView.center = self.view.center
+//////        loadingView.anchor(top: uiimageview.bottomAnchor,paddingTop: 10)
+//////        loadingView.centerY(inView: bc)
+//////        loadingView.centerX(inView: bc)
+//////        //loadingView.center.y = self.view.center.y / 2
+////        loadingView.backgroundColor =  loadingView.backgroundColor
+////        loadingView.clipsToBounds = true
+////        loadingView.layer.cornerRadius = 10
+//////
+//////        //Preparing activity indicator to load
+////        self.activityIndicator = UIActivityIndicatorView()
+////        self.activityIndicator.frame = CGRect(x: 40, y: 12, width: 40, height: 40)
+////        self.activityIndicator.style = UIActivityIndicatorView.Style.medium
+////        loadingView.addSubview(activityIndicator)
+//////
+//////        //creating label to display message
+////        let label = UILabel(frame: CGRect(x: 5, y: 55, width: 120, height: 20))
+//        let label = UILabel()
+//        label.text = "Loading..."
+//        label.textColor = UIColor.white
+////        label.font = UIFont.systemFont(ofSize: 25)
+//        label.font = .init(name: "Jua-Regular", size: 15)
+////        label.bounds = CGRect(x: 0, y: 0, width: loadingView.frame.size.width/2, height: loadingView.frame.size.height/2)
+//        loadingView.addSubview(label)
+//        label.anchor(top: loadingView.topAnchor, paddingTop: 5)
+//        label.centerX(inView: loadingView)
+////        print("k-1",loadingView.heightAnchor)
+////        print("k0",loadingView.layer.bounds.width)
+////        print("k1",loadingView.frame.height / 2,loadingView.frame.width / 2)
+////        print("k2",loadingView.bounds.height / 2,loadingView.bounds.width / 2)
+//        label.setDimensions(height: 20,width: 59)
+////        label.setDimensions(height: 50, width: 30)
+////        label.setHeight(height: 30)
+////        label.setWidth(width: 50)
+//
+////        self.activityIndicator = UIActivityIndicatorView()
+////        self.activityIndicator.style = UIActivityIndicatorView.Style.large
+//
+//
+//        self.activityIndicator = UIActivityIndicatorView()
+//        self.activityIndicator.style = UIActivityIndicatorView.Style.large
+//        //let activityIndicator = UILabel()
+//        //activityIndicator.text = "sdsd"
+//        //activityIndicator.textColor = UIColor.white
+//        loadingView.addSubview(activityIndicator)
+//        activityIndicator.centerX(inView: loadingView)
+//        activityIndicator.anchor(top: label.bottomAnchor, paddingTop: 0)
+//        activityIndicator.setDimensions(height: 40, width: 40)
+//
+////
+//////
+////        label.bounds = CGRect(x: 0, y: 0, width: loadingView.frame.size.width/2, height: loadingView.frame.size.height/2)
+////        label.font = UIFont.systemFont(ofSize: 12)
+////        loadingView.addSubview(label)
+//////
+////////        container.addSubview(loadingView)
+//////        bc.addSubview(loadingView)
+////
+////
+////        bc.addSubview(loadingView)
+////        loadingView.centerY(inView: uiimageview)
+////        loadingView.centerX(inView: uiimageview)
+//
+////        self.view.addSubview(container)
+//        self.view.addSubview(bc)
+//        bc.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.safeAreaLayoutGuide.leftAnchor, bottom: view.safeAreaLayoutGuide.bottomAnchor, right: view.safeAreaLayoutGuide.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0)
+//
+//        self.activityIndicator.startAnimating()
+//    }
+//    func stopIndicator()
+//    {
+//        UIApplication.shared.endIgnoringInteractionEvents()
+//            self.activityIndicator.stopAnimating()
+//        ((self.activityIndicator.superview as UIView?)?.superview as UIView?)!.removeFromSuperview()
+//    }
+}
+
 extension StudianMainPageViewController: PlusMainCellsDelegate,UIAnimatable {
     func cellChange() {
         print("ff")
@@ -24,11 +139,12 @@ extension StudianMainPageViewController: PlusMainCellsDelegate,UIAnimatable {
 
 class StudianMainPageViewController: UIViewController, EditTextViewControllerDelegate {
     @IBOutlet weak var editCellsBtn: UIButton!
-    
-    
+    var headerImage = UIImage()
+    var activityIndicator:UIActivityIndicatorView = UIActivityIndicatorView()
     func change(text:String?) {
         headerModel.textViewText = text!
-        collectionview.reloadSections(IndexSet(0..<1))
+        //collectionview.reloadSections(IndexSet(0..<1))//얘하면깜박임
+        collectionview.reloadData()
         //store(text, to: .documents, as: "PurposeTextViewText.txt")
         store(headerModel, to: .documents, as: "headerModel.txt") 
         print("\(text!)")
@@ -45,6 +161,7 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
     
     func updateTintColor() {
         editButton.setTitleColor(DefaultStyle.Colors.tint, for: .normal)
+        
         
         //editButton.tintColor = DefaultStyle.Colors.tint
         //editButton.backgroundColor = DefaultStyle.Colors.tint
@@ -123,8 +240,6 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
         if sender.isSelected == true {
             
             editCellsBtn.isHidden = true
-            
-            
             //print(editCellsBtn.isHidden)
             let baseColor = DefaultStyle.Colors.tint
             sender.setTitleColor(baseColor, for: .normal)
@@ -154,8 +269,20 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
     
     func fetchHeaderTexts(){
         print("load!!")
-        guard let a = retrive("headerModel.txt", from: .documents, as: HeaderModel.self) else {return}
-        headerModel = a
+        
+//        guard let a = retrive("headerModel.txt", from: .documents, as: HeaderModel.self) else {return}
+        
+            retrive("headerModel.txt", from: .documents, as: HeaderModel.self){
+                [weak self] header in
+                DispatchQueue.main.async {
+                    self?.headerModel = header
+                    self?.collectionview.reloadData()
+                }
+                
+            }
+        
+//        headerModel = a
+        
         //headerModel.headerImage = 
         //headerViewModel.textViewText = retrive("headerModel.txt", from: .documents, as: TodayHeaderViewModel.self)?.textViewText
     
@@ -166,25 +293,68 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
     
     
     func clearTmpDirectory(){
-        FileManager.default.clearTmpDirectory()
+        DispatchQueue.global().async {
+            FileManager.default.clearTmpDirectory()
+        }
+        
     }
     func fetchHeaderImage(){
         print("fetch! header!")
         //showLoadingAnimation()
-        let image = ImageFileManager.loadImageFromDocumentDirectory(fileName: "PurposePicture.png")
+        DispatchQueue.global().async {
+            ImageFileManager.loadImageFromDocumentDirectory(fileName: "PurposePicture.png",completion: {
+                [weak self] image in
+                DispatchQueue.main.async {
+                    self?.headerModel.headerImage = image.pngData()
+                    guard let data = self?.headerModel.headerImage,
+                          let uiimage = UIImage(data: data) else {return}
+                    self?.headerImage = uiimage
+                    self?.collectionview.reloadData()
+                }
+            })
+        }
+        
         //hideLoadingAnimation()
-        headerModel.headerImage = image?.pngData()
+        
+        
     }
     
     override func viewDidLoad() {
        
         super.viewDidLoad()
         //showLoadingAnimation()
+        //showLoadingAnimation()
+        
+//        let bc = UIView(frame: UIScreen.main.bounds)
+//        let uiimageview = UIImageView(frame: CGRect(x: 0, y: 0, width: 200, height: 100))
+//        uiimageview.contentMode = .scaleAspectFill//없으면 찌그러져 보인다.
+//        uiimageview.image = UIImage(named: "1024")
+//        bc.addSubview(uiimageview)
+//        bc.backgroundColor = .black
+//        uiimageview.centerX(inView: bc)
+//        uiimageview.centerY(inView: bc)
+//        uiimageview.setWidth(width: 200)
+//        uiimageview.setHeight(height: 100)
+//        view.addSubview(bc)
+        
+//        if let window = UIApplication.shared.windows.first as UIWindow? {
+//            window.backgroundColor = UIColor.red
+//        }
+        
+        
+        
+        startIndicator()
+//        showLoadingAnimation()
+        MakeDummyPurpose()
         firstTime()
         fetchHeaderTexts()
         fetchHeaderImage()
         clearTmpDirectory()
         updateTintColor()
+        //hideLoadingAnimation()
+        
+        
+        
         //tmpfile에 이미지 쌓이는것방지.
         //hideLoadingAnimation()
         //saveFile()
@@ -208,11 +378,7 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
         //collectionview.contentInsetAdjustmentBehavior = .never
         //버튼위치옮기는 코드 그러나 쓸 수 없다..
         //sendMailButton.transform = CGAffineTransform(translationX: 0, y: navBarH)
-        navigationController?.navigationBar.topItem?.title = "Purpose"
-         //navigationItem.rightBarButtonItem = UIBarButtonItem(customView: sendMailButton)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: editButton)
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.navigationItem.largeTitleDisplayMode = .automatic
+        
         
         
         //print(loadFile(name: "new1.txt"))
@@ -224,12 +390,27 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
 //                     name: uniqueFileName) { onSuccess in//weak self
 //          print("saveImage onSuccess: \(onSuccess)")
 //        }
+        print("?")
         editCellsBtn.isHidden = true
-        purposeViewModel.loadPurposes2()//cell들 정보 가져오기.
-
+        purposeViewModel.loadPurposes2 { [weak self] in
+            //bc.removeFromSuperview()
+            //self?.view.backgroundColor = .clear
+            self?.reloadCell()
+            self?.stopIndicator()
+            
+            self?.navigationController?.navigationBar.topItem?.title = "Purpose"
+             //navigationItem.rightBarButtonItem = UIBarButtonItem(customView: sendMailButton)
+            self?.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: self?.editButton ?? UIButton())
+            self?.navigationController?.navigationBar.prefersLargeTitles = true
+            self?.navigationController?.navigationItem.largeTitleDisplayMode = .automatic
+            
+            
+            //self?.hideLoadingAnimation()
+        }//cell들 정보 가져오기.
+//        stopIndicator()
         
         
-        
+       print("ee")
         
         
     }
@@ -265,7 +446,9 @@ extension StudianMainPageViewController :UICollectionViewDataSource {
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return purposeViewModel.purposes.count
+        print("count imgaes",purposeViewModel.images.count)
+        return purposeViewModel.images.count
+        
         //2배로해야한다.
     }
     
@@ -274,7 +457,7 @@ extension StudianMainPageViewController :UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PurposeCell", for: indexPath) as? PurposeCellView else {return UICollectionViewCell()}
         
-        
+        print("cell reload,\(indexPath.item)")
         cell.isInEditingMode = isEditing//delete 버튼 보이게
         
         let purpose = purposeViewModel.purposes[indexPath.item]
@@ -323,10 +506,10 @@ extension StudianMainPageViewController {
                 return UICollectionReusableView()
             }
             
-            
-            header.purposeImageView?.image = UIImage(data: headerModel.headerImage ?? Data())
-            
-            
+            print("header1111")
+            //header.purposeImageView?.image = UIImage(data: headerModel.headerImage ?? Data())
+             header.configure(img: headerImage)//data->uiimage 데이터 변환시간이 걸려서 로딩시간 걸리므로 다음과 같이 코딩하여 로딩없앴다.
+            //header.configure2(data: headerModel.headerImage ?? Data())
             //header.purposeImageView?.image = UIImage(systemName: "circle")!
             //header.updateForMainPage()
             //header.purposeImageView?.image = headerImage
@@ -388,18 +571,31 @@ extension StudianMainPageViewController: EditHedeaderProfileDelegate {
         print("끝났습니다\(headerModel.textFieldText1)")
         print("끝났습니다\(headerModel.textFieldText2)")
         //showLoadingAnimation()
-        collectionview.reloadSections(IndexSet(0..<1))
+        
+        //collectionview.reloadSections(IndexSet(0..<1))//없애도되네?
+        collectionview.reloadData()//위에거 하면 깜박이는데 이거하면 깜박안함.
+       // collectionview.reloadItems(at: [IndexPath(index: 0)])
+        
         //showLoadingAnimation()
         store(headerModel, to: .documents, as: "headerModel.txt")
         //hideLoadingAnimation()
         //hideLoadingAnimation()
     }
+    
     func completeMainPicture(vm: HeaderModel) {
         print("success")
         //showLoadingAnimation()
         //showLoadingAnimation()
-        headerModel.headerImage = vm.headerImage
+        //headerModel.headerImage = vm.headerImage
+        
+        guard let data = vm.headerImage,
+                let uiimage = UIImage(data: data) else {return}
+        headerImage = uiimage
+        
+        ImageFileManager.saveImageInDocumentDirectory(image: uiimage, fileName: "PurposePicture.png")
+        
         collectionview.reloadSections(IndexSet(0..<1))
+        
         //hideLoadingAnimation()
         //hideLoadingAnimation()
     }
@@ -411,10 +607,9 @@ extension StudianMainPageViewController: UICollectionViewDelegate,PurposeDetailV
     func changeDetail() {
         print("chage")
         
-        showLoadingAnimation()
+        //showLoadingAnimation()
         reloadCell()
-        
-        hideLoadingAnimation()
+        //hideLoadingAnimation()
     }
     
 
@@ -427,8 +622,8 @@ extension StudianMainPageViewController: UICollectionViewDelegate,PurposeDetailV
         
         let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
         guard let detailVC = storyboard.instantiateViewController(withIdentifier: "PurposeDetailVIewController") as? PurposeDetailVIewController else {return}//스토리보드에서 연결 안해도 이거면 갈 수 있다.
-        let purposeAndImage = purposeViewModel.purposeAndImage(id: indexPath.item)
-        detailVC.purposeAndImage = purposeAndImage
+        //let purposeAndImage = purposeViewModel.purposeAndImage(id: indexPath.item)
+        //detailVC.purposeAndImage = purposeAndImage
         detailVC.viewModel = purposeViewModel
         detailVC.index = indexPath.item
         detailVC.delegate = self

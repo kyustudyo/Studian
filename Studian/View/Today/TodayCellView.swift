@@ -53,24 +53,41 @@ class TodayCellView :
         TodayManager.shared.createTableCell(today: today)//index 올림
     
         guard let nextId = TodayManager.tableCellLastIdDict[today.id] else {return}
-        print(nextId)
-        let todo = Todo(id: nextId, todoName: "일", todoDetail: "양",doOrNot: false)
-        viewModel?.updateTodate(today: today, todo: todo)
+        
+       
+        let todo = Todo(id: nextId, todoName: "one", todoDetail: "two",doOrNot: false)
+        viewModel?.updateTodate(today: today, todo: todo)//추가
         //self.today = today
+        
+        guard let index = viewModel?.getIndex(today: today) else {return}
+        //print("개수:", (viewModel?.todays[index].todos.count ?? 0) / 2 )
+        
+        //print("k",countN-1)
+        
+//        if countN != 0{
+//            let endIndex = IndexPath(row: countN - 1 ,section:  0 )
+//            self.tv?.scrollToRow(at: endIndex, at: .bottom, animated: true)
+//        }
+        
+        
+        
         print(viewModel?.todays)
         print("sel row",selectedRows)
         //print("today:",today)
         tv?.reloadData()
+        let countN = (viewModel?.todays[index].todos.count ?? 0)
+        print("co:", countN)
+        let endIndex = IndexPath(row: countN-2,section:  0 )//더하면 맨 아래로
+        self.tv?.scrollToRow(at: endIndex, at: .top, animated: true)
         plusButtonHidden()
     }
     
     func plusButtonHidden(){//6개 까지만 추가가능.
         guard let today = today else {return}
         guard let index = viewModel?.getIndex(today: today) else {return}
-        if !isInEditingMode {
+        if isInEditingMode {
             if viewModel?.todays[index].todos.count ?? 0 > 10 {
                 plusBtn.isHidden = true
-                
             }
             else {plusBtn.isHidden = false}
         }
@@ -134,6 +151,7 @@ class TodayCellView :
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         //cell.backgroundColor = .blue
     }
+    
     override var isSelected: Bool {
         didSet {
             print("isselected바뀜 현재 isinedit: \(isInEditingMode)")
@@ -151,10 +169,11 @@ class TodayCellView :
         }
     }
     
-    func updateUI(today:Today){
-        guard let image = UIImage(data: today.imageData) else{
-            return
-        }
+    func updateUI(today:Today,image:UIImage){
+        
+//        guard let image = UIImage(data: today.imageData) else{
+//            return
+//        }
         
         TodayImg.image = image.fixOrientation()
         
@@ -228,19 +247,28 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
         sender.isSelected = !sender.isSelected
         print("주의1: sender_isselected:\(sender.isSelected)")
         let point = sender.convert(CGPoint.zero, to: tv!)
-        let indxPath = tv!.indexPathForRow(at: point)
+        let indxPath = tv!.indexPathForRow(at: point)//거기에 해당하는 인덱스패스
+        
+        
+        //tv?.scrollToRow(at: indxPath!, at: .bottom, animated: false)
+        
         print("기존 selected:\(selectedRows)")
         print("indexpath:",indxPath!)
         guard let today = today ,let todo = viewModel?.getTodo(today: today, index: indxPath!.row) else {return}
         print("pass?")
         print("통과이후와 indexpath",selectedRows,indxPath)
+        
         if selectedRows.contains(indxPath!) {//그린 이야?
+            
                        selectedRows.remove(at: selectedRows.index(of: indxPath!)!)
-            viewModel?.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: false))                }
+            viewModel?.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: false))
+            
+        }
         else {//빨강 이야?
                  selectedRows.append(indxPath!)
                 viewModel?.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: true))
                }
+        
         print(selectedRows)
         print("indexpat\(indxPath!)")//전체 컬렉션뷰가 커지면 체크박스 바뀌는 속도 느려짐.
                tv!.reloadRows(at: [indxPath!], with: .automatic)
@@ -274,8 +302,8 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
                 //print("today.todos:\(today.todos)")
                 
                 
-                let todo = self.viewModel?.getTodo(today: today, index: indexPath.row)
-                let indexpa = IndexPath(index: todo?.id ?? 0)
+//                let todo = self.viewModel?.getTodo(today: today, index: indexPath.row)
+//                let indexpa = IndexPath(index: todo?.id ?? 0)
                 print("i want to zegu:",indexPath.row)
                 self.selectedRows.removeAll {$0 == IndexPath(indexes: [0,indexPath.row])}
                 
@@ -290,11 +318,22 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
                 
                 print("change:",self.viewModel?.todays)
                 self.plusButtonHidden()
-                
+                print("kk",indexPath.row)
                 
                 
                 
                 self.tv?.reloadData()
+                
+                
+                if indexPath.row > 0 {//아래쪽에 있다면 지우면 올라오도록.
+                    //let countN = (self.viewModel?.todays[index].todos.count ?? 0)
+                    let endIndex = IndexPath(row: indexPath.row - 2 ,section:  0 )//더하면 맨 아래로
+                    self.tv?.scrollToRow(at: endIndex, at: .top, animated: true)
+                }
+                
+                
+                
+                //@@
                 
             }
             //smallBtn.setImage(UIImage(named: "person"), for: .normal)
@@ -414,7 +453,7 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         print("@@@@indexpath@@@@:\(indexPath.row)")
-        tv?.scrollToRow(at: indexPath, at: .middle, animated: true)
+        //tv?.scrollToRow(at: indexPath, at: .middle, animated: true)
         //print("dodo")
     }
     
