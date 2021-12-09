@@ -628,7 +628,7 @@ extension StudianMainPageViewController: UICollectionViewDelegate,PurposeDetailV
         detailVC.viewModel = purposeViewModel
         detailVC.index = indexPath.item
         detailVC.delegate = self
-        detailVC.modalPresentationStyle = .overFullScreen//full screen 하면 detailview에서 색깔 십힘
+        detailVC.modalPresentationStyle = .automatic//full screen 하면 detailview에서 색깔 십힘
 //        guard let purpose = purposeViewModel.purposes[indexPath.item]  else {return}
         
         

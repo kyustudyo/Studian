@@ -30,6 +30,21 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         uiView.backgroundColor = .groupTableViewBackground
         return uiView
     }()
+    private let completeButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Complete!", for: .normal)
+        button.layer.cornerRadius = 2
+        
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        button.backgroundColor = .systemGreen
+        button.setTitleColor(.white, for: .normal)
+        //button.layer.masksToBounds = true
+        button.setHeight(height: 40)
+        button.isEnabled = true
+        button.addTarget(self, action: #selector(handleRegistration), for: .touchUpInside)
+        return button
+    }()
+    
     
 //    private let plusPhotoButton: UIButton = {
 //        let button = UIButton(type: .system)
@@ -55,7 +70,7 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
         //view.backgroundColor = .black
-        setSwipeGestures()
+//        setSwipeGestures()
         configureUI()
         setupGestures()
         smallTextView.delegate = self
@@ -70,7 +85,6 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         guard let purpose = purpose else {
             return
         }
-
         viewModel.updatePurpose(purpose)
         self.delegate?.changeDetail()
     }
@@ -147,18 +161,22 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         if noti.name == UIResponder.keyboardWillShowNotification {
            
             print("go")
-            let adjustmentHeight = keyboardFrame.height - view.safeAreaInsets.bottom
+            let adjustmentHeight = keyboardFrame.height//원래 view.safeAreaInsets.bottom 이거 뺏다.
 //            bigTextView.centerY(inView: containerView)
+            print("1", keyboardFrame.height, view.safeAreaInsets.bottom)
             let viewPoint = view.bounds.height
             let bigTextViewHeight = bigTextView.bounds.height
+            print(bigTextViewHeight)
             let bigTextViewPoint = bigTextView.convert(view.frame.origin, to: nil)
-            let smallTextViewPoint = smallTextView.convert(view.frame.origin, to: nil)
-            let smallTextViewHeight = smallTextView.bounds.height
-            
+            print(bigTextViewPoint)
+            let smallTextViewPoint = completeButton.convert(view.frame.origin, to: nil)
+            print(smallTextViewPoint)
+            let smallTextViewHeight = completeButton.bounds.height
+            print(smallTextViewPoint)
             let HeightFromTop = bigTextViewHeight + bigTextViewPoint.y
             let HeightFromBottom = viewPoint - HeightFromTop
             let diff = adjustmentHeight - HeightFromBottom
-            print(adjustmentHeight)
+            print("k",adjustmentHeight)
             print(diff)
             if view.frame.origin.y == 0{
                         self.view.frame.origin.y -= diff
@@ -206,28 +224,32 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         containerView.setWidth(width: UIScreen.main.bounds.width - 50)
          
         containerView.backgroundColor = UIColor(displayP3Red: 239/255, green: 239/255, blue: 244/255, alpha: 1)
+        
         let stackView = UIStackView(arrangedSubviews: [
             plusPhotoButton,
             smallTextView,
-            bigTextView
+            bigTextView,
+            completeButton
         ])
+        
         stackView.axis = .vertical
         stackView.spacing = 12
         stackView.alignment = .center
         stackView.distribution = .fill
-        
+        completeButton.anchor( left: stackView.leftAnchor, right: stackView.rightAnchor, paddingLeft:10 , paddingRight:10)
 //        view.addSubview(plusPhotoButton)
         
 //        plusPhotoButton.anchor(top:view.safeAreaLayoutGuide.topAnchor,
 //                         left: view.safeAreaLayoutGuide.leftAnchor,
 //                         paddingTop: 16,
 //                         paddingLeft: 16)//이 코드를 써야 여러종에도 맞게 코딩된다.
-        plusPhotoButton.setHeight(height: UIScreen.main.bounds.height/2.3)
-        plusPhotoButton.setWidth(width: UIScreen.main.bounds.height/2.3)
-        bigTextView.setHeight(height: 80)
-        smallTextView.setHeight(height: 80)
-        bigTextView.anchor( left: stackView.leftAnchor, right: stackView.rightAnchor, paddingLeft:0 , paddingRight:0 )
-        smallTextView.anchor( left: stackView.leftAnchor, right: stackView.rightAnchor, paddingLeft:0 , paddingRight:0 )
+        plusPhotoButton.setHeight(height: UIScreen.main.bounds.height/3)
+        plusPhotoButton.setWidth(width: UIScreen.main.bounds.height/3)
+        bigTextView.setHeight(height: 60)
+        smallTextView.setHeight(height: 60)
+        bigTextView.anchor( left: stackView.leftAnchor, right: stackView.rightAnchor, paddingLeft:10 , paddingRight:10)
+        smallTextView.anchor( left: stackView.leftAnchor, right: stackView.rightAnchor, paddingLeft:10 , paddingRight:10 )
+        
         
        //iconImage.image = purposeAndImage?.image
         let image = viewModel.images[index]//수정전 코드.
@@ -276,7 +298,15 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         
         
     }
-    
+    @objc func handleRegistration(){
+        print("sdsdsd")
+        //print(UIApplication.topViewController())
+//        navigationController?.popViewController(animated: true)
+        dismiss(animated: true, completion: nil)
+//        delegate?.completeTwoTexts(vm: headerModel!)
+        //print(UIApplication.topViewController())
+        //dismiss(animated: true, completion: nil)
+    }
     
     
 }
@@ -291,11 +321,11 @@ extension PurposeDetailVIewController : UIImagePickerControllerDelegate & UINavi
     @objc private func dismissViewController(){
         self.dismiss(animated: true, completion: nil)
     }
+    
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         print("zz")
         return touch.view == self.view
     }
-
     
     @objc func handleSelectPhoto() {//처음 누를때
         print("select")

@@ -19,11 +19,21 @@ class PurposeHeaderView : UICollectionReusableView {
     var tapHandler: ((HeaderModel)->Void)?
     var editMode : Bool = false {//edit 누를 때만 텍스트뷰 수정 가능.
         didSet {
+            
+            
             textView.isEditable = false
 //            textView.isEditable = editMode//edit누르면 수정가능
-            profilePlusButton.isHidden = !editMode
+            
+            
+            
+            //profilePlusButton.isHidden = !editMode
+            //위 코드는 원래 수정 눌러야만 바꿀 수 있었다.
+            
+            
+            
             print("header editmode:\(editMode)")
-            TextPlusButton.isHidden = !editMode
+//            TextPlusButton.isHidden = !editMode
+            //위 코드는 원래 수정 눌러야만 바꿀 수 있었다.
         }
     }
 //    func textViewSave(){

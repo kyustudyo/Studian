@@ -11,11 +11,13 @@ class CustomTextField: UITextField {
     init(placeholder:String) {
         super.init(frame: .zero)
         self.addDoneButtonOnKeyboard()
-        borderStyle = .none
-        font = UIFont.systemFont(ofSize: 16)
-        textColor = .white
+//        borderStyle = .none
+        borderStyle = .roundedRect
+        backgroundColor = .white
+        font = UIFont.systemFont(ofSize: 17)
+        textColor = .black
         keyboardAppearance = .default
-        attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.foregroundColor : UIColor.white])
+        attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.foregroundColor : UIColor.black])
     }
     
     required init?(coder: NSCoder) {

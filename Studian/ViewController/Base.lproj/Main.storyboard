@@ -527,8 +527,6 @@
                                             <rect key="frame" x="217.5" y="5" width="147.5" height="218"/>
                                             <state key="normal" title="Button"/>
                                             <buttonConfiguration key="configuration" style="plain">
-                                                <imageReference key="image" image="pencil" catalog="system" symbolScale="large"/>
-                                                <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" scale="default" weight="bold"/>
                                                 <attributedString key="attributedTitle">
                                                     <fragment content=" ">
                                                         <attributes>
