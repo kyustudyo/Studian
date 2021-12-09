@@ -19,8 +19,8 @@ class CustomTextView: UITextView {
         
         
         
-        backgroundColor = .black
-        textColor = .white
+        backgroundColor = .white
+        textColor = .black
         layer.masksToBounds = true
         layer.cornerRadius =  10.0
         layer.borderWidth = 1 // Set the border color to black.

@@ -351,6 +351,7 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
         fetchHeaderImage()
         clearTmpDirectory()
         updateTintColor()
+        
         //hideLoadingAnimation()
         
         
@@ -627,7 +628,10 @@ extension StudianMainPageViewController: UICollectionViewDelegate,PurposeDetailV
         detailVC.viewModel = purposeViewModel
         detailVC.index = indexPath.item
         detailVC.delegate = self
+        detailVC.modalPresentationStyle = .overFullScreen//full screen 하면 detailview에서 색깔 십힘
 //        guard let purpose = purposeViewModel.purposes[indexPath.item]  else {return}
+        
+        
             present(detailVC, animated: true, completion: nil)
             
         
@@ -636,7 +640,6 @@ extension StudianMainPageViewController: UICollectionViewDelegate,PurposeDetailV
         
     }
 }
-
 
 
 
@@ -653,6 +656,7 @@ extension StudianMainPageViewController: UICollectionViewDelegateFlowLayout {
         let height: CGFloat = width + 35
         return CGSize(width: width, height: height)
     }
+    
 }
 
 

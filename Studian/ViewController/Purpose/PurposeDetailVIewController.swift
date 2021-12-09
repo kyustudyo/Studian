@@ -16,7 +16,6 @@ protocol PurposeDetailVIewControllerDelegate : class {
 
 
 class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDelegate {
-    
     @Published private var bigTextView = CustomTextView()
     @Published private var smallTextView = CustomTextView()
     //var purposeAndImage : PurposeAndImage!//사용안함.
@@ -26,45 +25,44 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
     weak var delegate : PurposeDetailVIewControllerDelegate?
     private var subscribers = Set<AnyCancellable>()
     
+    private let containerView : UIView = {
+        let uiView = UIView()
+        uiView.backgroundColor = .groupTableViewBackground
+        return uiView
+    }()
+    
+//    private let plusPhotoButton: UIButton = {
+//        let button = UIButton(type: .system)
+//        let image = UIImage(named: "2")?.withRoundedCorners(radius: UIScreen.main.bounds.width/2.5)
+//        button.imageView?.contentMode = .scaleAspectFill//이거 안하면 좀 이상하게 나온다.
+//        button.tintColor = .white
+//        button.addTarget(self, action: #selector(handleSelectPhoto), for: .touchUpInside)
+//        button.layer.cornerRadius = 15
+//        button.clipsToBounds = true//이걸해야 동그라게 나온다. 안에들어갈 사진들이.
+//        return button
+//    }()
     private let plusPhotoButton: UIButton = {
         let button = UIButton(type: .system)
-        let image = UIImage(named: "2")?.withRoundedCorners(radius: UIScreen.main.bounds.width/2.5)
+        let image = UIImage(named: "2")
         button.imageView?.contentMode = .scaleAspectFill//이거 안하면 좀 이상하게 나온다.
-        //button.setImage(image, for: .normal)
         button.tintColor = .white
         button.addTarget(self, action: #selector(handleSelectPhoto), for: .touchUpInside)
-        //button.imageView?.contentMode = .scaleAspectFill
         button.layer.cornerRadius = 15
-        //button.imageView?.clipsToBounds = true
         button.clipsToBounds = true//이걸해야 동그라게 나온다. 안에들어갈 사진들이.
         return button
     }()
-    
-//    private let iconImage: UIImageView = {
-//        let iv = UIImageView()
-//        iv.image = UIImage(named: "2")?.withRoundedCorners(radius: UIScreen.main.bounds.width/2.5)
-//        //iv.layer.cornerRadius = iv.frame.size.width / 2
-//        iv.tintColor = .white//이미지 색깔
-//
-//        //iv.layer.cornerRadius = iv.frame.size.width / 2
-//        iv.layer.cornerRadius = 15
-//        iv.clipsToBounds = true
-//        return iv
-//    }()
-
-  
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .black
+        //view.backgroundColor = .black
+        setSwipeGestures()
         configureUI()
-        
-        //tapGesture()
-        //observeForm()
+        setupGestures()
         smallTextView.delegate = self
         bigTextView.delegate = self
         textViewDone()
         print("dididid")
+        configureNotificationObservers()
         observeForm()
     }
     override func viewDidDisappear(_ animated: Bool) {
@@ -89,12 +87,6 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
             let purpose = Purpose(id:viewModel.purposes[index].id , name: text, oneSenetence: bigTextView.text)
             print(purpose)
             self?.purpose = purpose
-            //self?.showLoadingAnimation()
-            //viewModel.updatePurpose(purpose)
-            //self?.delegate?.changeDetail()
-            //self?.hideLoadingAnimation()
-            //print("\(text)")
-            
         }.store(in: &subscribers)
         
         NotificationCenter.default.publisher(for: UITextView.textDidChangeNotification, object: bigTextView).compactMap {
@@ -102,9 +94,7 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
             
             ($0.object as? UITextView)?.text
         }.sink { [weak self] (text) in
-            //self?.initialInvetmentAmount = Int(text) ?? 0
-            //print("f")
-            
+
             print("\(text)")
             guard let smallTextView = self?.smallTextView,
                   let viewModel = self?.viewModel,
@@ -139,7 +129,68 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
                 }
                 return true
     }
+    func textViewDidEndEditing(_ textView: UITextView) {
+        
+        print("end")
+    }
+    func configureNotificationObservers(){
+        NotificationCenter.default.addObserver(self, selector: #selector(adjustInputView), name: UIResponder.keyboardWillShowNotification, object: nil)//키보드 뜰때 --을 해라.
+        NotificationCenter.default.addObserver(self, selector: #selector(adjustInputView), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
     
+    @objc func adjustInputView(noti:Notification) {
+        
+        guard let userInfo = noti.userInfo else { return }
+        // [x] TODO: 키보드 높이에 따른 인풋뷰 위치 변경
+        guard let keyboardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
+        
+        if noti.name == UIResponder.keyboardWillShowNotification {
+           
+            print("go")
+            let adjustmentHeight = keyboardFrame.height - view.safeAreaInsets.bottom
+//            bigTextView.centerY(inView: containerView)
+            let viewPoint = view.bounds.height
+            let bigTextViewHeight = bigTextView.bounds.height
+            let bigTextViewPoint = bigTextView.convert(view.frame.origin, to: nil)
+            let smallTextViewPoint = smallTextView.convert(view.frame.origin, to: nil)
+            let smallTextViewHeight = smallTextView.bounds.height
+            
+            let HeightFromTop = bigTextViewHeight + bigTextViewPoint.y
+            let HeightFromBottom = viewPoint - HeightFromTop
+            let diff = adjustmentHeight - HeightFromBottom
+            print(adjustmentHeight)
+            print(diff)
+            if view.frame.origin.y == 0{
+                        self.view.frame.origin.y -= diff
+                    }//diff 는 맨아래 텍스트뷰 맨아래 위치와 키보드 올라올 때 부족한 차이.
+            //if절이 없다면 계속 올린다.
+            
+//            print(viewPoint)
+//            print(bigTextViewHeight)
+//            print(bigTextViewPoint.y)
+//            print(smallTextViewPoint.y)
+//            containerView.centerY(inView: view, constant: <#T##CGFloat#>)
+            
+//            containerView.layoutIfNeeded()
+//            view.layoutIfNeeded()
+//            inputViewBottom.constant = adjustmentHeight
+        } else if noti.name == UIResponder.keyboardWillHideNotification {
+            if view.frame.origin.y != 0{
+                        self.view.frame.origin.y = 0 //88픽셀 올려라.
+                    }
+            print("hide")
+//            containerView.centerY(inView: view)
+//            containerView.layoutIfNeeded()
+//            view.layoutIfNeeded()
+//            inputViewBottom.constant = 0
+        }
+//        if view.frame.origin.y == 0{
+//            self.view.frame.origin.y -= 120 //88픽셀 올려라.화면이 올라가서 텍스트 가 좀 보이도록.
+//        }
+    }
+//    @objc func keyboardWillHide() {
+//
+//    }
     func configureUI() {
         
 //        let stack = UIStackView(arrangedSubviews: [iconImage,smallTextView])
@@ -147,11 +198,36 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
 //        stack.spacing = 16
 //        view.addSubview(stack)
         
-        view.addSubview(plusPhotoButton)
-        plusPhotoButton.anchor(top:view.safeAreaLayoutGuide.topAnchor,
-                         left: view.safeAreaLayoutGuide.leftAnchor,
-                         paddingTop: 16,
-                         paddingLeft: 16)//이 코드를 써야 여러종에도 맞게 코딩된다.
+        view.backgroundColor = UIColor(white: 0.3, alpha: 0.4)
+        self.view.addSubview(containerView)
+        containerView.layer.cornerRadius = 25
+        containerView.centerX(inView: view)
+        containerView.centerY(inView: view)
+        containerView.setWidth(width: UIScreen.main.bounds.width - 50)
+         
+        containerView.backgroundColor = UIColor(displayP3Red: 239/255, green: 239/255, blue: 244/255, alpha: 1)
+        let stackView = UIStackView(arrangedSubviews: [
+            plusPhotoButton,
+            smallTextView,
+            bigTextView
+        ])
+        stackView.axis = .vertical
+        stackView.spacing = 12
+        stackView.alignment = .center
+        stackView.distribution = .fill
+        
+//        view.addSubview(plusPhotoButton)
+        
+//        plusPhotoButton.anchor(top:view.safeAreaLayoutGuide.topAnchor,
+//                         left: view.safeAreaLayoutGuide.leftAnchor,
+//                         paddingTop: 16,
+//                         paddingLeft: 16)//이 코드를 써야 여러종에도 맞게 코딩된다.
+        plusPhotoButton.setHeight(height: UIScreen.main.bounds.height/2.3)
+        plusPhotoButton.setWidth(width: UIScreen.main.bounds.height/2.3)
+        bigTextView.setHeight(height: 80)
+        smallTextView.setHeight(height: 80)
+        bigTextView.anchor( left: stackView.leftAnchor, right: stackView.rightAnchor, paddingLeft:0 , paddingRight:0 )
+        smallTextView.anchor( left: stackView.leftAnchor, right: stackView.rightAnchor, paddingLeft:0 , paddingRight:0 )
         
        //iconImage.image = purposeAndImage?.image
         let image = viewModel.images[index]//수정전 코드.
@@ -165,27 +241,32 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
 //        print(viewModel.images)
 //        print(viewModel.images[index])
         //plusPhotoButton.image = viewModel.images[index]
-        plusPhotoButton.setDimensions(height: UIScreen.main.bounds.width/2.3, width: UIScreen.main.bounds.width/2.3)
+//        plusPhotoButton.setDimensions(height: UIScreen.main.bounds.width/2.3, width: UIScreen.main.bounds.width/2.3)
         
-        view.addSubview(smallTextView)
-        smallTextView.anchor(top:view.safeAreaLayoutGuide.topAnchor,
-                             left: plusPhotoButton.rightAnchor,
-                            
-                             right: view.safeAreaLayoutGuide.rightAnchor,
-                             paddingTop: 16,
-                             paddingLeft: 16,
-                             paddingRight: 16)
+//        view.addSubview(smallTextView)
+//        smallTextView.anchor(top:view.safeAreaLayoutGuide.topAnchor,
+//                             left: plusPhotoButton.rightAnchor,
+//
+//                             right: view.safeAreaLayoutGuide.rightAnchor,
+//                             paddingTop: 16,
+//                             paddingLeft: 16,
+//                             paddingRight: 16)
         smallTextView.text = viewModel.purposes[index].name//수정후 코드
 //        smallTextView.text = purposeAndImage?.purpose?.name//수정전 코드
         smallTextView.isEditable = true
         
         //smallTextView.setDimensions(height: 100, width: 100)
-        view.addSubview(bigTextView)
-        bigTextView.anchor(top:plusPhotoButton.bottomAnchor,left: view.safeAreaLayoutGuide.leftAnchor,bottom: view.safeAreaLayoutGuide.bottomAnchor,right: view.safeAreaLayoutGuide.rightAnchor,paddingTop: 32,paddingLeft: 16,paddingBottom: 200,paddingRight: 16)
-        bigTextView.anchor(top:smallTextView.bottomAnchor,paddingTop: 32)
+//        view.addSubview(bigTextView)
+//        bigTextView.anchor(top:plusPhotoButton.bottomAnchor,left: view.safeAreaLayoutGuide.leftAnchor,bottom: view.safeAreaLayoutGuide.bottomAnchor,right: view.safeAreaLayoutGuide.rightAnchor,paddingTop: 32,paddingLeft: 16,paddingBottom: 200,paddingRight: 16)
+//        bigTextView.anchor(top:smallTextView.bottomAnchor,paddingTop: 32)
         bigTextView.text = viewModel.purposes[index].oneSenetence//수정후 코드
         //bigTextView.text = purposeAndImage?.purpose?.oneSenetence//수정전코드
         bigTextView.isEditable = true
+        
+        containerView.addSubview(stackView)
+        stackView.anchor(top: containerView.topAnchor, left: containerView.leftAnchor, bottom: containerView.bottomAnchor, right: containerView.rightAnchor, paddingTop: 24, paddingLeft: 24, paddingBottom: 24, paddingRight: 24)
+        
+        
         
     }
     
@@ -200,7 +281,21 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
     
 }
 
-extension PurposeDetailVIewController : UIImagePickerControllerDelegate & UINavigationControllerDelegate {
+extension PurposeDetailVIewController : UIImagePickerControllerDelegate & UINavigationControllerDelegate,UIGestureRecognizerDelegate {
+    
+    private func setupGestures() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissViewController))
+        tapGesture.delegate = self
+        view.addGestureRecognizer(tapGesture)
+    }
+    @objc private func dismissViewController(){
+        self.dismiss(animated: true, completion: nil)
+    }
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        print("zz")
+        return touch.view == self.view
+    }
+
     
     @objc func handleSelectPhoto() {//처음 누를때
         print("select")
@@ -214,9 +309,7 @@ extension PurposeDetailVIewController : UIImagePickerControllerDelegate & UINavi
         let fixedImage = image?.fixOrientation()//90도 회전하는 것 방지하는 코드.
         plusPhotoButton.setImage(fixedImage?.withRenderingMode(.alwaysOriginal), for: .normal)
         //viewModel?.headerImage = fixedImage!.pngData()
-        
         showLoadingAnimation()
-        
         viewModel.updateImage(purpose: viewModel.purposes[index], image: fixedImage!, index: index){
             hideLoadingAnimation()
         }
@@ -230,6 +323,24 @@ extension PurposeDetailVIewController : UIImagePickerControllerDelegate & UINavi
         delegate?.changeDetail()
         //사진저장하기.
     }
+    
+    private func setSwipeGestures(){//사용안함.
+        let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(respondToSwipeGesture(_ : )))
+        swipeDown.direction = UISwipeGestureRecognizer.Direction.down
+        self.view.addGestureRecognizer(swipeDown)
+    }
+    @objc func respondToSwipeGesture(_ gesture: UIGestureRecognizer){
+        if let swipeGesture = gesture as? UISwipeGestureRecognizer {
+            print("!!")
+            switch swipeGesture.direction {
+            case .down :
+                dismissViewController()
+                print("down!")
+            default: break
+            }
+        }
+    }
+    
     
 }
 

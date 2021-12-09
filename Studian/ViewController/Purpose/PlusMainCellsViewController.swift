@@ -58,7 +58,7 @@ class PlusMainCellsViewController : UIViewController, UIAnimatable{
     @objc func handleRegistration(){
         print("sdsdsd")
         //print(UIApplication.topViewController())
-        navigationController?.popViewController(animated: true)
+        navigationController?.popViewController(animated: true)//없어도된다.
         dismiss(animated: true, completion: nil)
         //print(UIApplication.topViewController())
         //dismiss(animated: true, completion: nil)
@@ -190,9 +190,10 @@ extension PlusMainCellsViewController : UIImagePickerControllerDelegate & UINavi
     
     @objc func handleSelectPhoto() {//처음 누를때
         print("select")
+        showLoadingAnimation()
         let imagePickerController = UIImagePickerController()
         imagePickerController.delegate = self
-        present(imagePickerController, animated: true, completion: nil)
+        present(imagePickerController, animated: true, completion: hideLoadingAnimation)
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
