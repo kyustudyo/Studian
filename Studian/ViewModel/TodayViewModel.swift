@@ -68,51 +68,53 @@ class TodayManager {
      
     func retrieveTodo(completion2: @escaping ()->Void) {//cell들에 할것
         //var images : [UIImage]?
-        retrive("todays.json", from: .documents, as: [Today].self,completion: { [weak self] todays in
-            
-            self?.todays = todays
-            print("몇개@@",todays.count)// 곱하기 2 되어서 나온다.
-            print("몇개",todays)
-            if todays.count != 0{
-                todays.forEach{
-                    
-    //                guard let image = ImageFileManager.loadImageFromDocumentDirectory(fileName: "\($0.id).png") else {return}
-                    print($0.imageData.description)
-                    //if $0.imageData.description != "30242712 bytes" {
-                        let image = UIImage(data: $0.imageData) ?? UIImage(systemName: "circle")!
-                    self?.images.append(image)
-                    //}
-                    
-    //                images.append(image)
-                }
-                print("총몇개 d:\(self?.images.count)")
-            }
-            
-            let lastId = todays.last?.id ?? 0
-            var LastIdDict = Dictionary<Int,Int>()
-            var todoIds = Array<Int>()
-            for i in 0..<todays.count {
-                let id = todays[i].id
+        
+        DispatchQueue.global().async {
+            retrive("todays.json", from: .documents, as: [Today].self,completion: { [weak self] todays in
                 
-                for todo in todays[i].todos{
-                    todoIds.append(todo.id)
+                self?.todays = todays
+                print("몇개@@",todays.count)// 곱하기 2 되어서 나온다.
+                print("몇개",todays)
+                if todays.count != 0{
+                    todays.forEach{
+                        
+        //                guard let image = ImageFileManager.loadImageFromDocumentDirectory(fileName: "\($0.id).png") else {return}
+                        print($0.imageData.description)
+                        //if $0.imageData.description != "30242712 bytes" {
+                            let image = UIImage(data: $0.imageData) ?? UIImage(systemName: "circle")!
+                        self?.images.append(image)
+                        //}
+                        
+        //                images.append(image)
+                    }
+                    print("총몇개 d:\(self?.images.count)")
                 }
-                let lastId = todoIds.max() ?? 0
-                let numberOfTodo = todays[i].todos.count
                 
-    //            LastIdDict.updateValue(numberOfTodo, forKey: id)
-                LastIdDict.updateValue(lastId, forKey: id)
-            }
-            TodayManager.lastId = lastId
-            TodayManager.tableCellLastIdDict = LastIdDict
-            
-            DispatchQueue.main.async {
-                completion2()
-            }
-            
+                let lastId = todays.last?.id ?? 0
+                var LastIdDict = Dictionary<Int,Int>()
+                var todoIds = Array<Int>()
+                for i in 0..<todays.count {
+                    let id = todays[i].id
+                    
+                    for todo in todays[i].todos{
+                        todoIds.append(todo.id)
+                    }
+                    let lastId = todoIds.max() ?? 0
+                    let numberOfTodo = todays[i].todos.count
+                    
+        //            LastIdDict.updateValue(numberOfTodo, forKey: id)
+                    LastIdDict.updateValue(lastId, forKey: id)
+                }
+                TodayManager.lastId = lastId
+                TodayManager.tableCellLastIdDict = LastIdDict
+                
+                DispatchQueue.main.async {
+                    completion2()
+                }
 
-            
-        })
+            })
+        }
+        
         
         
     }

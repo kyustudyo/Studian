@@ -7,20 +7,22 @@
 
 import UIKit
 protocol EditHedeaderProfileDelegate: class {
-    func completeTwoTexts(vm:HeaderModel)
-    func completeMainPicture(vm: HeaderModel)
+//    func completeTwoTexts(vm:HeaderModel)
+//    func completeMainPicture(vm: HeaderModel)
+    func completeTextsOrImage(vm:HeaderModel,isTextsChanged:Bool,isImageChanged:Bool)
 }
 
 class EditHedeaderProfileViewController : UIViewController,UIAnimatable,UIGestureRecognizerDelegate{
     
     weak var delegate : EditHedeaderProfileDelegate?
-    weak var headerModel :HeaderModel?
+    var headerModel :HeaderModel?
     private let containerView : UIView = {
         let uiView = UIView()
         uiView.backgroundColor = .groupTableViewBackground
         return uiView
     }()
-    
+    var isImageChanged = false
+    var isTextsChagned = false
     private let plusPhotoButton: UIButton = {
         let button = UIButton(type: .system)
         //button.setImage(#imageLiteral(resourceName: "plus_photo"), for: .normal)
@@ -76,12 +78,21 @@ class EditHedeaderProfileViewController : UIViewController,UIAnimatable,UIGestur
         return touch.view == self.view
     }
     
-    @objc func handleRegistration(){
+    @objc func handleRegistration(){//@@@
         print("sdsdsd")
         //print(UIApplication.topViewController())
         navigationController?.popViewController(animated: true)
         dismiss(animated: true, completion: nil)
-        delegate?.completeTwoTexts(vm: headerModel!)
+        
+        
+        //
+        if let headerModel = headerModel {
+            delegate?.completeTextsOrImage(vm: headerModel, isTextsChanged: isTextsChagned, isImageChanged: isImageChanged)
+        }
+        
+//        delegate?.completeTwoTexts(vm: headerModel!)
+        
+        
         //print(UIApplication.topViewController())
         //dismiss(animated: true, completion: nil)
     }
@@ -153,25 +164,10 @@ class EditHedeaderProfileViewController : UIViewController,UIAnimatable,UIGestur
         } else {
             let image =  UIImage(named:"plus_photo")?.fixOrientation()
             plusPhotoButton.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)//withrenderingmode 안하면 안뜬다.
-            //plusPhotoButton.layer.borderColor = UIColor.white.cgColor
-            
-            //plusPhotoButton.layer.borderColor = UIColor.white.cgColor
-            //plusPhotoButton.layer.borderWidth = 3.0
-            //plusPhotoButton.layer.cornerRadius = 50
+
         }
         
-//        plusPhotoButton.centerX(inView: view)
-//        plusPhotoButton.anchor(top:view.safeAreaLayoutGuide.topAnchor,paddingTop: 32)
-//        plusPhotoButton.setDimensions(height: 250, width: 250)
-//
-//        let stack = UIStackView(arrangedSubviews: [FirstContainerView,SecondContainerView])
-//        stack.axis = .vertical
-//        stack.spacing = 16
-//        view.addSubview(stack)
-//        stack.anchor(top:plusPhotoButton.bottomAnchor,left:view.leftAnchor, right: view.rightAnchor,paddingTop: 32, paddingLeft: 32, paddingRight: 32)
-//        view.addSubview(completeButton)
-//        completeButton.anchor(bottom:view.safeAreaLayoutGuide.bottomAnchor,paddingBottom: 32)
-//        completeButton.centerX(inView: view)
+
     }
     
 }
@@ -209,43 +205,21 @@ extension EditHedeaderProfileViewController {
                         self.view.frame.origin.y -=  ( diff - doneButtonHeight )
                     }//diff 는 맨아래 텍스트뷰 맨아래 위치와 키보드 올라올 때 부족한 차이.
             //if절이 없다면 계속 올린다.
-            
-//            print(viewPoint)
-//            print(bigTextViewHeight)
-//            print(bigTextViewPoint.y)
-//            print(smallTextViewPoint.y)
-//            containerView.centerY(inView: view, constant: <#T##CGFloat#>)
-            
-//            containerView.layoutIfNeeded()
-//            view.layoutIfNeeded()
-//            inputViewBottom.constant = adjustmentHeight
+
         } else if noti.name == UIResponder.keyboardWillHideNotification {
             if view.frame.origin.y != 0{
                         self.view.frame.origin.y = 0 //88픽셀 올려라.
                     }
             print("hide")
-//            containerView.centerY(inView: view)
-//            containerView.layoutIfNeeded()
-//            view.layoutIfNeeded()
-//            inputViewBottom.constant = 0
+
         }
-//        if view.frame.origin.y == 0{
-//            self.view.frame.origin.y -= 120 //88픽셀 올려라.화면이 올라가서 텍스트 가 좀 보이도록.
-//        }
+
     }
-//    @objc func keyboardWillShow() {
-//        if view.frame.origin.y == 0{
-//            self.view.frame.origin.y -= 120 //88픽셀 올려라.화면이 올라가서 텍스트 가 좀 보이도록.
-//        }
-//    }
-//    @objc func keyboardWillHide() {
-//        if view.frame.origin.y != 0{
-//            self.view.frame.origin.y = 0 //88픽셀 올려라.
-//        }
-//    }
-    override func viewDidDisappear(_ animated: Bool) {
-        delegate?.completeTwoTexts(vm: headerModel!)
+
+    override func viewDidDisappear(_ animated: Bool) {//@@@
+        //delegate?.completeTwoTexts(vm: headerModel!)
         //delegate?.completeMainPicture(vm: headerModel!)
+        //dismiss(animated: true, completion: nil)
     }
     @objc func textDidChange(sender: UITextField){
         if sender == FirstTextField {
@@ -255,6 +229,7 @@ extension EditHedeaderProfileViewController {
             headerModel?.textFieldText2 = sender.text
             print("\(headerModel?.textFieldText2)")
         }
+        isTextsChagned = true
 //        delegate?.completeTwoTexts(vm: headerModel!)
         //checkFormStatus()//여기다하면 너무 느리다.
     }
@@ -286,7 +261,11 @@ extension EditHedeaderProfileViewController : UIImagePickerControllerDelegate & 
         plusPhotoButton.layer.cornerRadius = 50
         dismiss(animated: true, completion: nil)
         hideLoadingAnimation()
-        delegate?.completeMainPicture(vm: headerModel!)
+        
+        isImageChanged = true
+        
+        
+        //delegate?.completeMainPicture(vm: headerModel!)
         //사진저장하기.
     }
     

@@ -10,7 +10,7 @@ import Foundation
 import Combine
 
 protocol PurposeDetailVIewControllerDelegate : class {
-    func changeDetail()
+    func changeDetail(purpose:Purpose,image:UIImage,indexInt:Int,isTextsChanged:Bool,isImageChanged:Bool)
 }
 
 
@@ -19,12 +19,14 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
     @Published private var bigTextView = CustomTextView()
     @Published private var smallTextView = CustomTextView()
     //var purposeAndImage : PurposeAndImage!//사용안함.
-    var purpose : Purpose?//여기에 변경사항 저장.
     var viewModel : PurposesViewModel!
     var index : Int!
     weak var delegate : PurposeDetailVIewControllerDelegate?
     private var subscribers = Set<AnyCancellable>()
-    
+    private var image = UIImage()
+    private var isImageChanged = false
+    private var isTextsChanged = false
+    var purpose : Purpose?
     private let containerView : UIView = {
         let uiView = UIView()
         uiView.backgroundColor = .groupTableViewBackground
@@ -85,15 +87,16 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         guard let purpose = purpose else {
             return
         }
-        viewModel.updatePurpose(purpose)
-        self.delegate?.changeDetail()
+        
+//        viewModel.updatePurpose(purpose)
+//        self.delegate?.changeDetail()
+        
     }
     
     func observeForm(){
         NotificationCenter.default.publisher(for: UITextView.textDidChangeNotification, object: smallTextView).compactMap {
             ($0.object as? UITextView)?.text
         }
-        
         .sink { [weak self] (text) in
             guard let bigTextView = self?.bigTextView,
                   let viewModel = self?.viewModel,
@@ -300,9 +303,17 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
     }
     @objc func handleRegistration(){
         print("sdsdsd")
+        
+        
+        
+        if let purpose = purpose {
+            delegate?.changeDetail(purpose: purpose,image:image,indexInt: index, isTextsChanged: isTextsChanged, isImageChanged: isImageChanged)
+        }
+        dismiss(animated: true, completion: nil)
+        
         //print(UIApplication.topViewController())
 //        navigationController?.popViewController(animated: true)
-        dismiss(animated: true, completion: nil)
+        
 //        delegate?.completeTwoTexts(vm: headerModel!)
         //print(UIApplication.topViewController())
         //dismiss(animated: true, completion: nil)
@@ -338,19 +349,31 @@ extension PurposeDetailVIewController : UIImagePickerControllerDelegate & UINavi
         let image = info[.originalImage] as? UIImage
         let fixedImage = image?.fixOrientation()//90도 회전하는 것 방지하는 코드.
         plusPhotoButton.setImage(fixedImage?.withRenderingMode(.alwaysOriginal), for: .normal)
+        
+        
+        
         //viewModel?.headerImage = fixedImage!.pngData()
-        showLoadingAnimation()
-        viewModel.updateImage(purpose: viewModel.purposes[index], image: fixedImage!, index: index){
-            hideLoadingAnimation()
-        }
+        
+        //showLoadingAnimation()
+        
+//        viewModel.updateImage(purpose: viewModel.purposes[index], image: fixedImage!, index: index){
+//            hideLoadingAnimation()
+//        }
         
         //ImageFileManager.saveImageInDocumentDirectory(image: fixedImage!, fileName: "PurposePicture.png")
         plusPhotoButton.layer.borderColor = UIColor.white.cgColor
         //plusPhotoButton.layer.borderWidth = 3.0
         plusPhotoButton.layer.cornerRadius = 15
         
+        
+        //delegate?.changeDetail()
+        
+        if let fixedImage = fixedImage {
+            self.image = fixedImage
+            isImageChanged = true
+        }
+        
         dismiss(animated: true, completion: nil)
-        delegate?.changeDetail()
         //사진저장하기.
     }
     

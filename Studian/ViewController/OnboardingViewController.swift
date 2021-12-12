@@ -16,7 +16,8 @@ class OnboardingViewController: UIViewController,UIAnimatable {
     @IBOutlet weak var darkView: UIView!
     
     
-    
+    private let storageManager = StorageManager()
+    private let navigationManager = NavigationManager()
     
     private var items: [OnboardingItem] = []
     
@@ -32,6 +33,10 @@ class OnboardingViewController: UIViewController,UIAnimatable {
         setupViews()
         updateBackgroundImage(index: currentPage)
         // Do any additional setup after loading the view.
+    }
+    
+    private func updateFunc(){
+        storageManager.SetOnboardingSeen()
     }
     private func setupPlaceholderItems() {
         items = OnboardingItem.placeholderItems
@@ -128,7 +133,11 @@ class OnboardingViewController: UIViewController,UIAnimatable {
                 //self.setupScreen(index: self.currentPage)
                 if self.isOverLastItem() {
                     self.showLoadingAnimation()
-                    self.showMainApp()
+                    
+                    self.navigationManager.show(screen: .mainApp, inController: self)
+                    
+                    
+                    //self.showMainApp()
                 } else {
                     //self.showLoadingAnimation()
                     

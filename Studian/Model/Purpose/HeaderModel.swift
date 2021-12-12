@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-class HeaderModel: Codable{
+struct HeaderModel: Codable{
     var textViewText : String?
     var textFieldText1: String?
     var textFieldText2: String?

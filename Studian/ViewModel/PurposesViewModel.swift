@@ -150,6 +150,7 @@ class PurposeManager {
     }
     
     
+    
     func deleteTodo(_ purpose: Purpose) {
         // [x] TODO: delete 로직 추가
         purposes = purposes.filter { $0.id != purpose.id }
@@ -186,57 +187,31 @@ class PurposeManager {
     
     func retrieveTodo(completion:@escaping ()->Void) {//cell들에 할것
 //        var images : [UIImage]?
-        retrive("purposes.json", from: .documents, as: [Purpose].self, completion: { [weak self] purposes in
-            
-            print("hi")
-            self?.purposes = purposes
-            print("hi",purposes.count)
-            if purposes.count != 0{
-    //            for index in 1...purposes.count {
-    //                let image = ImageFileManager.loadImageFromDocumentDirectory(fileName: "\(index).png") ?? UIImage(systemName: "circle")!
-    //    //            let image2 = UIImage(systemName: "circle")!
-    //                images.append(image)
-    //            }
-                
-                
-                    purposes.forEach{
-                        let image = ImageFileManager.loadImageFromDocumentDirectory(fileName: "\($0.id).png",completion: {_ in
-                            print("hi")
-                        }) ?? UIImage(systemName: "circle")!
-                        self?.images.append(image)
-                        print(self?.images.count)
-                        print("몇개",self?.purposes.count)
-                    }
-                
-                DispatchQueue.main.async {
-                    completion()
-                }
-                
+        DispatchQueue.global().async {
+            retrive("purposes.json", from: .documents, as: [Purpose].self, completion: { [weak self] purposes in
+                print("hi")
+                self?.purposes = purposes
+                print("hi",purposes.count)
+                if purposes.count != 0{
+                        purposes.forEach{
+                            let image = ImageFileManager.loadImageFromDocumentDirectory(fileName: "\($0.id).png",completion: {_ in
+                                print("hi")
+                            }) ?? UIImage(systemName: "circle")!
+                            self?.images.append(image)
+                            print(self?.images.count)
+                            print("몇개",self?.purposes.count)
+                        }
                     
-                
-                
-                
-            }
-//            else {//무조건있으므로 필요없다
-//                DispatchQueue.main.async {
-//                    completion()
-//                }
-//            }
-            
-            
-            
-        })
+                    DispatchQueue.main.async {
+                        completion()
+                        let lastId = purposes.last?.id ?? 0
+                        PurposeManager.lastId = lastId
+                        print("lastid",PurposeManager.lastId)
+                    }
+                }
+            })
+        }
         
         
-        //현재 0 일때 안된다.
-        
-        
-            
-        
-        
-       
-        let lastId = purposes.last?.id ?? 0
-        PurposeManager.lastId = lastId
-        print("lastid",PurposeManager.lastId)
     }
 }

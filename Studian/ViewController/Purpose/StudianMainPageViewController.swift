@@ -146,8 +146,9 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
         //collectionview.reloadSections(IndexSet(0..<1))//얘하면깜박임
         collectionview.reloadData()
         //store(text, to: .documents, as: "PurposeTextViewText.txt")
-        store(headerModel, to: .documents, as: "headerModel.txt") 
+        store(headerModel, to: .documents, as: "headerModel.txt")
         print("\(text!)")
+        
     }
     
 //    @IBOutlet weak var txt1 : UILabel!
@@ -156,6 +157,7 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
     
     var headerModel = HeaderModel(textViewText: nil, textFieldText1: nil, textFieldText2: nil,headerImage: nil)
     var purposeViewModel = PurposesViewModel()
+    
     
     
     
@@ -231,7 +233,7 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
         print(headerModel.headerImage)
 //        vc?.TextViewText = headerViewModel.textViewText
 //        vc?.delegate = self
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.automatic
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
         self.present(navigationController,animated: true,completion: nil)
     }
     
@@ -271,7 +273,7 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
         print("load!!")
         
 //        guard let a = retrive("headerModel.txt", from: .documents, as: HeaderModel.self) else {return}
-        
+        DispatchQueue.global().async {
             retrive("headerModel.txt", from: .documents, as: HeaderModel.self){
                 [weak self] header in
                 DispatchQueue.main.async {
@@ -280,6 +282,8 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
                 }
                 
             }
+        }
+            
         
 //        headerModel = a
         
@@ -322,103 +326,43 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
     override func viewDidLoad() {
        
         super.viewDidLoad()
-        //showLoadingAnimation()
-        //showLoadingAnimation()
-        
-//        let bc = UIView(frame: UIScreen.main.bounds)
-//        let uiimageview = UIImageView(frame: CGRect(x: 0, y: 0, width: 200, height: 100))
-//        uiimageview.contentMode = .scaleAspectFill//없으면 찌그러져 보인다.
-//        uiimageview.image = UIImage(named: "1024")
-//        bc.addSubview(uiimageview)
-//        bc.backgroundColor = .black
-//        uiimageview.centerX(inView: bc)
-//        uiimageview.centerY(inView: bc)
-//        uiimageview.setWidth(width: 200)
-//        uiimageview.setHeight(height: 100)
-//        view.addSubview(bc)
-        
-//        if let window = UIApplication.shared.windows.first as UIWindow? {
-//            window.backgroundColor = UIColor.red
-//        }
-        
+
         
         
         startIndicator()
 //        showLoadingAnimation()
-        MakeDummyPurpose()
-        firstTime()
-        fetchHeaderTexts()
-        fetchHeaderImage()
-        clearTmpDirectory()
-        updateTintColor()
-        
-        //hideLoadingAnimation()
-        
-        
-        
-        //tmpfile에 이미지 쌓이는것방지.
-        //hideLoadingAnimation()
-        //saveFile()
-        //save연습.
-//        let str = "strr"
-//        let txt1 = getDocumentsDirectory().appendingPathComponent("new1.txt")
-//        do {
-//                   try str.write(to: txt1, atomically: true, encoding: .utf8)
-//                   let input = try String(contentsOf: txt1)
-//                   print(input)
-//               } catch {
-//                   print(error.localizedDescription)
-//        }
-        
-        guard let _ = navigationController?.navigationBar.frame.height else {
+//        MakeDummyPurpose()
+        firstTime{
+            self.fetchHeaderTexts()
+            self.fetchHeaderImage()
+            self.clearTmpDirectory()
+            self.updateTintColor()
+            
+            guard let _ = self.navigationController?.navigationBar.frame.height else {
                 //print(navBarH)
-            return
-                        }
-        
-        //collectionview.contentInset = UIEdgeInsets(top: navBarH, left: 0, bottom: 0, right: 0)
-        //collectionview.contentInsetAdjustmentBehavior = .never
-        //버튼위치옮기는 코드 그러나 쓸 수 없다..
-        //sendMailButton.transform = CGAffineTransform(translationX: 0, y: navBarH)
-        
-        
-        
-        //print(loadFile(name: "new1.txt"))
-        //아래는 사진 저장.
-//        let uniqueFileName: String
-//          = "\(ProcessInfo.processInfo.globallyUniqueString).jpeg"
-//        ImageFileManager.shared
-//          .saveImage(image: UIImage(systemName: "circle")!,
-//                     name: uniqueFileName) { onSuccess in//weak self
-//          print("saveImage onSuccess: \(onSuccess)")
-//        }
-        print("?")
-        editCellsBtn.isHidden = true
-        purposeViewModel.loadPurposes2 { [weak self] in
-            //bc.removeFromSuperview()
-            //self?.view.backgroundColor = .clear
-            self?.reloadCell()
-            self?.stopIndicator()
+                return
+            }
             
-            self?.navigationController?.navigationBar.topItem?.title = "Purpose"
-             //navigationItem.rightBarButtonItem = UIBarButtonItem(customView: sendMailButton)
-            self?.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: self?.editButton ?? UIButton())
-            self?.navigationController?.navigationBar.prefersLargeTitles = true
-            self?.navigationController?.navigationItem.largeTitleDisplayMode = .automatic
+            print("?")
+            self.editCellsBtn.isHidden = true
+            self.purposeViewModel.loadPurposes2 { [weak self] in
+                
+                self?.reloadCell()
+                self?.stopIndicator()
+                
+                self?.navigationController?.navigationBar.topItem?.title = "Purpose"
+                
+                self?.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: self?.editButton ?? UIButton())
+                self?.navigationController?.navigationBar.prefersLargeTitles = true
+                self?.navigationController?.navigationItem.largeTitleDisplayMode = .automatic
+                
+            }//cell들 정보 가져오기.
             
-            
-            //self?.hideLoadingAnimation()
-        }//cell들 정보 가져오기.
-//        stopIndicator()
-        
-        
-       print("ee")
-        
-        
+        }
     }
+        
     
-    override func viewWillAppear(_ animated: Bool) {
-        //print("home")
-    }
+    
 }
 
 extension StudianMainPageViewController :UICollectionViewDataSource {
@@ -470,13 +414,16 @@ extension StudianMainPageViewController :UICollectionViewDataSource {
         cell.deleteButtonTapHandler = {
             
             print(purpose.id)
+            
             self.purposeViewModel.deletePurpose(purpose)
+            
             self.purposeViewModel.deleteImage(purpose,index: indexPath.item)
             
             self.editButtonHidden()
-            
             self.collectionview.reloadData()
+            
         }
+        
         return cell
     }
     func editButtonHidden(){
@@ -565,51 +512,110 @@ extension StudianMainPageViewController {
 }
 
 extension StudianMainPageViewController: EditHedeaderProfileDelegate {
-    func completeTwoTexts(vm: HeaderModel) {
-        headerModel.textFieldText1 = vm.textFieldText1
-        headerModel.textFieldText2 = vm.textFieldText2
+    
+    
+    
+    func completeTextsOrImage(vm:HeaderModel,isTextsChanged:Bool,isImageChanged:Bool){
         
-        print("끝났습니다\(headerModel.textFieldText1)")
-        print("끝났습니다\(headerModel.textFieldText2)")
-        //showLoadingAnimation()
+        showLoadingAnimation()
         
-        //collectionview.reloadSections(IndexSet(0..<1))//없애도되네?
-        collectionview.reloadData()//위에거 하면 깜박이는데 이거하면 깜박안함.
-       // collectionview.reloadItems(at: [IndexPath(index: 0)])
+        let workGroup = DispatchGroup()
+        if isImageChanged {
+            guard let data = vm.headerImage,
+                  let uiimage = UIImage(data: data) else {return}
+            headerImage = uiimage
+            headerModel.headerImage = vm.headerImage
+            DispatchQueue.global().async(group: workGroup) {
+                ImageFileManager.saveImageInDocumentDirectory(image: uiimage, fileName: "PurposePicture.png")
+            }
+        }
+        if isTextsChanged {
+            headerModel.textFieldText1 = vm.textFieldText1
+            headerModel.textFieldText2 = vm.textFieldText2
+            //collectionview.reloadData()//위에거 하면 깜박이는데 이거하면 깜박안함.
+            DispatchQueue.global().async(group: workGroup) {
+                store(self.headerModel, to: .documents, as: "headerModel.txt")
+            }
+        }
+        workGroup.notify(queue: .main){
+            self.collectionview.reloadSections(IndexSet(0..<1))
+            self.hideLoadingAnimation()
+        }
         
-        //showLoadingAnimation()
-        store(headerModel, to: .documents, as: "headerModel.txt")
-        //hideLoadingAnimation()
-        //hideLoadingAnimation()
     }
     
-    func completeMainPicture(vm: HeaderModel) {
-        print("success")
-        //showLoadingAnimation()
-        //showLoadingAnimation()
-        //headerModel.headerImage = vm.headerImage
-        
-        guard let data = vm.headerImage,
-                let uiimage = UIImage(data: data) else {return}
-        headerImage = uiimage
-        
-        ImageFileManager.saveImageInDocumentDirectory(image: uiimage, fileName: "PurposePicture.png")
-        
-        collectionview.reloadSections(IndexSet(0..<1))
-        
-        //hideLoadingAnimation()
-        //hideLoadingAnimation()
-    }
+    
+//    func completeTwoTexts(vm: HeaderModel) {
+//
+//
+//
+//        headerModel.textFieldText1 = vm.textFieldText1
+//        headerModel.textFieldText2 = vm.textFieldText2
+//
+//        print("끝났습니다\(headerModel.textFieldText1)")
+//        print("끝났습니다\(headerModel.textFieldText2)")
+//        //showLoadingAnimation()
+//
+//        //collectionview.reloadSections(IndexSet(0..<1))//없애도되네?
+//        collectionview.reloadData()//위에거 하면 깜박이는데 이거하면 깜박안함.
+//       // collectionview.reloadItems(at: [IndexPath(index: 0)])
+//
+//        //showLoadingAnimation()
+//        store(headerModel, to: .documents, as: "headerModel.txt")
+//        //hideLoadingAnimation()
+//        //hideLoadingAnimation()
+//    }
+//
+//    func completeMainPicture(vm: HeaderModel) {
+//        print("success")
+//        //showLoadingAnimation()
+//        //showLoadingAnimation()
+//        //headerModel.headerImage = vm.headerImage
+//
+//        guard let data = vm.headerImage,
+//                let uiimage = UIImage(data: data) else {return}
+//        headerImage = uiimage
+//        ImageFileManager.saveImageInDocumentDirectory(image: uiimage, fileName: "PurposePicture.png")
+//
+//        collectionview.reloadSections(IndexSet(0..<1))
+//
+//        //hideLoadingAnimation()
+//        //hideLoadingAnimation()
+//    }
+    
+    
+    
+    
 }
 
 //cell 클릭시
 
 extension StudianMainPageViewController: UICollectionViewDelegate,PurposeDetailVIewControllerDelegate {
-    func changeDetail() {
+    func changeDetail(purpose:Purpose,image:UIImage,indexInt:Int,isTextsChanged:Bool,isImageChanged:Bool) {
         print("chage")
+        showLoadingAnimation()
+        let workGroup = DispatchGroup()
         
+        if isImageChanged {
+            DispatchQueue.global().async(group:workGroup) { [weak self] in
+                self?.purposeViewModel.updateImage(purpose: purpose, image: image, index: indexInt){
+                       
+                        }
+            }
+            
+        }
+        if isTextsChanged {
+            DispatchQueue.global().async(group: workGroup) { [weak self] in
+                self?.purposeViewModel.updatePurpose(purpose)
+            }
+            
+        }
+        workGroup.notify(queue: .main){ [weak self] in
+            self?.reloadCell()
+            self?.hideLoadingAnimation()
+        }
         //showLoadingAnimation()
-        reloadCell()
+        
         //hideLoadingAnimation()
     }
     
@@ -627,8 +633,9 @@ extension StudianMainPageViewController: UICollectionViewDelegate,PurposeDetailV
         //detailVC.purposeAndImage = purposeAndImage
         detailVC.viewModel = purposeViewModel
         detailVC.index = indexPath.item
+        detailVC.purpose = purposeViewModel.purposes[indexPath.row]
         detailVC.delegate = self
-        detailVC.modalPresentationStyle = .automatic//full screen 하면 detailview에서 색깔 십힘
+        detailVC.modalPresentationStyle = .overFullScreen//full screen 하면 detailview에서 색깔 십힘
 //        guard let purpose = purposeViewModel.purposes[indexPath.item]  else {return}
         
         

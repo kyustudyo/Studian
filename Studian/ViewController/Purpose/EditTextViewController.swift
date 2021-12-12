@@ -44,7 +44,7 @@ class EditTextViewController : UIViewController, UITextViewDelegate{
         //dismiss(animated: true, completion: nil)
     }
     private let textView = CustomTextView()
-    weak var viewModel :HeaderModel?
+    var viewModel :HeaderModel?
     var TextViewText: String?
     private var subscribers = Set<AnyCancellable>()
     weak var delegate : EditTextViewControllerDelegate?
