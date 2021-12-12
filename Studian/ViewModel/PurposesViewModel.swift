@@ -76,6 +76,9 @@ class PurposesViewModel {
     func addImage(_ image: UIImage){
         manager.addImage(image)
     }
+    func addPurposeAndImage(purpose:Purpose,image:UIImage,completion:@escaping ()->Void){
+        manager.addPurposeAndImage(purpose: purpose, image: image, completion: completion)
+    }
     func deletePurpose(_ purpose: Purpose) {
         manager.deleteTodo(purpose)
     }
@@ -148,6 +151,25 @@ class PurposeManager {
         images.append(image)
         ImageFileManager.saveImageInDocumentDirectory(image: image, fileName: "\(PurposeManager.lastId).png")
     }
+    
+    func addPurposeAndImage(purpose:Purpose,image:UIImage,completion:@escaping ()->Void) {
+        purposes.append(purpose)
+        images.append(image)
+        let workGroup = DispatchGroup()
+        DispatchQueue.global().async(group:workGroup) {
+            store(self.purposes, to: .documents, as: "purposes.json")
+            
+        }
+        DispatchQueue.global().async(group:workGroup) {
+            ImageFileManager.saveImageInDocumentDirectory(image: image, fileName: "\(PurposeManager.lastId).png")
+        }
+        workGroup.notify(queue: .main){
+            completion()
+        }
+        
+    }
+    
+    
     
     
     

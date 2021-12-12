@@ -9,13 +9,15 @@ import UIKit
 import MBProgressHUD
 
 protocol PlusMainCellsDelegate: class {
-    func cellChange()
+//    func cellChange()
+    func PlusCell(purpose:Purpose,image:UIImage)
 }
 class PlusMainCellsViewController : UIViewController, UIAnimatable{
     
     weak var delegate : PlusMainCellsDelegate?
     weak var viewModel :PurposesViewModel?
     var purpose = Purpose(id: -1, name: "", oneSenetence: "")
+
     private let plusPhotoButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(#imageLiteral(resourceName: "plus_photo"), for: .normal)
@@ -59,6 +61,43 @@ class PlusMainCellsViewController : UIViewController, UIAnimatable{
         print("sdsdsd")
         //print(UIApplication.topViewController())
         navigationController?.popViewController(animated: true)//없어도된다.
+        
+        guard let image = plusPhotoButton.imageView?.image else {return}//플러스버튼에 이미지는 원래있다.
+        if plusPhotoButton.imageView?.tag == 1 {//사진넣으면 태그 1되도록해놨다.
+ 
+            let resultPurpose = PurposeManager.shared.createPurpose(name: purpose.name, oneSentence: purpose.oneSenetence)//id가 한번만 생길 수 있도록.
+
+//            viewModel?.addPurpose(resultPurpose)
+//            viewModel?.addImage(image)//파일저장까지 포함
+
+            
+            
+            delegate?.PlusCell(purpose: resultPurpose, image: image)
+            
+        }
+        //image nothing
+        else {//태그가 -1 일때
+            //이미지가 없는데 뭐라고 썼다면 이미지를 랜덤하게 만든다.
+            print("사진없다.")
+            print("현재 \(PurposeManager.lastId)")
+            if purpose.name == "" && purpose.oneSenetence == "" {return}
+            print("사진없는데 말이 있다")
+            let image = UIImage(systemName: "circle")!
+
+    //        guard let firstText = FirstTextField.text, firstText.isEmpty == false else {return}
+            let resultPurpose = PurposeManager.shared.createPurpose(name: purpose.name, oneSentence: purpose.oneSenetence)//id가 한번만 생길 수 있도록.
+//            viewModel?.addPurpose(resultPurpose)
+//            viewModel?.addImage(image)//파일저장까지 포함
+            
+            delegate?.PlusCell(purpose: resultPurpose, image: image)
+        }
+        
+//        delegate?.cellChange()
+        
+        
+        
+        
+        
         dismiss(animated: true, completion: nil)
         //print(UIApplication.topViewController())
         //dismiss(animated: true, completion: nil)
@@ -144,41 +183,44 @@ extension PlusMainCellsViewController {
         //타자 안쳐도 "" 로 들어가있어서 위에서는 안걸린다. 하지만 아래에서 isEmpty쓸때 옵셔널 아니어야하므로 guard let 쓴것
         //단 텍스트필드를 건드리지도 않으면 위에서 걸린다.
         //이미지가 있을때
-        guard let image = plusPhotoButton.imageView?.image else {return}//플러스버튼에 이미지는 원래있다.
-        if plusPhotoButton.imageView?.tag == 1 {//사진넣으면 태그 1되도록해놨다.
-            //print("\(plusPhotoButton.imageView?.image?.description)")
-            print("사진있다.")
-            
-            
-            
-            let resultPurpose = PurposeManager.shared.createPurpose(name: purpose.name, oneSentence: purpose.oneSenetence)//id가 한번만 생길 수 있도록.
-            viewModel?.addPurpose(resultPurpose)
-            viewModel?.addImage(image)//파일저장까지 포함
-                //showLoadingAnimation()
-//            ImageFileManager.saveImageInDocumentDirectory(image: image, fileName: "\(PurposeManager.lastId).png")
-           // hideLoadingAnimation()
-        }
-        //image nothing
-        else {//태그가 -1 일때
-            //이미지가 없는데 뭐라고 썼다면 이미지를 랜덤하게 만든다.
-            print("사진없다.")
-            print("현재 \(PurposeManager.lastId)")
-            if purpose.name == "" && purpose.oneSenetence == "" {return}
-            print("사진없는데 말이 있다")
-            let image = UIImage(systemName: "circle")!
-            
-            
-    //        guard let firstText = FirstTextField.text, firstText.isEmpty == false else {return}
-            let resultPurpose = PurposeManager.shared.createPurpose(name: purpose.name, oneSentence: purpose.oneSenetence)//id가 한번만 생길 수 있도록.
-            viewModel?.addPurpose(resultPurpose)
-            viewModel?.addImage(image)//파일저장까지 포함
-            //showLoadingAnimation()
-            //ImageFileManager.saveImageInDocumentDirectory(image: image, fileName: "\(PurposeManager.lastId).png")
-           // hideLoadingAnimation()
-            
-        }
-        
-        delegate?.cellChange()
+//        guard let image = plusPhotoButton.imageView?.image else {return}//플러스버튼에 이미지는 원래있다.
+//        if plusPhotoButton.imageView?.tag == 1 {//사진넣으면 태그 1되도록해놨다.
+//            //print("\(plusPhotoButton.imageView?.image?.description)")
+//            print("사진있다.")
+//
+//
+//
+//            let resultPurpose = PurposeManager.shared.createPurpose(name: purpose.name, oneSentence: purpose.oneSenetence)//id가 한번만 생길 수 있도록.
+//
+//
+//
+//            viewModel?.addPurpose(resultPurpose)
+//            viewModel?.addImage(image)//파일저장까지 포함
+//                //showLoadingAnimation()
+////            ImageFileManager.saveImageInDocumentDirectory(image: image, fileName: "\(PurposeManager.lastId).png")
+//           // hideLoadingAnimation()
+//        }
+//        //image nothing
+//        else {//태그가 -1 일때
+//            //이미지가 없는데 뭐라고 썼다면 이미지를 랜덤하게 만든다.
+//            print("사진없다.")
+//            print("현재 \(PurposeManager.lastId)")
+//            if purpose.name == "" && purpose.oneSenetence == "" {return}
+//            print("사진없는데 말이 있다")
+//            let image = UIImage(systemName: "circle")!
+//
+//
+//    //        guard let firstText = FirstTextField.text, firstText.isEmpty == false else {return}
+//            let resultPurpose = PurposeManager.shared.createPurpose(name: purpose.name, oneSentence: purpose.oneSenetence)//id가 한번만 생길 수 있도록.
+//            viewModel?.addPurpose(resultPurpose)
+//            viewModel?.addImage(image)//파일저장까지 포함
+//            //showLoadingAnimation()
+//            //ImageFileManager.saveImageInDocumentDirectory(image: image, fileName: "\(PurposeManager.lastId).png")
+//           // hideLoadingAnimation()
+//
+//        }
+//
+//        delegate?.cellChange()
         
         //print("disapper")
         

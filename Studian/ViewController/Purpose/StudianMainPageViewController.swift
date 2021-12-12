@@ -124,13 +124,23 @@ extension StudianMainPageViewController {
 }
 
 extension StudianMainPageViewController: PlusMainCellsDelegate,UIAnimatable {
-    func cellChange() {
-        print("ff")
-        //showLoadingAnimation()
-        reloadCell()
-        editButtonHidden()//cell개수 8개로 제한
-        //hideLoadingAnimation()
-        clearTmpDirectory()
+//    func cellChange() {
+//        print("ff")
+//        //showLoadingAnimation()
+//        reloadCell()
+//        editButtonHidden()//cell개수 8개로 제한
+//        //hideLoadingAnimation()
+//        clearTmpDirectory()
+//    }
+    func PlusCell(purpose:Purpose,image:UIImage){
+        showLoadingAnimation()
+        purposeViewModel.addPurposeAndImage(purpose: purpose, image: image) { [weak self] in
+            self?.reloadCell()
+            self?.editButtonHidden()
+            self?.clearTmpDirectory()
+            self?.hideLoadingAnimation()
+        }
+        
     }
     
     
@@ -141,12 +151,26 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
     @IBOutlet weak var editCellsBtn: UIButton!
     var headerImage = UIImage()
     var activityIndicator:UIActivityIndicatorView = UIActivityIndicatorView()
+    
+    
+    
     func change(text:String?) {
         headerModel.textViewText = text!
+        showLoadingAnimation()
+        let workGroup = DispatchGroup()
+        DispatchQueue.global().async(group: workGroup) { [weak self] in
+            store(self?.headerModel, to: .documents, as: "headerModel.txt")
+        }
+        workGroup.notify(queue: .main){ [weak self] in
+            self?.collectionview.reloadData()
+            self?.hideLoadingAnimation()
+        }
+        
         //collectionview.reloadSections(IndexSet(0..<1))//얘하면깜박임
-        collectionview.reloadData()
+        
         //store(text, to: .documents, as: "PurposeTextViewText.txt")
-        store(headerModel, to: .documents, as: "headerModel.txt")
+        
+        
         print("\(text!)")
         
     }

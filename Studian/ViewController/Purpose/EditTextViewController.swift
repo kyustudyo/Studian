@@ -14,7 +14,7 @@ protocol EditTextViewControllerDelegate: class {
 }
 
 class EditTextViewController : UIViewController, UITextViewDelegate{
-    
+    private var isTextChanged = false
     private let containerView : UIView = {
         let uiView = UIView()
         uiView.backgroundColor = .groupTableViewBackground
@@ -38,6 +38,7 @@ class EditTextViewController : UIViewController, UITextViewDelegate{
         print("sdsdsd")
         //print(UIApplication.topViewController())
 //        navigationController?.popViewController(animated: true)
+        delegate?.change(text: textView.text)
         dismiss(animated: true, completion: nil)
 //        delegate?.completeTwoTexts(vm: headerModel!)
         //print(UIApplication.topViewController())
@@ -79,7 +80,7 @@ class EditTextViewController : UIViewController, UITextViewDelegate{
     }
     
     override func viewDidDisappear(_ animated: Bool) {
-        delegate?.change(text: textView.text)
+//        delegate?.change(text: textView.text)
     }
     
     func updateUI(){
@@ -180,18 +181,16 @@ class EditTextViewController : UIViewController, UITextViewDelegate{
 //            self.view.frame.origin.y -= 120 //88픽셀 올려라.화면이 올라가서 텍스트 가 좀 보이도록.
 //        }
     }
-    
-    
-    
-    
 }
 
 extension EditTextViewController : UIGestureRecognizerDelegate {
     private func setupGestures() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissViewController))
+        
         tapGesture.delegate = self
         view.addGestureRecognizer(tapGesture)
     }
+    
     @objc private func dismissViewController(){
         self.dismiss(animated: true, completion: nil)
     }
@@ -200,4 +199,5 @@ extension EditTextViewController : UIGestureRecognizerDelegate {
         print("zz")
         return touch.view == self.view
     }
+    
 }
