@@ -17,7 +17,7 @@ class CustomTextField: UITextField {
         font = UIFont.systemFont(ofSize: 17)
         textColor = .black
         keyboardAppearance = .default
-        attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.foregroundColor : UIColor.black])
+        attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [.foregroundColor : UIColor.lightGray])
     }
     
     required init?(coder: NSCoder) {

@@ -35,16 +35,16 @@ class EditHedeaderProfileViewController : UIViewController,UIAnimatable,UIGestur
     }()
     
     var FirstTextField = CustomTextField(placeholder: "Something")
-    private lazy var FirstContainerView: InputContainerView = {//lazy
-        return InputContainerView(image: UIImage(systemName: "doc.text.fill")
-                                               , textField: FirstTextField)
-    }()
+//    private lazy var FirstContainerView: InputContainerView = {//lazy
+//        return InputContainerView(image: UIImage(systemName: "doc.text.fill")
+//                                               , textField: FirstTextField)
+//    }()
     
     var SecondTextField = CustomTextField(placeholder: "Anything")
-    private lazy var SecondContainerView: InputContainerView = {//lazy
-        return InputContainerView(image: UIImage(systemName: "doc.text")
-                                               , textField: SecondTextField)
-    }()
+//    private lazy var SecondContainerView: InputContainerView = {//lazy
+//        return InputContainerView(image: UIImage(systemName: "doc.text")
+//                                               , textField: SecondTextField)
+//    }()
     
     private let completeButton: UIButton = {
         let button = UIButton(type: .system)

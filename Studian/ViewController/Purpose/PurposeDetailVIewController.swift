@@ -290,13 +290,8 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         
         containerView.addSubview(stackView)
         stackView.anchor(top: containerView.topAnchor, left: containerView.leftAnchor, bottom: containerView.bottomAnchor, right: containerView.rightAnchor, paddingTop: 24, paddingLeft: 24, paddingBottom: 24, paddingRight: 24)
-        
-        
-        
+          
     }
-    
-    
-    
     @IBAction func editPlz(_ sender: UIButton) {
         
         
@@ -318,10 +313,7 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         //print(UIApplication.topViewController())
         //dismiss(animated: true, completion: nil)
     }
-    
-    
 }
-
 extension PurposeDetailVIewController : UIImagePickerControllerDelegate & UINavigationControllerDelegate,UIGestureRecognizerDelegate {
     
     private func setupGestures() {

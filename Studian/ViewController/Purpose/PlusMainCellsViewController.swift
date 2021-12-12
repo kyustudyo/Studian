@@ -13,11 +13,16 @@ protocol PlusMainCellsDelegate: class {
     func PlusCell(purpose:Purpose,image:UIImage)
 }
 class PlusMainCellsViewController : UIViewController, UIAnimatable{
-    
     weak var delegate : PlusMainCellsDelegate?
     weak var viewModel :PurposesViewModel?
     var purpose = Purpose(id: -1, name: "", oneSenetence: "")
 
+    private let containerView : UIView = {
+        let uiView = UIView()
+        uiView.backgroundColor = .groupTableViewBackground
+        return uiView
+    }()
+    
     private let plusPhotoButton: UIButton = {
         let button = UIButton(type: .system)
         button.setImage(#imageLiteral(resourceName: "plus_photo"), for: .normal)
@@ -25,35 +30,57 @@ class PlusMainCellsViewController : UIViewController, UIAnimatable{
         button.tintColor = .white
         button.addTarget(self, action: #selector(handleSelectPhoto), for: .touchUpInside)
         button.imageView?.contentMode = .scaleAspectFill
+        button.layer.cornerRadius = 15
         //button.imageView?.clipsToBounds = true
         button.clipsToBounds = true//이걸해야 동그라게 나온다. 안에들어갈 사진들이.
         return button
     }()
     
-    var FirstTextField = CustomTextField(placeholder: "Target")
-    private lazy var FirstContainerView: InputContainerView = {//lazy
-        return InputContainerView(image: UIImage(systemName: "doc.text.fill")
-                                               , textField: FirstTextField)
-    }()
     
-    var SecondTextField = CustomTextField(placeholder: "Remind")
-    private lazy var SecondContainerView: InputContainerView = {//lazy
-        return InputContainerView(image: UIImage(systemName: "doc.text")
-                                               , textField: SecondTextField)
-    }()
+    
+    
+    
+    
+    
+    
+    var FirstTextField = CustomTextField(placeholder: "Something")
+//    private lazy var FirstContainerView: InputContainerView = {//lazy
+//        return InputContainerView(image: UIImage(systemName: "doc.text.fill")
+//                                               , textField: FirstTextField)
+//    }()
+    
+    var SecondTextField = CustomTextField(placeholder: "Anything")
+//    private lazy var SecondContainerView: InputContainerView = {//lazy
+//        return InputContainerView(image: UIImage(systemName: "doc.text")
+//                                               , textField: SecondTextField)
+//    }()
+    
+    
+    
+//    var FirstTextField = CustomTextField(placeholder: "Target")
+//    private lazy var FirstContainerView: InputContainerView = {//lazy
+//        return InputContainerView(image: UIImage(systemName: "doc.text.fill")
+//                                               , textField: FirstTextField)
+//    }()
+//
+//    var SecondTextField = CustomTextField(placeholder: "Remind")
+//    private lazy var SecondContainerView: InputContainerView = {//lazy
+//        return InputContainerView(image: UIImage(systemName: "doc.text")
+//                                               , textField: SecondTextField)
+//    }()
     
     private let completeButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Complete", for: .normal)
-        button.layer.cornerRadius = 5
+        button.setTitle("Complete!", for: .normal)
+        button.layer.cornerRadius = 2
+        
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        button.backgroundColor = #colorLiteral(red: 0.1411764771, green: 0.3960784376, blue: 0.5647059083, alpha: 1)
+        button.backgroundColor = .systemGreen
         button.setTitleColor(.white, for: .normal)
         //button.layer.masksToBounds = true
-        button.setHeight(height: 50)
+        button.setHeight(height: 40)
         button.isEnabled = true
         button.addTarget(self, action: #selector(handleRegistration), for: .touchUpInside)
-        
         return button
     }()
     
@@ -121,20 +148,54 @@ class PlusMainCellsViewController : UIViewController, UIAnimatable{
     }
     
     func configureUI(){
-        view.backgroundColor = .darkGray
-        view.addSubview(plusPhotoButton)
-        view.addSubview(plusPhotoButton)
-        plusPhotoButton.centerX(inView: view)
-        plusPhotoButton.anchor(top:view.safeAreaLayoutGuide.topAnchor,paddingTop: 32)
-        plusPhotoButton.setDimensions(height: 200, width: 200)
-        let stack = UIStackView(arrangedSubviews: [FirstContainerView,SecondContainerView])
-        stack.axis = .vertical
-        stack.spacing = 16
-        view.addSubview(stack)
-        stack.anchor(top:plusPhotoButton.bottomAnchor,left:view.leftAnchor, right: view.rightAnchor,paddingTop: 32, paddingLeft: 32, paddingRight: 32)
-        view.addSubview(completeButton)
-        completeButton.anchor(bottom:view.safeAreaLayoutGuide.bottomAnchor,paddingBottom: 32)
-        completeButton.centerX(inView: view)
+        view.backgroundColor = UIColor(white: 0.3, alpha: 0.4)
+        self.view.addSubview(containerView)
+        containerView.layer.cornerRadius = 25
+        containerView.centerX(inView: view)
+        containerView.centerY(inView: view)
+        containerView.setWidth(width: UIScreen.main.bounds.width - 50)
+        containerView.backgroundColor = UIColor(displayP3Red: 239/255, green: 239/255, blue: 244/255, alpha: 1)
+        
+        let stackView = UIStackView(arrangedSubviews: [
+            plusPhotoButton,
+            FirstTextField,
+            SecondTextField,
+            completeButton
+        ])
+        plusPhotoButton.setHeight(height: UIScreen.main.bounds.height/3)
+        plusPhotoButton.setWidth(width: UIScreen.main.bounds.height/3)
+        
+        stackView.axis = .vertical
+        stackView.spacing = 12
+        stackView.alignment = .center
+        stackView.distribution = .fill
+        completeButton.anchor( left: stackView.leftAnchor, right: stackView.rightAnchor, paddingLeft:10 , paddingRight:10)
+        
+        SecondTextField.setHeight(height: 40)
+        FirstTextField.setHeight(height: 40)
+        SecondTextField.anchor( left: stackView.leftAnchor, right: stackView.rightAnchor, paddingLeft:10 , paddingRight:10 )
+        FirstTextField.anchor( left: stackView.leftAnchor, right: stackView.rightAnchor, paddingLeft:10 , paddingRight:10 )
+        completeButton.anchor( left: stackView.leftAnchor, right: stackView.rightAnchor, paddingLeft:10 , paddingRight:10 )
+        containerView.addSubview(stackView)
+        stackView.anchor(top: containerView.topAnchor, left: containerView.leftAnchor, bottom: containerView.bottomAnchor, right: containerView.rightAnchor, paddingTop: 24, paddingLeft: 24, paddingBottom: 24, paddingRight: 24)
+        
+        
+//        plusPhotoButton.layer.borderColor = UIColor.white.cgColor
+//        plusPhotoButton.layer.borderWidth = 3.0
+        plusPhotoButton.layer.cornerRadius = 15
+//        view.addSubview(plusPhotoButton)
+//        view.addSubview(plusPhotoButton)
+//        plusPhotoButton.centerX(inView: view)
+//        plusPhotoButton.anchor(top:view.safeAreaLayoutGuide.topAnchor,paddingTop: 32)
+//        plusPhotoButton.setDimensions(height: 200, width: 200)
+//        let stack = UIStackView(arrangedSubviews: [FirstTextField,SecondContainerView])
+//        stack.axis = .vertical
+//        stack.spacing = 16
+//        view.addSubview(stack)
+//        stack.anchor(top:plusPhotoButton.bottomAnchor,left:view.leftAnchor, right: view.rightAnchor,paddingTop: 32, paddingLeft: 32, paddingRight: 32)
+//        view.addSubview(completeButton)
+//        completeButton.anchor(bottom:view.safeAreaLayoutGuide.bottomAnchor,paddingBottom: 32)
+//        completeButton.centerX(inView: view)
     }
 }
 
@@ -247,6 +308,15 @@ extension PlusMainCellsViewController : UIImagePickerControllerDelegate & UINavi
         //ImageFileManager.saveImageInDocumentDirectory(image: fixedImage!, fileName: "\(PurposeManager.lastId).png")
         //hideLoadingAnimation()
         plusPhotoButton.imageView?.tag = 1
+        
+        
+        
+//        ImageFileManager.saveImageInDocumentDirectory(image: fixedImage!, fileName: "PurposePicture.png")
+        //hideLoadingAnimation()
+        
+        
+        
+        
         
         
 //        ImageFileManager.saveImageInDocumentDirectory(image: fixedImage!, fileName: "PurposePicture.png")
