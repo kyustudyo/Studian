@@ -226,7 +226,7 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
         vc?.viewModel = headerModel
         //vc?.TextViewText = headerViewModel
         vc?.delegate = self
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.automatic
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
         self.present(navigationController,animated: true,completion: nil)
   
     }
@@ -351,7 +351,16 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
        
         super.viewDidLoad()
 
+//        refactorPurposesIndex()
         
+//        let fileManager = FileManager.default
+//            let directoryURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+//        var destinationURL = directoryURL.appendingPathComponent("qq.json")
+//        var rv = URLResourceValues()
+//        rv.name = "pp.json"
+//        try? destinationURL.setResourceValues(rv)
+        loadFile()
+        purposeViewModel.refactorIndexes()
         
         startIndicator()
 //        showLoadingAnimation()
@@ -381,8 +390,10 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
                 self?.navigationController?.navigationItem.largeTitleDisplayMode = .automatic
                 
             }//cell들 정보 가져오기.
-            
         }
+        
+        
+        
     }
         
     

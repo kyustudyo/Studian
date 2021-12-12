@@ -102,6 +102,7 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
                   let viewModel = self?.viewModel,
                   let index = self?.index else {return}
             let purpose = Purpose(id:viewModel.purposes[index].id , name: text, oneSenetence: bigTextView.text)
+            self?.isTextsChanged = true
             print(purpose)
             self?.purpose = purpose
         }.store(in: &subscribers)
@@ -117,6 +118,7 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
                   let viewModel = self?.viewModel,
                   let index = self?.index else {return}
             let purpose = Purpose(id:viewModel.purposes[index].id , name: smallTextView.text, oneSenetence: text)
+            self?.isTextsChanged = true
             print(purpose)
             self?.purpose = purpose
             

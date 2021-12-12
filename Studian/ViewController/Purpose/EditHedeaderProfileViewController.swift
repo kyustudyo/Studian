@@ -154,6 +154,8 @@ class EditHedeaderProfileViewController : UIViewController,UIAnimatable,UIGestur
             print(headerImage)
             let image = UIImage(data: headerImage)?.fixOrientation()
             plusPhotoButton.setImage(image?.withRenderingMode(.alwaysOriginal), for: .normal)//withrenderingmode 안하면 안뜬다.
+            //여기서 렉이 살짝 걸린다.
+            
             //plusPhotoButton.layer.borderColor = UIColor.white.cgColor
             
             plusPhotoButton.layer.borderColor = UIColor.white.cgColor

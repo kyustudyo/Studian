@@ -101,6 +101,9 @@ class PurposesViewModel {
     func purposeAndImage(id: Int) -> PurposeAndImage{
         return manager.purposeAndImage(id: id)
     }
+    func refactorIndexes(){
+        return manager.refactorIndexes()
+    }
 
 }
 
@@ -123,6 +126,56 @@ class PurposeManager {
     func purposeAndImage(id: Int) -> PurposeAndImage{
         return PurposeAndImage(purpose: purposes[id], image: images[id], index: id)
     }
+    
+    func refactorIndexes(){
+        let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+
+        do {
+            // Get the directory contents urls (including subfolders urls)
+            let directoryContents = try FileManager.default.contentsOfDirectory(at: documentsUrl, includingPropertiesForKeys: nil)
+            print(directoryContents)
+            let pngFiles = directoryContents.filter{ $0.pathExtension == "png" }
+            print("png urls:",pngFiles)
+            var CroppedpngFiles = pngFiles.map{ $0.deletingPathExtension().lastPathComponent
+                
+            }
+            
+                .filter{
+                    if let firstCharacter = $0.first {
+                        if firstCharacter.isNumber {
+                            return true
+                        }
+                        else {
+                            return false
+                        }
+                    }
+                    return false
+                }
+            
+            print("png list:", CroppedpngFiles)
+            
+            CroppedpngFiles = CroppedpngFiles.sorted{$0<$1}
+            
+            let fileManager = FileManager.default
+            let directoryURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+//            let directoryURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!.appendingPathComponent("\(pngFile).png")
+            
+            for (i,pngFile) in CroppedpngFiles.enumerated() {
+                var destinationURL = directoryURL.appendingPathComponent("\(pngFile).png")
+                var rv = URLResourceValues()
+                rv.name = "\(i).png"
+                try? destinationURL.setResourceValues(rv)
+            }
+
+        } catch {
+            print(error)
+        }
+//        var destinationURL = directoryURL.appendingPathComponent("qq.json")
+//        var rv = URLResourceValues()
+//        rv.name = "pp.json"
+//        try? destinationURL.setResourceValues(rv)
+    }
+    
     
     func updatePurpose(_ purpose:Purpose){
         guard let index = purposes.firstIndex(of: purpose) else {return}

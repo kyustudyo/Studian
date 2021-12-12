@@ -67,9 +67,13 @@ struct Constants {
 
 func firstTime(completion:@escaping ()->Void){
     
+    
     let fileManager = FileManager.default
         let directoryURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
     let destinationURL = directoryURL.appendingPathComponent("headerModel.txt")
+    
+//    destinationURL.setTemporaryResourceValue("ss", forKey: .nameKey)
+    
     guard !fileManager.fileExists(atPath: destinationURL.path) else {
         print("이미존재")
         completion()
@@ -113,6 +117,7 @@ func firstTime(completion:@escaping ()->Void){
                           Today(id: 1, imageData: UIImage().pngData() ?? Data(), todos: [])
                                 ]
        
+        
         
         let encoder = JSONEncoder()
         let helloPath = directoryURL.appendingPathComponent("headerModel.txt")
@@ -285,21 +290,66 @@ func clear(_ directory: Directory) {
     }
 }
 
-
-func loadFile(name: String) -> String? {
+func refactorPurposesIndex() -> String? {
     let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
     let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
     let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
+    
     if let dirPath = paths.first {
-        let file = URL(fileURLWithPath: dirPath).appendingPathComponent("Studian").appendingPathComponent(name)
+        let file = URL(fileURLWithPath: dirPath).appendingPathComponent("purposes.json")
         if let data = try? Data(contentsOf: file) {
             let dataString = String(data: data, encoding: .utf8)
-            print(dataString)
+            print("@",dataString)
             return dataString
         }
         return nil
     }
     return nil
+}
+func loadFile()  {
+    let url : URL = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: .userDomainMask).first!
+    let destinationUrl = url.appendingPathComponent("purposes.json")
+    print("ssa",FileManager.default.fileExists(atPath: destinationUrl.path))
+    let decodedData : [Purpose] = [Purpose]()
+    if FileManager.default.fileExists(atPath: destinationUrl.path) {
+        
+        guard let data = FileManager.default.contents(atPath: destinationUrl.path) else {return}
+        let decoder = JSONDecoder()
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = .prettyPrinted
+        var inputData = [Purpose]()
+        do {
+            let decodedData = try decoder.decode([Purpose].self, from: data)
+            print("qqad",decodedData.count,decodedData)
+
+            for (i,s) in decodedData.enumerated() {
+                var purpose = s
+                let singleData = purpose.updateId(id: i)
+                inputData.append(singleData)
+            }
+            let data = try encoder.encode(inputData)
+            FileManager.default.createFile(atPath: destinationUrl.path, contents: data, attributes: nil)
+            
+            
+        } catch let error {
+            print("---> Failed to decode msg: \(error.localizedDescription)")
+
+        }
+    }
+    
+      
+    
+    
+    
+                                    
+//    let encoder = JSONEncoder()
+//    do {
+//        let data = try encoder.encode(Dummy)
+//        print(data)
+//        FileManager.default.createFile(atPath: directoryURL.path, contents: data, attributes: nil)
+//    } catch let error {
+//        print("---> Failed to store msg: \(error.localizedDescription)")
+//    }
 }
 
 func getDocumentsDirectory() -> URL {
@@ -309,3 +359,95 @@ func getDocumentsDirectory() -> URL {
     // just send back the first one, which ought to be the only one
     return paths
 }
+
+
+
+//func chilkatTest() {
+//
+//    let json = CkoJsonObject()
+//
+//    //  Load the JSON from a file.
+//    var success: Bool = json.LoadFile("qa_data/json/modifySample.json")
+//    if success != true {
+//        print("\(json.LastErrorText)")
+//        return
+//    }
+//
+//    //  This example will not check for errors (i.e. null / false / 0 return values)...
+//
+//    //  Get the "list" array:
+//    var listA: CkoJsonArray? = json.ArrayOf("list")
+//
+//    //  Modify values in the list.
+//
+//    //  Change banana to plantain
+//    success = listA!.SetStringAt(0, value: "plantain")
+//
+//    //  Change 12 to 24
+//    success = listA!.SetIntAt(1, value: 24)
+//
+//    //  Change true to false
+//    success = listA!.SetBoolAt(2, value: false)
+//
+//    //  Is the 3rd item null?
+//    var bNull: Bool = listA!.IsNullAt(3)
+//
+//    //  Change "orange" to 32.
+//    success = listA!.SetIntAt(4, value: 32)
+//
+//    //  Change 12.5 to 31.2
+//    success = listA!.SetNumberAt(5, value: "31.2")
+//
+//    //  Replace the { "ticker" : "AAPL" } object with { "ticker" : "GOOG" }
+//    //  Do this by deleting, then inserting a new object at the same location.
+//    success = listA!.DeleteAt(6)
+//    success = listA!.AddObjectAt(6)
+//    var tickerObj: CkoJsonObject? = listA!.ObjectAt(6)
+//    success = tickerObj!.AddStringAt(-1, name: "ticker", value: "GOOG")
+//
+//    tickerObj = nil
+//
+//    //  Replace "[ 1, 2, 3, 4, 5 ]" with "[ "apple", 22, true, null, 1080.25 ]"
+//    success = listA!.DeleteAt(7)
+//    success = listA!.AddArrayAt(7)
+//    var aa: CkoJsonArray? = listA!.ArrayAt(7)
+//    success = aa!.AddStringAt(-1, value: "apple")
+//    success = aa!.AddIntAt(-1, value: 22)
+//    success = aa!.AddBoolAt(-1, value: true)
+//    success = aa!.AddNullAt(-1)
+//    success = aa!.AddNumberAt(-1, numericStr: "1080.25")
+//    aa = nil
+//
+//    listA = nil
+//
+//    //  Get the "fruit" array
+//    var aFruit: CkoJsonArray? = json.ArrayAt(0)
+//
+//    //  Get the 1st element:
+//    var appleObj: CkoJsonObject? = aFruit!.ObjectAt(0)
+//
+//    //  Modify values by member name:
+//    success = appleObj!.SetStringOf("fruit", value: "fuji_apple")
+//    success = appleObj!.SetIntOf("count", value: 46)
+//    success = appleObj!.SetBoolOf("fresh", value: false)
+//    success = appleObj!.SetStringOf("extraInfo", value: "developed by growers at the Tohoku Research Station in Fujisaki")
+//
+//    appleObj = nil
+//
+//    //  Modify values by index:
+//    var pearObj: CkoJsonObject? = aFruit!.ObjectAt(1)
+//    success = pearObj!.SetStringAt(0, value: "bartlett_pear")
+//    success = pearObj!.SetIntAt(1, value: 12)
+//    success = pearObj!.SetBoolAt(2, value: false)
+//    success = pearObj!.SetStringAt(3, value: "harvested in late August to early September")
+//    pearObj = nil
+//
+//    aFruit = nil
+//
+//    json.EmitCompact = false
+//    print("\(json.Emit())")
+//
+//}
+
+
+

@@ -17,6 +17,10 @@ struct Purpose : Equatable, Codable{
         self.name = name
         self.oneSenetence = oneSentence
     }
+    mutating func updateId(id:Int)->Purpose{
+        self.id = id
+        return self
+    }
 //    init(id:Int,name:String,image:UIImage,oneSentence:String){
 //        self.id = id
 //        self.name = name
