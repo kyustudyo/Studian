@@ -25,6 +25,7 @@ class OnboardingViewController: UIViewController,UIAnimatable {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        updateFunc()
         setSwipeGestures()
         setupPlaceholderItems()
         setupPageControl()

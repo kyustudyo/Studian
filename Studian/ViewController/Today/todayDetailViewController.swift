@@ -9,17 +9,29 @@ import Foundation
 import UIKit
 import Combine
 
-protocol EditTextViewControllerDelegate: class {
-    func change(text:String?)
+protocol EditTodayDetailViewControllerDelegate : class {
+    func change(image:UIImage)
 }
 
-class EditTextViewController : UIViewController, UITextViewDelegate{
-    private var isTextChanged = false
+class todayDetailViewController : UIViewController, UITextViewDelegate{
+    
+    private var isImageChanged = false
     private let containerView : UIView = {
         let uiView = UIView()
         uiView.backgroundColor = .groupTableViewBackground
         return uiView
     }()
+    private let plusPhotoButton: UIButton = {
+        let button = UIButton(type: .system)
+        let image = UIImage(named: "2")
+        button.imageView?.contentMode = .scaleAspectFill//이거 안하면 좀 이상하게 나온다.
+        button.tintColor = .white
+        button.addTarget(self, action: #selector(handleSelectPhoto), for: .touchUpInside)
+        button.layer.cornerRadius = 15
+        button.clipsToBounds = true//이걸해야 동그라게 나온다. 안에들어갈 사진들이.
+        return button
+    }()
+    
     private let completeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Complete!", for: .normal)
@@ -38,47 +50,55 @@ class EditTextViewController : UIViewController, UITextViewDelegate{
         print("sdsdsd")
         //print(UIApplication.topViewController())
 //        navigationController?.popViewController(animated: true)
-        delegate?.change(text: textView.text)
+        
+        if isImageChanged{
+            guard let image = image else{return}
+            delegate?.change(image: image)
+        }
+        
         dismiss(animated: true, completion: nil)
+        
 //        delegate?.completeTwoTexts(vm: headerModel!)
         //print(UIApplication.topViewController())
         //dismiss(animated: true, completion: nil)
     }
-    private let textView = CustomTextView()
+//    private let textView = CustomTextView()
+    
+    
     var viewModel :HeaderModel?
-    var TextViewText: String?
+    var image: UIImage?
     private var subscribers = Set<AnyCancellable>()
-    weak var delegate : EditTextViewControllerDelegate?
+    weak var delegate : EditTodayDetailViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.isNavigationBarHidden = true
         updateUI()
-        textView.delegate = self
+//        textView.delegate = self
         configureNotificationObservers()
         //tapGesture()
         //observeForm()
-        textViewDone()
+//        textViewDone()
         setupGestures()
     }
-    func textViewDone(){
-        self.textView.addDoneButton(title: "Done", target: self, selector: #selector(tapDone(sender:)))
-    }
+//    func textViewDone(){
+//        self.textView.addDoneButton(title: "Done", target: self, selector: #selector(tapDone(sender:)))
+//    }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
-         self.view.endEditing(true)
-   }//텍스트뷰말고 다른곳 클릭시 키보드내려감.
-    @objc func tapDone(sender: Any) {
-            self.view.endEditing(true)
-        }
+//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
+//         self.view.endEditing(true)
+//   }//텍스트뷰말고 다른곳 클릭시 키보드내려감.
+//    @objc func tapDone(sender: Any) {
+//            self.view.endEditing(true)
+//        }
     
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if(text == "\n") {
-                    textView.resignFirstResponder()
-                    return false
-                }
-                return true
-    }
+//    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+//        if(text == "\n") {
+//                    textView.resignFirstResponder()
+//                    return false
+//                }
+//                return true
+//    }
     
     override func viewDidDisappear(_ animated: Bool) {
 //        delegate?.change(text: textView.text)
@@ -95,9 +115,9 @@ class EditTextViewController : UIViewController, UITextViewDelegate{
         containerView.setWidth(width: UIScreen.main.bounds.width - 50)
         containerView.backgroundColor = UIColor(displayP3Red: 239/255, green: 239/255, blue: 244/255, alpha: 1)
 //        textView.text = TextViewText ?? ""
-        textView.text = viewModel?.textViewText ?? ""
+//        textView.text = viewModel?.textViewText ?? ""
         let stackView = UIStackView(arrangedSubviews: [
-            textView,
+            plusPhotoButton,
             completeButton
         ])
         stackView.axis = .vertical
@@ -106,10 +126,22 @@ class EditTextViewController : UIViewController, UITextViewDelegate{
         stackView.distribution = .fill
         containerView.addSubview(stackView)
         stackView.anchor(top: containerView.topAnchor, left: containerView.leftAnchor, bottom: containerView.bottomAnchor, right: containerView.rightAnchor, paddingTop: 8, paddingLeft: 8, paddingBottom: 8, paddingRight: 8)
-        textView.layer.cornerRadius = 10
-        textView.anchor(left: stackView.leftAnchor,  right: stackView.rightAnchor, paddingLeft: 2,paddingRight: 2, height: 240)
+//        textView.layer.cornerRadius = 10
+//        textView.anchor(left: stackView.leftAnchor,  right: stackView.rightAnchor, paddingLeft: 2,paddingRight: 2, height: 240)
+        plusPhotoButton.setHeight(height: UIScreen.main.bounds.height/3)
+        plusPhotoButton.setWidth(width: UIScreen.main.bounds.height/3)
+        
+        
+        let image = self.image ?? UIImage(systemName: "circle")!//수정전 코드.
+        //guard let image = purposeAndImage.image else {return}//수정후 코드
+        
+        let fixedImage = image.fixOrientation()//90도 회전하는 것 방지하는 코드.
+        showLoadingAnimation()
+        plusPhotoButton.setImage(fixedImage.withRenderingMode(.alwaysOriginal), for: .normal)
+        
         completeButton.anchor( left: stackView.leftAnchor, right: stackView.rightAnchor, paddingLeft:0 , paddingRight:0)
-        textView.isEditable = true
+//        textView.isEditable = true
+        hideLoadingAnimation()
         
         
     }
@@ -184,7 +216,8 @@ class EditTextViewController : UIViewController, UITextViewDelegate{
     }
 }
 
-extension EditTextViewController : UIGestureRecognizerDelegate {
+extension todayDetailViewController : UIGestureRecognizerDelegate,UIImagePickerControllerDelegate,UIAnimatable,
+UINavigationControllerDelegate{
     private func setupGestures() {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissViewController))
         
@@ -201,4 +234,45 @@ extension EditTextViewController : UIGestureRecognizerDelegate {
         return touch.view == self.view
     }
     
+    
+    @objc func handleSelectPhoto() {//처음 누를때
+        print("select")
+        showLoadingAnimation()
+        let imagePickerController = UIImagePickerController()
+        imagePickerController.delegate = self
+        present(imagePickerController, animated: true, completion: hideLoadingAnimation)
+    }
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        let image = info[.originalImage] as? UIImage
+        let fixedImage = image?.fixOrientation()//90도 회전하는 것 방지하는 코드.
+        plusPhotoButton.setImage(fixedImage?.withRenderingMode(.alwaysOriginal), for: .normal)
+        
+        
+        
+        //viewModel?.headerImage = fixedImage!.pngData()
+        
+        //showLoadingAnimation()
+        
+//        viewModel.updateImage(purpose: viewModel.purposes[index], image: fixedImage!, index: index){
+//            hideLoadingAnimation()
+//        }
+        
+        //ImageFileManager.saveImageInDocumentDirectory(image: fixedImage!, fileName: "PurposePicture.png")
+        plusPhotoButton.layer.borderColor = UIColor.white.cgColor
+        //plusPhotoButton.layer.borderWidth = 3.0
+        plusPhotoButton.layer.cornerRadius = 15
+        
+        
+        //delegate?.changeDetail()
+        
+        if let fixedImage = fixedImage {
+            self.image = fixedImage
+            isImageChanged = true
+        }
+        
+        dismiss(animated: true, completion: nil)
+        //사진저장하기.
+    }
+    
 }
+

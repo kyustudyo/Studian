@@ -226,7 +226,15 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
         vc?.viewModel = headerModel
         //vc?.TextViewText = headerViewModel
         vc?.delegate = self
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
+        
+        vc?.modalPresentationStyle = .overFullScreen//full screen 하면 detailview에서 색깔 십힘
+//        guard let purpose = purposeViewModel.purposes[indexPath.item]  else {return}
+        
+        
+//            present(vc, animated: true, completion: nil)
+        
+        
+        navigationController.modalPresentationStyle = .overFullScreen
         self.present(navigationController,animated: true,completion: nil)
   
     }
@@ -238,7 +246,7 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
         let vc = navigationController.viewControllers.first! as? PlusMainCellsViewController
         vc?.delegate = self
         vc?.viewModel = purposeViewModel
-        navigationController.modalPresentationStyle = UIModalPresentationStyle.automatic
+        navigationController.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
         self.present(navigationController,animated: true,completion: nil)
         
         //print("btbt")

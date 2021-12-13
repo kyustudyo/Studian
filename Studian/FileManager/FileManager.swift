@@ -71,11 +71,28 @@ func firstTime(completion:@escaping ()->Void){
     let fileManager = FileManager.default
         let directoryURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
     let destinationURL = directoryURL.appendingPathComponent("headerModel.txt")
+    let purposePath = directoryURL.appendingPathComponent("purposes.json")
+    let todayPath = directoryURL.appendingPathComponent("todays.json")
     
 //    destinationURL.setTemporaryResourceValue("ss", forKey: .nameKey)
     
     guard !fileManager.fileExists(atPath: destinationURL.path) else {
-        print("이미존재")
+        if !fileManager.fileExists(atPath: purposePath.path) {//혹시 purposes가 없는 상황
+            let encoder = JSONEncoder()
+            let PurposeDummy = [Purpose(id: 0, name: "just do it", oneSenetence: "중요한건 방향!")]
+            do {
+                let data = try encoder.encode(PurposeDummy)
+                print(data)
+        //        if FileManager.default.fileExists(atPath: helloPath.path) {
+        //            return
+        //        }
+                FileManager.default.createFile(atPath: purposePath.path, contents: data, attributes: nil)
+            } catch let error {
+                print("---> Failed to store msg: \(error.localizedDescription)")
+            }
+            
+        }
+        
         completion()
         return
     }

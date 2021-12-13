@@ -100,6 +100,7 @@ class EditHedeaderProfileViewController : UIViewController,UIAnimatable,UIGestur
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.isNavigationBarHidden = true
         configureUI()
         setupGestures()
         configureNotificationObservers()

@@ -195,12 +195,14 @@ class StudianTodayViewController: UIViewController, tmpDelegate,UIAnimatable {
         super.viewDidLoad()
         //configureButton()//custom 버튼 일단 쓰지말자.
         //showLoadingAnimation()
+        
         startIndicator()
         updateTintColor()
         observer()
-        
+        print("123",collectionview.isUserInteractionEnabled)
         collectionview.alwaysBounceVertical = false
-        
+        collectionview.dataSource = self
+        collectionview.delegate = self
         
         
         
@@ -319,6 +321,7 @@ extension StudianTodayViewController : UICollectionViewDataSource {
 //    //        // handling code
 //        }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
         if indexPath.row % 2 == 0{
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TodayCell", for: indexPath) as? TodayCellView else {return UICollectionViewCell()}
             
@@ -336,7 +339,7 @@ extension StudianTodayViewController : UICollectionViewDataSource {
             let image = todayViewModel.images[indexPath.row]
             cell.updateUI(today: today,image: image)
             cell.today = today
-            
+            cell.delegate = self
             cell.viewModel = todayViewModel
             cell.tmpDelegate = self
             cell.deleteButtonTapHandler = {
@@ -434,18 +437,7 @@ extension StudianTodayViewController : UIImagePickerControllerDelegate & UINavig
         
         editButtonHidden()
         reloadCell()
-        //showLoadingAnimation()
-        //plusPhotoButton.setImage(fixedImage?.withRenderingMode(.alwaysOriginal), for: .normal)
-        //ImageFileManager.saveImageInDocumentDirectory(image: fixedImage!, fileName: "\(PurposeManager.lastId).png")
-        //hideLoadingAnimation()
-        //plusPhotoButton.imageView?.tag = 1
-        
-        
-//        ImageFileManager.saveImageInDocumentDirectory(image: fixedImage!, fileName: "PurposePicture.png")
-//        plusPhotoButton.layer.borderColor = UIColor.white.cgColor
-//        plusPhotoButton.layer.borderWidth = 3.0
-//        plusPhotoButton.layer.cornerRadius = 50
-       // print("current: ",plusPhotoButton.currentImage,plusPhotoButton.imageView?.tag)
+     
         dismiss(animated: true, completion: nil)
         //delegate?.completeMainPicture()
         //사진저장하기.
@@ -456,84 +448,77 @@ extension StudianTodayViewController : UIImagePickerControllerDelegate & UINavig
     
 }
 
-//extension StudianTodayViewController {
-//    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-//        switch kind {
-//        case UICollectionView.elementKindSectionHeader:
-//            guard let purpose = purposeViewModel.mainPurpose else {
-//                return UICollectionReusableView()
-//            }
-//
-//
-//
-//            //커스텀셀을 가져오는 것처럼 커스텀 헤더 뷰를 가져온다.
-//            //헤더나 푸터의 경우 디큐리유서블 서플먼트해야한다.
-//            //헤더뷰.
-//            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "TodayHeaderView", for: indexPath) as? PurposeHeaderView else {
-//                return UICollectionReusableView()
-//            }
-//
-//            //오늘의 곡 아이템 업데이트
-//            header.updateForTodayPage()
-//
-//            //
-////            header.tapHandler = { item -> Void in
-////                //player띄운다.
-////                print("item:\(item.convertToTrack()?.title)")
-////            }//이거 실행하면 헤더누르면 프린트된다.
-//
-//            //교수
-//            //headerview를 보면 있는데,여기서 뭔가 이동을 하기원하므로 여기 헨들러가 있는듯.
-//            print("taphanlder")
-////            header.tapHandler = { purpose in
-////                let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-////                guard let detailVC = storyboard.instantiateViewController(withIdentifier: "PurposeDetailVIewController") as? PurposeDetailVIewController else {return}
-////
-//////                let playerStoryboard = UIStoryboard.init(name: "Player", bundle: nil)
-//////                //Player는 저 아래에도 있다. Player는 파일이름.
-//////                guard let playerVC = playerStoryboard.instantiateViewController(identifier: "PlayerViewController") as? PlayerViewController else { return }
-////                //let item = trackManager.tracks[indexPath.item]
-////                //simplePlayer는 싱글톤.
-////
-////                self.present(detailVC, animated: true, completion: nil)
-////            }
-//            //교수
-//            return header
-//        default:
-//            return UICollectionReusableView()
-//        }
-//    }
-//}
 
 extension StudianTodayViewController: UICollectionViewDelegate {
-    // 클릭했을때 어떻게 할까? 무엇을띄울까.
+//    func change(image: UIImage) {
+////        todayViewModel.updateTodo(today: <#T##Today#>, todo: <#T##Todo#>)
+//        print(image)
+//    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("index")
+    }
 //    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        //reloadCell()
-////        print("누를 때 player가도록 설정됨.")
-//
-//        collectionview.scrollToItem(at: IndexPath(index: 0), at: .left, animated: true)
-//        print("clcl")
-//
-//        if isEditing == true {return}//수정중이면 클릭안되도록.
+//        print(editButton.isSelected)
+//        //guard !(editButton.isSelected) else {return}//수정중일때는 못들어가도록.
+//        print("누를 때 player가도록 설정됨.")
 //
 //        let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-//        guard let detailVC = storyboard.instantiateViewController(withIdentifier: "PurposeDetailVIewController") as? PurposeDetailVIewController else {return}//스토리보드에서 연결 안해도 이거면 갈 수 있다.
-//
+//        guard let detailVC = storyboard.instantiateViewController(withIdentifier: "PurposeDetailVIewController") as? todayDetailViewController else {return}//스토리보드에서 연결 안해도 이거면 갈 수 있다.
+//        //let purposeAndImage = purposeViewModel.purposeAndImage(id: indexPath.item)
+//        //detailVC.purposeAndImage = purposeAndImage
+//        detailVC.image = todayViewModel.images[indexPath.row]
+////        detailVC.viewModel = purposeViewModel
+////        detailVC.index = indexPath.item
+////        detailVC.purpose = purposeViewModel.purposes[indexPath.row]
+//        detailVC.delegate = self
+//        detailVC.modalPresentationStyle = .overFullScreen//full screen 하면 detailview에서 색깔 십힘
 ////        guard let purpose = purposeViewModel.purposes[indexPath.item]  else {return}
+//
 //
 //            present(detailVC, animated: true, completion: nil)
 //
 //
 ////        playerVC.simplePlayer.replaceCurrentItem(with: item)
 //
+//
 //    }
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print(indexPath)
+}
+    
+    
+
+extension StudianTodayViewController : goToDetailDelegate,EditTodayDetailViewControllerDelegate {
+    func change(image: UIImage) {
+        print("d")
+    }
+    
+    func gotoDetailVC(image:UIImage,index:Int) {
+                let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
+                        guard let detailVC = storyboard.instantiateViewController(withIdentifier: "todayDetailViewController") as? todayDetailViewController else {return}//스토리보드에서 연결 안해도 이거면 갈 수 있다.
+                        //let purposeAndImage = purposeViewModel.purposeAndImage(id: indexPath.item)
+                        //detailVC.purposeAndImage = purposeAndImage
+
+                        detailVC.image = todayViewModel.images[index]
+//                        detailVC.image = UIImage(systemName: "circle")
+        
+        
+        
+                //        detailVC.viewModel = purposeViewModel
+                //        detailVC.index = indexPath.item
+                //        detailVC.purpose = purposeViewModel.purposes[indexPath.row]
+                        detailVC.delegate = self
+                        detailVC.modalPresentationStyle = .overFullScreen//full screen 하면 detailview에서 색깔 십힘
+                //        guard let purpose = purposeViewModel.purposes[indexPath.item]  else {return}
+        
+        
+                        present(detailVC, animated: true, completion: nil)
+        
+        
+                //        playerVC.simplePlayer.replaceCurrentItem(with: item)
     }
     
     
 }
-
 
 
 

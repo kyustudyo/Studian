@@ -61,7 +61,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="335" height="140"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                                             <subviews>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" insetsLayoutMarginsFromSafeArea="NO" image="square.and.arrow.up" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="ObO-F0-8e5">
+                                                <imageView clipsSubviews="YES" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" insetsLayoutMarginsFromSafeArea="NO" image="square.and.arrow.up" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="ObO-F0-8e5">
                                                     <rect key="frame" x="0.0" y="-1" width="140" height="141"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" secondItem="ObO-F0-8e5" secondAttribute="height" multiplier="1:1" id="rjl-8t-ENw"/>
@@ -356,7 +356,22 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QXc-5E-xRX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-415" y="134"/>
+            <point key="canvasLocation" x="-289" y="-591"/>
+        </scene>
+        <!--Today Detail View Controller-->
+        <scene sceneID="LWH-Se-LIs">
+            <objects>
+                <viewController storyboardIdentifier="todayDetailViewController" id="wys-Ui-Cdd" customClass="todayDetailViewController" customModule="Studian" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="70G-hL-Sd9">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="pr5-lR-mNH"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eYv-Gx-GG8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="354" y="-591"/>
         </scene>
         <!--Loading View Controller-->
         <scene sceneID="74c-xT-oet">
@@ -371,7 +386,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PsN-x7-s6Q" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-987" y="837"/>
+            <point key="canvasLocation" x="-415" y="797"/>
         </scene>
         <!--Studian Main Page View Controller-->
         <scene sceneID="YIP-5a-qdW">
@@ -765,7 +780,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="v3n-Zl-6md" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="508" y="806"/>
+            <point key="canvasLocation" x="289" y="806"/>
         </scene>
     </scenes>
     <resources>

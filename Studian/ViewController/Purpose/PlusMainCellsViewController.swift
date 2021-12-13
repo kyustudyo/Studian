@@ -133,6 +133,7 @@ class PlusMainCellsViewController : UIViewController, UIAnimatable{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationController?.isNavigationBarHidden = true
         configureNotificationObservers()
         configureUI()
         tapGesture()

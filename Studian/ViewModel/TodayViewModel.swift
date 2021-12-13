@@ -192,6 +192,10 @@ class TodayManager {
         saveTodays()
         //saveImages()
     }
+    func editToday(_ today : Today) {
+        
+    }
+    
     
     func saveTodays() {
         //DispatchQueue.global(qos: .background).async {

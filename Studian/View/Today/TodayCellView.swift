@@ -16,6 +16,9 @@ import UIKit
 protocol tmpDelegate : class {
     func connectPlz(index  :Int)
 }
+protocol goToDetailDelegate : class {
+    func gotoDetailVC(image:UIImage,index:Int)
+}
 class TodayCellView :
     UICollectionViewCell, TableViewCenterDelegate{
     func setViewCenter() {
@@ -35,7 +38,7 @@ class TodayCellView :
     
     
     weak var tmpDelegate : tmpDelegate?
-    
+    weak var delegate : goToDetailDelegate?
     
     @IBOutlet weak var removeBtn: UIButton!
     var deleteButtonTapHandler: (() -> Void)?
@@ -97,6 +100,13 @@ class TodayCellView :
         
     }
     
+    
+    
+  
+
+    
+
+
     
     var isInEditingMode: Bool = false {
         didSet {
@@ -168,13 +178,48 @@ class TodayCellView :
             
         }
     }
-    
+    @objc func touchToPickPhoto(image:UIImage,index:Int) {
+        print("d")
+        guard let today = today else {
+            return
+        }
+        guard let index = viewModel?.getIndex(today: today) else {return}
+        delegate?.gotoDetailVC(image:image,index: index)
+        
+    //code
+//        let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
+//                guard let detailVC = storyboard.instantiateViewController(withIdentifier: "PurposeDetailVIewController") as? todayDetailViewController else {return}//스토리보드에서 연결 안해도 이거면 갈 수 있다.
+//                //let purposeAndImage = purposeViewModel.purposeAndImage(id: indexPath.item)
+//                //detailVC.purposeAndImage = purposeAndImage
+//
+//
+//
+//                detailVC.image = todayViewModel.images[indexPath.row]
+//        detailVC.image = UIImage(systemName: "circle")
+//
+//
+//
+//        //        detailVC.viewModel = purposeViewModel
+//        //        detailVC.index = indexPath.item
+//        //        detailVC.purpose = purposeViewModel.purposes[indexPath.row]
+//                detailVC.delegate = self
+//                detailVC.modalPresentationStyle = .overFullScreen//full screen 하면 detailview에서 색깔 십힘
+//        //        guard let purpose = purposeViewModel.purposes[indexPath.item]  else {return}
+//
+//
+//                    present(detailVC, animated: true, completion: nil)
+//
+//
+//        //        playerVC.simplePlayer.replaceCurrentItem(with: item)
+//        print("rr")
+    }
     func updateUI(today:Today,image:UIImage){
-        
-//        guard let image = UIImage(data: today.imageData) else{
-//            return
-//        }
-        
+        guard let image = UIImage(data: today.imageData) else{
+            return
+        }
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(touchToPickPhoto))
+        TodayImg.addGestureRecognizer(tapGesture)
+        TodayImg.isUserInteractionEnabled = true
         TodayImg.image = image.fixOrientation()
         
         print("todos:",today.todos)
@@ -276,6 +321,7 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
     
     //tableview
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        //return UITableViewCell()
         if indexPath.row % 2 == 0 {
             let index = indexPath.row
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "TodayTableCell", for: indexPath) as? TodayTableCell else {return UITableViewCell()}
@@ -383,6 +429,9 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
                         //smallBtn.setImage(UIImage(named: "checkmark.seal"), for: .selected)
                     //}
                     bigBtn.isUserInteractionEnabled = true
+                    
+                    
+                    
                     cell.todoName.isUserInteractionEnabled = false
                     cell.todoDetail.isUserInteractionEnabled = false
                 }
@@ -484,3 +533,5 @@ extension TodayCellView : TableCellDelegate {
     
     
 }
+
+
