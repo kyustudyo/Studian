@@ -177,13 +177,17 @@ class PurposeManager {
     }
     
     
+    
     func updatePurpose(_ purpose:Purpose){
         guard let index = purposes.firstIndex(of: purpose) else {return}
         //guard let name = purpose.name, let oneSentence = purpose.oneSenetence else {return}
-        
         purposes[index].update(name: purpose.name, oneSentence: purpose.oneSenetence)
         savePurposes()
     }
+    
+    
+    
+    
     
     func updateImage(purpose:Purpose, image:UIImage,index: Int){
         //guard let index = purposes.firstIndex(of: purpose) else {return}

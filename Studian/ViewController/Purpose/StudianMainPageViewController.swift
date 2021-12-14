@@ -373,6 +373,9 @@ class StudianMainPageViewController: UIViewController, EditTextViewControllerDel
         startIndicator()
 //        showLoadingAnimation()
 //        MakeDummyPurpose()
+        navigationController?.navigationItem.largeTitleDisplayMode = .always
+        navigationController?.navigationBar.prefersLargeTitles = true
+
         firstTime{
             self.fetchHeaderTexts()
             self.fetchHeaderImage()

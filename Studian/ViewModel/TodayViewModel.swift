@@ -42,12 +42,19 @@ class TodayViewModel {
     func getIndex(today:Today) -> Int {
         return manager.getIndex(today)
     }
+    
+    
     func getTodo(today:Today,index:Int)->Todo {
         manager.getTodo(today: today, index: index)
     }
-    func saveTodays(){
-        manager.saveTodays()
+    
+    
+    func saveTodays(completion:@escaping ()->Void){
+        manager.saveTodays(completion: completion)
         
+    }
+    func editToday(image:UIImage, index: Int,completion:@escaping ()->Void){
+        manager.editToday(image: image, index: index,completion: completion)
     }
 //    func updateTodo(_ today:Today){
 //        guard let index = todays.firstIndex(of: today) else {retrun}
@@ -127,13 +134,16 @@ class TodayManager {
     
     let nextId = TodayManager.lastId + 2 //인덱스 하나 추가해야하므로
         TodayManager.lastId = nextId
+        
+        
+        
     let imageData = image.pngData()!
-    
-    //return Purpose(id: nextId, name: name!, oneSenetence: oneSentence!)
-    //return Today(id: nextId, imageData: imageData)
-    //return Today(id: nextId, imageData: imageData, todos: todos)
     return Today(id: nextId, imageData: imageData, todos: [])
+        
     }
+    
+    
+    
     
     func getNumberOfTodos(today:Today) -> Int {
         let today = todays.first {$0.id == today.id}
@@ -189,19 +199,36 @@ class TodayManager {
         images.append(image)
         images.append(UIImage(systemName: "circle")!)
         
-        saveTodays()
+        //saveTodays()//한꺼번에 저장하자 여기서 하지말고.
+        
+        
         //saveImages()
     }
-    func editToday(_ today : Today) {
+    func editToday(image:UIImage, index: Int,completion:@escaping ()->Void) {
+        let workGroup = DispatchGroup()
+        DispatchQueue.global().async(group:workGroup) { [weak self] in
+            let originalIndex = index
+            //let halfIndex = index / 2
+            self?.images[originalIndex] = image
+            //updatepurpose참고해서 다시.
+            self?.todays[originalIndex].editImage(image: image)
+        }
+        workGroup.notify(queue: .main) {
+            completion()
+        }
+        
         
     }
     
     
-    func saveTodays() {
-        //DispatchQueue.global(qos: .background).async {
-        
+    func saveTodays(completion:@escaping ()->Void) {
+        let workGroup = DispatchGroup()
+        DispatchQueue.global().async(group: workGroup) {
             store(self.todays, to: .documents, as: "todays.json")
-        //}
+        }
+        workGroup.notify(queue: .main) {
+            completion()
+        }
         
         
     }

@@ -89,10 +89,11 @@ class StudianTodayViewController: UIViewController, tmpDelegate,UIAnimatable {
 //
 //        sender.setTitleColor(.red, for: .selected)
         showLoadingAnimation()
-        self.todayViewModel.saveTodays()
-        hideLoadingAnimation()
-        
+        self.todayViewModel.saveTodays{ [weak self] in
+            self?.hideLoadingAnimation()
+        }
     }
+    
     @objc func editSelector(_ sender: UIButton) {
         if sender.isSelected == true {
             let baseColor = DefaultStyle.Colors.tint
@@ -107,74 +108,18 @@ class StudianTodayViewController: UIViewController, tmpDelegate,UIAnimatable {
         collectionview.allowsMultipleSelection = sender.isSelected
         print("시작 isediting: \(isEditing)")
         editButtonHidden()
-        reloadCell()//이거있으면느려진다.
-        
-//        let indexPaths = collectionview.indexPathsForVisibleItems
-//        for indexPath in indexPaths {
-//            let cell = collectionview.cellForItem(at: indexPath) as! TodayCellView
-//            cell.isInEditingMode = sender.isSelected
-//            print("\(indexPath.row)에서 sender.isselcted:\(sender.isSelected)" )//처음누를때 모두 false 즉 isselected는 true
-//        }
         
         
+        showLoadingAnimation()
+        reloadCell()//reload는 main에서만 해야한다.
+        hideLoadingAnimation()
+       
         
-        //print("index: ", indexPaths)
-            
-        
-        
-        //print(isEditing)//항상flase?
+
         
     }
     
-    
-    
-    
-//    @objc func edit() {
-//        print("Edit")
-//        collectionview.allowsMultipleSelection = true
-//        let indexPaths = collectionview.indexPathsForVisibleItems
-//        for indexPath in indexPaths {
-//            let cell = collectionview.cellForItem(at: indexPath) as! TodayCellView
-//            cell.isInEditingMode = !cell.isInEditingMode
-//            print(indexPath.row)
-//        }
-//
-//
-//
-//
-//    }
-    
-//    override func setEditing(_ editing: Bool, animated: Bool) {
-//        print("Edit")
-//    }
-    
-//    lazy var editButton : UIButton = {
-//        guard let navBarH = navigationController?.navigationBar.frame.height else {fatalError()}
-//        let suggestButton = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
-//       suggestButton.setTitle("Edit", for: .normal)
-//       suggestButton.setTitleColor(.black, for: .normal)
-//       suggestButton.backgroundColor = .clear
-//       suggestButton.layer.cornerRadius = 5
-//       suggestButton.layer.borderWidth = 1
-//       suggestButton.layer.borderColor = UIColor.black.cgColor
-////        suggestButton.setBackgroundImage(suggestImage, for: .normal)
-//       suggestButton.addTarget(self, action: #selector(Edit), for:.touchUpInside)
-//        // here where the magic happens, you can shift it where you like
-////       suggestButton.transform = CGAffineTransform(translationX: 0, y: navBarH)
-//        // add the button to a container, otherwise the transform will be ignored
-//
-////        let suggestButtonContainer = UIImageView(frame: suggestButton.frame)
-//        //suggestButton.isUserInteractionEnabled = true
-//
-////        suggestButtonContainer.addSubview(suggestButton)
-//
-//        //suggestButtonContainer.bringSubviewToFront(suggestButton)
-////        let suggestButtonItem = UIBarButtonItem(customView: suggestButtonContainer)
-//        //suggestButtonItem.customView = suggestButton
-//
-//
-//        return suggestButton
-//    }()
+
     
     @IBOutlet var collectionview: UICollectionView!
     
@@ -204,9 +149,6 @@ class StudianTodayViewController: UIViewController, tmpDelegate,UIAnimatable {
         collectionview.dataSource = self
         collectionview.delegate = self
         
-        
-        
-        
         editButtonHidden()//많으면 추가 못하게.
         
 //        collectionview.frame = CGRect(x: collectionview.frame.origin.x, y: collectionview.frame.origin.y, width: collectionview.frame.size.width, height: collectionview.frame.size.height)
@@ -223,17 +165,20 @@ class StudianTodayViewController: UIViewController, tmpDelegate,UIAnimatable {
         
         
         //purposeViewModel.loadPurposes2()
-        
+        navigationController?.navigationItem.largeTitleDisplayMode = .always
+        navigationController?.navigationBar.prefersLargeTitles = true
         todayViewModel.loadPurposes2(completion:
                                         
                                         { [weak self] in
             //self?.hideLoadingAnimation()
             self?.navigationController?.navigationBar.topItem?.title = "Today..."
+            self?.navigationController?.navigationBar.prefersLargeTitles = true
+            self?.navigationController?.navigationItem.largeTitleDisplayMode = .always
+            
             self?.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: self?.saveButton ?? UIButton())
             self?.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: self?.editButton ?? UIButton())
             //navigationItem.leftBarButtonItem = UIBarButtonItem(customView: deleteButton)//제거 바 버튼
-            self?.navigationController?.navigationBar.prefersLargeTitles = true
-            self?.navigationController?.navigationItem.largeTitleDisplayMode = .automatic
+            
             
             self?.stopIndicator()
             self?.collectionview.reloadData()})
@@ -339,6 +284,7 @@ extension StudianTodayViewController : UICollectionViewDataSource {
             let image = todayViewModel.images[indexPath.row]
             cell.updateUI(today: today,image: image)
             cell.today = today
+            
             cell.delegate = self
             cell.viewModel = todayViewModel
             cell.tmpDelegate = self
@@ -386,16 +332,6 @@ extension StudianTodayViewController : UIImagePickerControllerDelegate & UINavig
 //    }
     @IBAction func plusCells(_ sender: UIButton) {
         
-//        let navigationController = UINavigationController(rootViewController: PlusCellsViewController())
-//        let vc = navigationController.viewControllers.first! as? PlusCellsViewController
-//
-//        //vc?.delegate = self
-//        //vc?.viewModel = purposeViewModel
-//        vc?.delegate = self
-//        vc?.viewModel = todayViewModel
-//        navigationController.modalPresentationStyle = UIModalPresentationStyle.automatic
-//        self.present(navigationController,animated: true,completion: nil)
-        
         print("select")
         showLoadingAnimation()
         let imagePickerController = UIImagePickerController()
@@ -425,20 +361,26 @@ extension StudianTodayViewController : UIImagePickerControllerDelegate & UINavig
         
     }
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        let image = info[.originalImage] as? UIImage
-        //profileImage = image//프사 변수에 저장.
-        guard let fixedImage = image?.fixOrientation() else {return}
-                //90도 회전하는 것 방지하는 코드.
-        
-        let today = TodayManager.shared.createIndexAndData(image: fixedImage)
-        todayViewModel.addToday(today)
-        
-        
-        
-        editButtonHidden()
-        reloadCell()
-     
         dismiss(animated: true, completion: nil)
+        showLoadingAnimation()
+        let workGroup = DispatchGroup()
+        DispatchQueue.global().async(group:workGroup) { [weak self] in
+            let image = info[.originalImage] as? UIImage
+            //profileImage = image//프사 변수에 저장.
+            guard let fixedImage = image?.fixOrientation() else {return}
+                    //90도 회전하는 것 방지하는 코드.
+            let today = TodayManager.shared.createIndexAndData(image: fixedImage)
+            self?.todayViewModel.addToday(today)
+        }
+        //todayViewModel.getTodo(today: <#T##Today#>, index: <#T##Int#>)
+        workGroup.notify(queue: .main) { [weak self] in
+            self?.editButtonHidden()
+            self?.reloadCell()
+            self?.hideLoadingAnimation()
+        }
+        
+     
+        
         //delegate?.completeMainPicture()
         //사진저장하기.
     }
@@ -488,33 +430,40 @@ extension StudianTodayViewController: UICollectionViewDelegate {
     
 
 extension StudianTodayViewController : goToDetailDelegate,EditTodayDetailViewControllerDelegate {
-    func change(image: UIImage) {
-        print("d")
+    func change(image: UIImage,index: Int) {//2가 곱해진 인덱스
+        print("ind",index)
+        showLoadingAnimation()
+        todayViewModel.editToday(image: image, index: index){ [weak self] in
+            self?.reloadCell()
+            self?.hideLoadingAnimation()
+        }
+        
     }
     
     func gotoDetailVC(image:UIImage,index:Int) {
-                let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-                        guard let detailVC = storyboard.instantiateViewController(withIdentifier: "todayDetailViewController") as? todayDetailViewController else {return}//스토리보드에서 연결 안해도 이거면 갈 수 있다.
-                        //let purposeAndImage = purposeViewModel.purposeAndImage(id: indexPath.item)
-                        //detailVC.purposeAndImage = purposeAndImage
-
-                        detailVC.image = todayViewModel.images[index]
-//                        detailVC.image = UIImage(systemName: "circle")
+        let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
+        guard let detailVC = storyboard.instantiateViewController(withIdentifier: "todayDetailViewController") as? todayDetailViewController else {return}//스토리보드에서 연결 안해도 이거면 갈 수 있다.
+        //let purposeAndImage = purposeViewModel.purposeAndImage(id: indexPath.item)
+        //detailVC.purposeAndImage = purposeAndImage
+        
+        detailVC.image = todayViewModel.images[index]
+        
+        //                        detailVC.image = UIImage(systemName: "circle")
+        
+        detailVC.index = index
+        
+        //        detailVC.viewModel = purposeViewModel
+        //        detailVC.index = indexPath.item
+        //        detailVC.purpose = purposeViewModel.purposes[indexPath.row]
+        detailVC.delegate = self
+        detailVC.modalPresentationStyle = .overFullScreen//full screen 하면 detailview에서 색깔 십힘
+        //        guard let purpose = purposeViewModel.purposes[indexPath.item]  else {return}
         
         
-        
-                //        detailVC.viewModel = purposeViewModel
-                //        detailVC.index = indexPath.item
-                //        detailVC.purpose = purposeViewModel.purposes[indexPath.row]
-                        detailVC.delegate = self
-                        detailVC.modalPresentationStyle = .overFullScreen//full screen 하면 detailview에서 색깔 십힘
-                //        guard let purpose = purposeViewModel.purposes[indexPath.item]  else {return}
+        present(detailVC, animated: true, completion: nil)
         
         
-                        present(detailVC, animated: true, completion: nil)
-        
-        
-                //        playerVC.simplePlayer.replaceCurrentItem(with: item)
+        //        playerVC.simplePlayer.replaceCurrentItem(with: item)
     }
     
     

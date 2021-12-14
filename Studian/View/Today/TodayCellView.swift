@@ -214,9 +214,7 @@ class TodayCellView :
 //        print("rr")
     }
     func updateUI(today:Today,image:UIImage){
-        guard let image = UIImage(data: today.imageData) else{
-            return
-        }
+        
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(touchToPickPhoto))
         TodayImg.addGestureRecognizer(tapGesture)
         TodayImg.isUserInteractionEnabled = true

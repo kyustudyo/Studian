@@ -22,6 +22,9 @@ struct Today : Equatable, Codable {
     mutating func remove(todo:Todo) {
         todos.removeAll{$0.id == todo.id}
     }
+    mutating func editImage(image:UIImage){
+        self.imageData = image.pngData() ?? Data()
+    }
     
 }
 struct Todo : Codable {

@@ -10,12 +10,13 @@ import UIKit
 import Combine
 
 protocol EditTodayDetailViewControllerDelegate : class {
-    func change(image:UIImage)
+    func change(image: UIImage,index: Int)
 }
 
 class todayDetailViewController : UIViewController, UITextViewDelegate{
     
     private var isImageChanged = false
+    var index : Int?
     private let containerView : UIView = {
         let uiView = UIView()
         uiView.backgroundColor = .groupTableViewBackground
@@ -46,17 +47,21 @@ class todayDetailViewController : UIViewController, UITextViewDelegate{
         button.addTarget(self, action: #selector(handleRegistration), for: .touchUpInside)
         return button
     }()
+    
     @objc func handleRegistration(){
         print("sdsdsd")
         //print(UIApplication.topViewController())
 //        navigationController?.popViewController(animated: true)
-        
+        dismiss(animated: true, completion: nil)//여기잇어도 되나?
         if isImageChanged{
-            guard let image = image else{return}
-            delegate?.change(image: image)
+            if let index = index {
+                guard let image = image else{return}
+                delegate?.change(image: image,index: index)
+            }
+            
         }
         
-        dismiss(animated: true, completion: nil)
+        
         
 //        delegate?.completeTwoTexts(vm: headerModel!)
         //print(UIApplication.topViewController())
@@ -128,6 +133,8 @@ class todayDetailViewController : UIViewController, UITextViewDelegate{
         stackView.anchor(top: containerView.topAnchor, left: containerView.leftAnchor, bottom: containerView.bottomAnchor, right: containerView.rightAnchor, paddingTop: 8, paddingLeft: 8, paddingBottom: 8, paddingRight: 8)
 //        textView.layer.cornerRadius = 10
 //        textView.anchor(left: stackView.leftAnchor,  right: stackView.rightAnchor, paddingLeft: 2,paddingRight: 2, height: 240)
+        plusPhotoButton.anchor(top:stackView.topAnchor,paddingTop: 30)
+        plusPhotoButton.anchor(bottom:completeButton.topAnchor,paddingBottom: 38)
         plusPhotoButton.setHeight(height: UIScreen.main.bounds.height/3)
         plusPhotoButton.setWidth(width: UIScreen.main.bounds.height/3)
         
