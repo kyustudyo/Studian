@@ -337,12 +337,20 @@ extension PurposeDetailVIewController : UIImagePickerControllerDelegate & UINavi
         showLoadingAnimation()
         let imagePickerController = UIImagePickerController()
         imagePickerController.delegate = self
+        imagePickerController.allowsEditing = true
         present(imagePickerController, animated: true, completion: hideLoadingAnimation)
     }
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        let image = info[.originalImage] as? UIImage
-        let fixedImage = image?.fixOrientation()//90도 회전하는 것 방지하는 코드.
-        plusPhotoButton.setImage(fixedImage?.withRenderingMode(.alwaysOriginal), for: .normal)
+//        let image = info[.originalImage] as? UIImage
+//        let fixedImage = image?.fixOrientation()//90도 회전하는 것 방지하는 코드.
+        var newImage = UIImage()
+        if let possibleImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
+            newImage = possibleImage.fixOrientation() // 수정된 이미지가 있을 경우
+        } else if let possibleImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            newImage = possibleImage.fixOrientation() // 원본 이미지가 있을 경우
+        }
+        
+        plusPhotoButton.setImage(newImage.withRenderingMode(.alwaysOriginal), for: .normal)
         
         
         
@@ -362,10 +370,12 @@ extension PurposeDetailVIewController : UIImagePickerControllerDelegate & UINavi
         
         //delegate?.changeDetail()
         
-        if let fixedImage = fixedImage {
-            self.image = fixedImage
-            isImageChanged = true
-        }
+//        if let fixedImage = fixedImage {
+//            self.image = fixedImage
+//            isImageChanged = true
+//        }
+        self.image = newImage
+        isImageChanged = true
         
         dismiss(animated: true, completion: nil)
         //사진저장하기.

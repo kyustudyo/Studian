@@ -297,15 +297,23 @@ extension PlusMainCellsViewController : UIImagePickerControllerDelegate & UINavi
         showLoadingAnimation()
         let imagePickerController = UIImagePickerController()
         imagePickerController.delegate = self
+        imagePickerController.allowsEditing = true
         present(imagePickerController, animated: true, completion: hideLoadingAnimation)
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        let image = info[.originalImage] as? UIImage
-        //profileImage = image//프사 변수에 저장.
-        let fixedImage = image?.fixOrientation()//90도 회전하는 것 방지하는 코드.
+//        let image = info[.originalImage] as? UIImage
+//        //profileImage = image//프사 변수에 저장.
+//        let fixedImage = image?.fixOrientation()//90도 회전하는 것 방지하는 코드.
         //showLoadingAnimation()
-        plusPhotoButton.setImage(fixedImage?.withRenderingMode(.alwaysOriginal), for: .normal)
+        var newImage = UIImage()
+        if let possibleImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
+            newImage = possibleImage.fixOrientation() // 수정된 이미지가 있을 경우
+        } else if let possibleImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+            newImage = possibleImage.fixOrientation() // 원본 이미지가 있을 경우
+        }
+        
+        plusPhotoButton.setImage(newImage.withRenderingMode(.alwaysOriginal), for: .normal)
         //ImageFileManager.saveImageInDocumentDirectory(image: fixedImage!, fileName: "\(PurposeManager.lastId).png")
         //hideLoadingAnimation()
         plusPhotoButton.imageView?.tag = 1

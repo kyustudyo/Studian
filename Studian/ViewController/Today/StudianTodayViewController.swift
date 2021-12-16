@@ -284,15 +284,15 @@ extension StudianTodayViewController : UICollectionViewDataSource {
             let image = todayViewModel.images[indexPath.row]
             cell.updateUI(today: today,image: image)
             cell.today = today
-            
+            print("dz:",indexPath.row)
             cell.delegate = self
             cell.viewModel = todayViewModel
             cell.tmpDelegate = self
             cell.deleteButtonTapHandler = {
-                print("d:",indexPath.row)
+                print("delete dz:",indexPath.row)
                 self.todayViewModel.deleteToday(today)
                 self.todayViewModel.deleteImage(index: indexPath.row)
-                self.todayViewModel.deleteImage(index: indexPath.row+1)
+//                self.todayViewModel.deleteImage(index: indexPath.row+1)
                 print("d:,",self.todayViewModel.images.count)
                 self.editButtonHidden()
                 self.collectionview.reloadData()
@@ -336,6 +336,7 @@ extension StudianTodayViewController : UIImagePickerControllerDelegate & UINavig
         showLoadingAnimation()
         let imagePickerController = UIImagePickerController()
         imagePickerController.delegate = self
+        imagePickerController.allowsEditing = true
         present(imagePickerController, animated: true, completion: hideLoadingAnimation)
         
     }
@@ -367,9 +368,20 @@ extension StudianTodayViewController : UIImagePickerControllerDelegate & UINavig
         DispatchQueue.global().async(group:workGroup) { [weak self] in
             let image = info[.originalImage] as? UIImage
             //profileImage = image//프사 변수에 저장.
-            guard let fixedImage = image?.fixOrientation() else {return}
+//            guard let fixedImage = image?.fixOrientation() else {return}
                     //90도 회전하는 것 방지하는 코드.
-            let today = TodayManager.shared.createIndexAndData(image: fixedImage)
+            
+            var newImage = UIImage()
+            if let possibleImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
+                newImage = possibleImage.fixOrientation() // 수정된 이미지가 있을 경우
+            } else if let possibleImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
+                newImage = possibleImage.fixOrientation() // 원본 이미지가 있을 경우
+            }
+            
+            
+            
+            
+            let today = TodayManager.shared.createIndexAndData(image: newImage)
             self?.todayViewModel.addToday(today)
         }
         //todayViewModel.getTodo(today: <#T##Today#>, index: <#T##Int#>)

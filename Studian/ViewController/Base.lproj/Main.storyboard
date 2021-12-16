@@ -273,7 +273,7 @@
                                         </collectionViewCellContentView>
                                     </collectionViewCell>
                                 </cells>
-                                <collectionReusableView key="sectionHeaderView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="TodayHeaderView" id="ogZ-FY-PJ5" customClass="PurposeHeaderView" customModule="Studian">
+                                <collectionReusableView key="sectionHeaderView" hidden="YES" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="TodayHeaderView" id="ogZ-FY-PJ5" customClass="PurposeHeaderView" customModule="Studian">
                                     <rect key="frame" x="0.0" y="0.0" width="375" height="88"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>

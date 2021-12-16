@@ -88,13 +88,15 @@ class TodayManager {
         //                guard let image = ImageFileManager.loadImageFromDocumentDirectory(fileName: "\($0.id).png") else {return}
                         print($0.imageData.description)
                         //if $0.imageData.description != "30242712 bytes" {
-                            let image = UIImage(data: $0.imageData) ?? UIImage(systemName: "circle")!
+                            let image = UIImage(data: $0.imageData) ?? UIImage()
                         self?.images.append(image)
                         //}
                         
         //                images.append(image)
                     }
+                    
                     print("총몇개 d:\(self?.images.count)")
+                    
                 }
                 
                 let lastId = todays.last?.id ?? 0
@@ -118,7 +120,6 @@ class TodayManager {
                 DispatchQueue.main.async {
                     completion2()
                 }
-
             })
         }
         
@@ -126,12 +127,14 @@ class TodayManager {
         
     }
     func deleteImage(index:Int){
-        images.remove(at: index/2)
-        
+        print("delete index ", index)
+        print("delete index2 ",images.count)
+        print("delete index3 ",index/2)
+        images.remove(at: (index))
+        images.remove(at: (index))
     }
     
     func createIndexAndData(image: UIImage) -> Today {
-    
     let nextId = TodayManager.lastId + 2 //인덱스 하나 추가해야하므로
         TodayManager.lastId = nextId
         
