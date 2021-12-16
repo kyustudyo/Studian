@@ -485,6 +485,9 @@ extension StudianTodayViewController : goToDetailDelegate,EditTodayDetailViewCon
 
 extension StudianTodayViewController: UICollectionViewDelegateFlowLayout {
     // 셀 사이즈 어떻게 할까?
+//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+//        return 0
+//    }
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         // 20<좌측마진> - card(width) - 20<카드간간격> - card(width) - 20<오른쪽마진>
         //let itemSpacing:CGFloat = 20
