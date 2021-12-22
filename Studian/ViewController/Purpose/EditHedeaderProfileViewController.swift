@@ -265,6 +265,7 @@ extension EditHedeaderProfileViewController : UIImagePickerControllerDelegate & 
         //showLoadingAnimation()//  안먹힘
         plusPhotoButton.setImage(newImage.withRenderingMode(.alwaysOriginal), for: .normal)
         headerModel?.headerImage = newImage.pngData()
+        
 //        ImageFileManager.saveImageInDocumentDirectory(image: fixedImage!, fileName: "PurposePicture.png")
         //hideLoadingAnimation()
         
@@ -285,6 +286,7 @@ extension EditHedeaderProfileViewController : UIImagePickerControllerDelegate & 
     
     
 }
+
 extension UIApplication {
     class func topViewController(base: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
         if let nav = base as? UINavigationController {

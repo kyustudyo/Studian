@@ -348,12 +348,14 @@ extension StudianTodayViewController : UIImagePickerControllerDelegate & UINavig
         
         print(isEditing)
         if isEditing {
-            if self.todayViewModel.todays.count < 10 {// x 2 해야하므로. 6개까지
-            self.plusCellsBtn.isHidden = false
-            }
-            else {
-                self.plusCellsBtn.isHidden = true
-            }
+//            if self.todayViewModel.todays.count < 10 {// x 2 해야하므로. 6개까지
+//            if self.todayViewModel.countOfItems < 20 {
+//            self.plusCellsBtn.isHidden = false
+//            }
+//            else {
+//                self.plusCellsBtn.isHidden = true
+//            }
+            plusCellsBtn.isHidden = !todayViewModel.countIsValid
         }
         else {
             self.plusCellsBtn.isHidden = true
@@ -377,10 +379,6 @@ extension StudianTodayViewController : UIImagePickerControllerDelegate & UINavig
             } else if let possibleImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
                 newImage = possibleImage.fixOrientation() // 원본 이미지가 있을 경우
             }
-            
-            
-            
-            
             let today = TodayManager.shared.createIndexAndData(image: newImage)
             self?.todayViewModel.addToday(today)
         }

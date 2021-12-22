@@ -46,8 +46,15 @@ class PurposesViewModel {
     var images : [UIImage] {//get only
         return manager.images
     }
+    var countOfItem : Int {
+        return purposes.count
+    }
     
-    
+    var countIsValid: Bool {
+        if countOfItem < 10 {return true}
+        else if countOfItem >= 10 {return false}
+        return false
+    }
     
     
     var mainPurpose = Purpose(id: 1, name: "3", oneSenetence: "4")
@@ -62,6 +69,7 @@ class PurposesViewModel {
 //        }else {return}
     }
 
+    
     func loadPurposes() -> [Purpose] {
         var result = [Purpose]()
         let samplePurpose = Purpose(id: 1, name: "연세대학교", oneSenetence: "독수리 같이 빛나자.")

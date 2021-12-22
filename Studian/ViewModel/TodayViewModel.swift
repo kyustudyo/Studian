@@ -12,6 +12,17 @@ class TodayViewModel {
     var todays : [Today] {
         return manager.todays
     }
+    
+    var countOfItems : Int {
+        return todays.count
+    }
+    
+    var countIsValid: Bool {
+        if countOfItems < 20 {return true}
+        else if countOfItems >= 20 {return false}
+        return false
+    }
+    
     var images : [UIImage] {
         return manager.images
     }

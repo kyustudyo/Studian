@@ -84,9 +84,11 @@ class StudianMainPageViewController: UIViewController {
             setEditing(false, animated: false)//원래 override setEditing이란게 있다.
             sender.isSelected = false
         } else {
-            if purposeViewModel.purposes.count < 8 {
-            editCellsBtn.isHidden = false
-            }
+//            if purposeViewModel.purposes.count < 8 {
+//            editCellsBtn.isHidden = false
+//            }
+            editCellsBtn.isHidden = !purposeViewModel.countIsValid
+            
             sender.setTitleColor(UIColor.lightGray, for: .normal)
             setEditing(true, animated: false)
             sender.isSelected = true
@@ -159,12 +161,12 @@ class StudianMainPageViewController: UIViewController {
 
             self.editCellsBtn.isHidden = true
             self.purposeViewModel.loadPurposes2 { [weak self] in
-                
+
                 self?.reloadCell()
-                
-                
+
+
                 self?.navigationController?.navigationBar.topItem?.title = "Purpose"
-                
+
                 self?.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: self?.editButton ?? UIButton())
                 self?.navigationController?.navigationBar.prefersLargeTitles = true
                 self?.navigationController?.navigationItem.largeTitleDisplayMode = .automatic
@@ -229,12 +231,15 @@ extension StudianMainPageViewController :UICollectionViewDataSource {
     }
     
     func editButtonHidden(){
-        if self.purposeViewModel.purposes.count < 8 {
-        self.editCellsBtn.isHidden = false
+//        if self.purposeViewModel.purposes.count < 8 {//아래 연산프로퍼티 이용.
+        if self.purposeViewModel.purposes.count < 10{
+            self.editCellsBtn.isHidden = false
         }
         else {
             self.editCellsBtn.isHidden = true
         }
+        //아래를 통해 코드 단순화
+//        self.editCellsBtn.isHidden = !self.purposeViewModel.countIsValid
     }
 }
 // MARK: - HeaderCell
@@ -285,6 +290,7 @@ extension StudianMainPageViewController: EditHedeaderProfileDelegate {
         showLoadingAnimation()
         
         let workGroup = DispatchGroup()
+        
         if isImageChanged {
             guard let data = vm.headerImage,
                   let uiimage = UIImage(data: data) else {return}
@@ -294,14 +300,17 @@ extension StudianMainPageViewController: EditHedeaderProfileDelegate {
                 ImageFileManager.saveImageInDocumentDirectory(image: uiimage, fileName: "PurposePicture.png")
             }
         }
-        if isTextsChanged {
+        
+//        if isTextsChanged {//이걸 하면 이상해지네;; 연구필요.
             headerModel.textFieldText1 = vm.textFieldText1
             headerModel.textFieldText2 = vm.textFieldText2
             //collectionview.reloadData()//위에거 하면 깜박이는데 이거하면 깜박안함.
             DispatchQueue.global().async(group: workGroup) {
                 store(self.headerModel, to: .documents, as: "headerModel.txt")
             }
-        }
+//        }
+        
+        
         workGroup.notify(queue: .main){
             self.collectionview.reloadSections(IndexSet(0..<1))
             self.hideLoadingAnimation()
@@ -387,8 +396,8 @@ extension StudianMainPageViewController: PlusMainCellsDelegate,UIAnimatable {
     func PlusCell(purpose:Purpose,image:UIImage){
         showLoadingAnimation()
         purposeViewModel.addPurposeAndImage(purpose: purpose, image: image) { [weak self] in
-            self?.reloadCell()
             self?.editButtonHidden()
+            self?.reloadCell()
             self?.clearTmpDirectory()
             self?.hideLoadingAnimation()
         }

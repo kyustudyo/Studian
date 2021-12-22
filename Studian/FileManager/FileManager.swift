@@ -326,11 +326,12 @@ func refactorPurposesIndex() -> String? {
 func loadFile()  {
     let url : URL = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: .userDomainMask).first!
     let destinationUrl = url.appendingPathComponent("purposes.json")
-    print("ssa",FileManager.default.fileExists(atPath: destinationUrl.path))
+//    print("ssa",FileManager.default.fileExists(atPath: destinationUrl.path))
     let decodedData : [Purpose] = [Purpose]()
     if FileManager.default.fileExists(atPath: destinationUrl.path) {
         
         guard let data = FileManager.default.contents(atPath: destinationUrl.path) else {return}
+        
         let decoder = JSONDecoder()
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
