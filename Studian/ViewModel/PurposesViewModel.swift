@@ -145,7 +145,6 @@ class PurposeManager {
             let pngFiles = directoryContents.filter{ $0.pathExtension == "png" }
             print("png urls:",pngFiles)
             var CroppedpngFiles = pngFiles.map{ $0.deletingPathExtension().lastPathComponent
-                
             }
             
                 .filter{
@@ -161,8 +160,15 @@ class PurposeManager {
                 }
             
             print("png list:", CroppedpngFiles)
+            //숫자인데 string이면 sorted 하면 1다음에 2가아니라 11 이다 .ㅋㅋ
+            var intArray = CroppedpngFiles.map{ str -> Int in
+                if let int = Int(str) {
+                    return int
+                }
+                else {return 0}
+            }
             
-            CroppedpngFiles = CroppedpngFiles.sorted{$0<$1}
+            CroppedpngFiles = intArray.sorted{$0<$1}.map{String($0)}
             
             let fileManager = FileManager.default
             let directoryURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -223,11 +229,13 @@ class PurposeManager {
         let workGroup = DispatchGroup()
         DispatchQueue.global().async(group:workGroup) {
             store(self.purposes, to: .documents, as: "purposes.json")
-            
+            print("저장1",self.purposes.count)
         }
         DispatchQueue.global().async(group:workGroup) {
             ImageFileManager.saveImageInDocumentDirectory(image: image, fileName: "\(PurposeManager.lastId).png")
+            print("저장2",PurposeManager.lastId)
         }
+        
         workGroup.notify(queue: .main){
             completion()
         }
