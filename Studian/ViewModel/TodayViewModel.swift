@@ -18,8 +18,8 @@ class TodayViewModel {
     }
     
     var countIsValid: Bool {
-        if countOfItems < 20 {return true}
-        else if countOfItems >= 20 {return false}
+        if countOfItems < 12 {return true}
+        else if countOfItems >= 12 {return false}
         return false
     }
     

@@ -32,6 +32,7 @@ class CustomTextView: UITextView {
         dataDetectorTypes = UIDataDetectorTypes.all // Set shadow darkness.
         layer.shadowOpacity = 0.5 // Make text uneditable.
         isEditable = false
+        
     }
     
     required init?(coder: NSCoder) {

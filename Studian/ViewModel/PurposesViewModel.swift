@@ -51,8 +51,8 @@ class PurposesViewModel {
     }
     
     var countIsValid: Bool {
-        if countOfItem < 10 {return true}
-        else if countOfItem >= 10 {return false}
+        if countOfItem < 8 {return true}
+        else if countOfItem >= 8 {return false}
         return false
     }
     

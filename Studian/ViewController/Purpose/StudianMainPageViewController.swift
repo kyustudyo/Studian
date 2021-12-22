@@ -155,13 +155,13 @@ class StudianMainPageViewController: UIViewController {
             self.fetchHeaderImage()
             self.clearTmpDirectory()
             self.updateTintColor()
+            
             guard let _ = self.navigationController?.navigationBar.frame.height else {
                 return
             }
-
+            
             self.editCellsBtn.isHidden = true
             self.purposeViewModel.loadPurposes2 { [weak self] in
-
                 self?.reloadCell()
 
 
@@ -217,7 +217,6 @@ extension StudianMainPageViewController :UICollectionViewDataSource {
         
         print("cell reload,\(indexPath.item)")
         cell.isInEditingMode = isEditing//delete 버튼 보이게
-        
         let purpose = purposeViewModel.purposes[indexPath.item]
         let image = purposeViewModel.images[indexPath.item]
         cell.updateUI(purpose: purpose,image: image)
@@ -232,14 +231,14 @@ extension StudianMainPageViewController :UICollectionViewDataSource {
     
     func editButtonHidden(){
 //        if self.purposeViewModel.purposes.count < 8 {//아래 연산프로퍼티 이용.
-        if self.purposeViewModel.purposes.count < 10{
-            self.editCellsBtn.isHidden = false
-        }
-        else {
-            self.editCellsBtn.isHidden = true
-        }
+//        if self.purposeViewModel.purposes.count < 10{
+//            self.editCellsBtn.isHidden = false
+//        }
+//        else {
+//            self.editCellsBtn.isHidden = true
+//        }
         //아래를 통해 코드 단순화
-//        self.editCellsBtn.isHidden = !self.purposeViewModel.countIsValid
+        self.editCellsBtn.isHidden = !self.purposeViewModel.countIsValid
     }
 }
 // MARK: - HeaderCell
