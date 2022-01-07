@@ -98,7 +98,7 @@ class StudianMainPageViewController: UIViewController {
             sender.isSelected = true
         }
         
-        collectionview.allowsMultipleSelection = sender.isSelected
+//        collectionview.allowsMultipleSelection = sender.isSelected
         reloadCell()
         
     }

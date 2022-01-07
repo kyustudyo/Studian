@@ -19,15 +19,13 @@ protocol tmpDelegate : class {
 protocol goToDetailDelegate : class {
     func gotoDetailVC(image:UIImage,index:Int)
 }
+
 class TodayCellView :
     UICollectionViewCell, TableViewCenterDelegate{
     func setViewCenter() {
         guard let today = today else{return}
-        print("몇번째:",viewModel?.getIndex(today: today))
+//        print("몇번째:",viewModel?.getIndex(today: today))
         let index = viewModel?.getIndex(today: today)
-        print("yposition: ",yPosition)
-        print("click")
-        
         self.tmpDelegate?.connectPlz(index: index ?? 0)
     }
     
@@ -63,17 +61,7 @@ class TodayCellView :
         //self.today = today
         
         guard let index = viewModel?.getIndex(today: today) else {return}
-        //print("개수:", (viewModel?.todays[index].todos.count ?? 0) / 2 )
-        
-        //print("k",countN-1)
-        
-//        if countN != 0{
-//            let endIndex = IndexPath(row: countN - 1 ,section:  0 )
-//            self.tv?.scrollToRow(at: endIndex, at: .bottom, animated: true)
-//        }
-        
-        
-        
+
         print(viewModel?.todays)
         print("sel row",selectedRows)
         //print("today:",today)
@@ -99,14 +87,6 @@ class TodayCellView :
         }
         
     }
-    
-    
-    
-  
-
-    
-
-
     
     var isInEditingMode: Bool = false {
         didSet {
