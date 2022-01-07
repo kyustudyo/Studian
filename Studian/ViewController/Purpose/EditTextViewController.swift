@@ -52,6 +52,7 @@ class EditTextViewController : UIViewController, UITextViewDelegate{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("the overee")
         navigationController?.isNavigationBarHidden = true
         updateUI()
         textView.delegate = self

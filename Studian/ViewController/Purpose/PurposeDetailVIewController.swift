@@ -71,6 +71,7 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("the overee")
         //view.backgroundColor = .black
 //        setSwipeGestures()
         configureUI()

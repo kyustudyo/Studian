@@ -39,7 +39,7 @@ class ImageFileManager {
 //  }
     
     public static func saveImageInDocumentDirectory(image: UIImage, fileName: String) -> URL? {
-            
+        
             let documentsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!;
             let fileURL = documentsUrl.appendingPathComponent(fileName)
         if let imageData = image.pngData() {
@@ -84,13 +84,5 @@ class ImageFileManager {
             print("Could not clear temp folder: \(error)")
         }
     }
-    
-    
-    
-        
-    
-    
-    
-    
-    
 }
+

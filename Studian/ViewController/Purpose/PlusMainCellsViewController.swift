@@ -58,6 +58,7 @@ class PlusMainCellsViewController : UIViewController, UIAnimatable{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        print("the overee")
         navigationController?.isNavigationBarHidden = true
         configureNotificationObservers()
         configureUI()

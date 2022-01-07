@@ -63,6 +63,10 @@ class StudianMainPageViewController: UIViewController {
         print("headerprofile")
         let navigationController = UINavigationController(rootViewController: EditHedeaderProfileViewController())
         let vc = navigationController.viewControllers.first! as? EditHedeaderProfileViewController
+        
+//        let vc =EditHedeaderProfileViewController()
+        
+
         vc?.FirstTextField.text = headerModel.textFieldText1
         vc?.SecondTextField.text = headerModel.textFieldText2
         vc?.delegate = self
@@ -140,10 +144,14 @@ class StudianMainPageViewController: UIViewController {
     }
     
     // MARK: - LifeCycle
-    
+//    override func viewDidDisappear(_ animated: Bool) {
+////        super.viewDidDisappear(animated)
+//        print("the overee")
+//    }
     override func viewDidLoad() {
        
         super.viewDidLoad()
+        print("the overee")
         loadFile()
         purposeViewModel.refactorIndexes()
         startIndicator()
@@ -174,6 +182,7 @@ class StudianMainPageViewController: UIViewController {
             }//cell들 정보 가져오기.
         }
     }
+    
 }
 
 // MARK: - EditTextViewControllerDelegate
