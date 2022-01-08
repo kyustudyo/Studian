@@ -9,23 +9,23 @@ import Foundation
 import UIKit
 class TodayViewModel {
     private let manager = TodayManager.shared
+    
     var todays : [Today] {
         return manager.todays
     }
     
     var countOfItems : Int {
-        return todays.count
+        return manager.todays.count
     }
     
     var countIsValid: Bool {
-        if countOfItems < 12 {return true}
-        else if countOfItems >= 12 {return false}
-        return false
+        manager.todays.count < 12 ? true : false
     }
     
     var images : [UIImage] {
         return manager.images
     }
+    
     func loadPurposes(completion: @escaping ()->Void){//escaping안하면안된다.
         manager.retrieveTodo(completion: completion)
     }
@@ -67,19 +67,14 @@ class TodayViewModel {
     func editToday(image:UIImage, index: Int,completion:@escaping ()->Void){
         manager.editToday(image: image, index: index,completion: completion)
     }
-//    func updateTodo(_ today:Today){
-//        guard let index = todays.firstIndex(of: today) else {retrun}
-//        todays[index]
-//    }
-    
 }
 
 class TodayManager {
+    
+    private init() { }
     static let shared = TodayManager()
     static var lastId : Int = 0
-    static var yPosition : Int = 0
     static var tableCellLastIdDict = Dictionary<Int,Int>()
-    static var todayIdAndyPosition = [0,0]
     
     var todays: [Today] = []
     var images: [UIImage] = []

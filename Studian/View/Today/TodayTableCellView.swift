@@ -24,7 +24,7 @@ class TodayTableCell : UITableViewCell,UITextFieldDelegate {
     @IBOutlet weak var todoDetail: UITextField!
     weak var centerDelegate :TableViewCenterDelegate?
     weak var delegate:TableCellDelegate?
-    var yPosition : Int?
+//    var yPosition : Int?
     var pastViewCenter : CGFloat?
     var todo : Todo?
     var deleteButtonTapHandler: (()->Void)?

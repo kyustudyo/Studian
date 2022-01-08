@@ -16,16 +16,17 @@ import UIKit
 protocol tmpDelegate : class {
     func connectPlz(index  :Int)
 }
-protocol goToDetailDelegate : class {
+protocol GoToDetailDelegate : class {
     func gotoDetailVC(image:UIImage,index:Int)
 }
 
 class TodayCellView :
     UICollectionViewCell, TableViewCenterDelegate{
+    
     func setViewCenter() {
         guard let today = today else{return}
 //        print("몇번째:",viewModel?.getIndex(today: today))
-        let index = viewModel?.getIndex(today: today)
+        let index = viewModel.getIndex(today: today)
         self.tmpDelegate?.connectPlz(index: index ?? 0)
     }
     
@@ -36,14 +37,24 @@ class TodayCellView :
     
     
     weak var tmpDelegate : tmpDelegate?
-    weak var delegate : goToDetailDelegate?
+    weak var goToDetailDelegate : GoToDetailDelegate?
     
     @IBOutlet weak var removeBtn: UIButton!
     var deleteButtonTapHandler: (() -> Void)?
     //@IBOutlet weak var checkMark: UILabel?
-    var viewModel : TodayViewModel?
-    var today: Today?
-    var yPosition : Int?
+    
+    var indexRow : Int? {
+        didSet{
+            today = viewModel.todays[indexRow ?? 0]
+            image = viewModel.images[indexRow ?? 0]
+            updateUI()
+        }
+    }
+    
+    private var viewModel = TodayViewModel()
+    private var today : Today?
+    private var image : UIImage?
+    
     @IBAction func removeCell(_ sender: UIButton) {
         deleteButtonTapHandler?()
     }
@@ -57,16 +68,16 @@ class TodayCellView :
         
        
         let todo = Todo(id: nextId, todoName: "one", todoDetail: "two",doOrNot: false)
-        viewModel?.updateTodate(today: today, todo: todo)//추가
+        viewModel.updateTodate(today: today, todo: todo)//추가
         //self.today = today
         
-        guard let index = viewModel?.getIndex(today: today) else {return}
+        let index = viewModel.getIndex(today: today)
 
-        print(viewModel?.todays)
+        print(viewModel.todays)
         print("sel row",selectedRows)
         //print("today:",today)
         tv?.reloadData()
-        let countN = (viewModel?.todays[index].todos.count ?? 0)
+        let countN = (viewModel.todays[index].todos.count ?? 0)
         print("co:", countN)
         let endIndex = IndexPath(row: countN-2,section:  0 )//더하면 맨 아래로
         self.tv?.scrollToRow(at: endIndex, at: .top, animated: true)
@@ -75,9 +86,9 @@ class TodayCellView :
     
     func plusButtonHidden(){//6개 까지만 추가가능.
         guard let today = today else {return}
-        guard let index = viewModel?.getIndex(today: today) else {return}
+        let index = viewModel.getIndex(today: today)
         if isInEditingMode {
-            if viewModel?.todays[index].todos.count ?? 0 > 10 {
+            if viewModel.todays[index].todos.count ?? 0 > 10 {
                 plusBtn.isHidden = true
             }
             else {plusBtn.isHidden = false}
@@ -114,6 +125,7 @@ class TodayCellView :
     
 
     @IBOutlet weak var TodayImg : UIImageView!
+    
     var selectedRows = [IndexPath]()
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){ self.endEditing(true) }
@@ -123,21 +135,10 @@ class TodayCellView :
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        //textViewDone()
-//        print("isinedit:")
-//        print(isInEditingMode)
-//        print("checkmark:")
-//        print(checkMark?.isHidden)
-        //chkBox.setImage(UIImage(named: "checkmark.seal"), for: .normal)
-        //checkMark?.isHidden = true
-
-//        tv.separatorColor = UIColor.red
         TodayImg?.layer.cornerRadius = 10
-        //tv.separatorInset = .zero
         tv?.separatorColor = UIColor.clear
-        //tv?.backgroundColor = .blue
-        //tv.tableFooterView = UIView()
     }
+    
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         //cell.backgroundColor = .blue
     }
@@ -149,58 +150,23 @@ class TodayCellView :
                 print("isselected: \(isSelected) isinediting : \(isInEditingMode)")
                 //checkMark?.text = isSelected ? "✓" : "○"
             }
-//            if !isInEditingMode {
-//                if !isSelected{
-//                checkMark?.text = "asd"
-//                }
-//            }
-            
-            
         }
     }
+    
     @objc func touchToPickPhoto(image:UIImage,index:Int) {
-        print("d")
         guard let today = today else {
             return
         }
-        guard let index = viewModel?.getIndex(today: today) else {return}
-        delegate?.gotoDetailVC(image:image,index: index)
-        
-    //code
-//        let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-//                guard let detailVC = storyboard.instantiateViewController(withIdentifier: "PurposeDetailVIewController") as? todayDetailViewController else {return}//스토리보드에서 연결 안해도 이거면 갈 수 있다.
-//                //let purposeAndImage = purposeViewModel.purposeAndImage(id: indexPath.item)
-//                //detailVC.purposeAndImage = purposeAndImage
-//
-//
-//
-//                detailVC.image = todayViewModel.images[indexPath.row]
-//        detailVC.image = UIImage(systemName: "circle")
-//
-//
-//
-//        //        detailVC.viewModel = purposeViewModel
-//        //        detailVC.index = indexPath.item
-//        //        detailVC.purpose = purposeViewModel.purposes[indexPath.row]
-//                detailVC.delegate = self
-//                detailVC.modalPresentationStyle = .overFullScreen//full screen 하면 detailview에서 색깔 십힘
-//        //        guard let purpose = purposeViewModel.purposes[indexPath.item]  else {return}
-//
-//
-//                    present(detailVC, animated: true, completion: nil)
-//
-//
-//        //        playerVC.simplePlayer.replaceCurrentItem(with: item)
-//        print("rr")
+        let index = viewModel.getIndex(today: today)
+        goToDetailDelegate?.gotoDetailVC(image:image,index: index)
     }
-    func updateUI(today:Today,image:UIImage){
-        
+    
+    func updateUI(){
+        guard let image = image, let today = today else {return}
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(touchToPickPhoto))
         TodayImg.addGestureRecognizer(tapGesture)
         TodayImg.isUserInteractionEnabled = true
         TodayImg.image = image.fixOrientation()
-        
-        print("todos:",today.todos)
         selectedRows = []//그린으로 변화시켜놓은 애를 삭제하면 selectedrows가 한칸 씩 밀리고,
         //에딧버튼에서 나가면 updateUI함수를 호출하므로 새로 selecterows를 만든다.
         for (index,todo) in today.todos.enumerated() {
@@ -215,24 +181,7 @@ class TodayCellView :
         print("todos,selected rows: ",selectedRows)
         
         plusButtonHidden()
-        //TodayName.text = "d"
-//        TodayOneSentence.text = "qwq"
-//        guard let purpose = purpose else {return}
-        //purposeImageView.image = purpose.image
-        //purposeName.text = "sdsdsdsd"
-        //Onesentence.text = purpose.oneSenetence
-        
-        //addGestureRecognizer(tap)
-        
     }
-//    let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-//    @objc func handleTap(_ sender: UITapGestureRecognizer? = nil) {
-//        print("okokok")
-//        // handling code
-//    }
-    
-    
-
 }
 
 //table
@@ -258,8 +207,9 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let today = today else {return 0}
-        guard let number = viewModel?.getNumberOfTodos(today: today) else{ return 0}
-        print("보여줘야할:\(number)")
+        
+//        print("보여줘야할:\(number)")
+        let number = viewModel.getNumberOfTodos(today: today)
         return number 
         
     }
@@ -277,19 +227,20 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
         
         print("기존 selected:\(selectedRows)")
         print("indexpath:",indxPath!)
-        guard let today = today ,let todo = viewModel?.getTodo(today: today, index: indxPath!.row) else {return}
+        guard let today = today  else {return}
+        let todo = viewModel.getTodo(today: today, index: indxPath!.row)
         print("pass?")
         print("통과이후와 indexpath",selectedRows,indxPath)
         
         if selectedRows.contains(indxPath!) {//그린 이야?
             
                        selectedRows.remove(at: selectedRows.index(of: indxPath!)!)
-            viewModel?.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: false))
+            viewModel.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: false))
             
         }
         else {//빨강 이야?
                  selectedRows.append(indxPath!)
-                viewModel?.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: true))
+                viewModel.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: true))
                }
         
         print(selectedRows)
@@ -316,7 +267,7 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
             cell.deleteButtonTapHandler = {
                 print("delete@@@@@@@@@@@@@@@@@@@@@@@@")
                 guard let today = self.today else {return}
-                let todayIndex = self.viewModel?.getIndex(today: today) ?? 0
+                let todayIndex = self.viewModel.getIndex(today: today) ?? 0
                 
                 
                 //print("change:",self.viewModel?.todays)
@@ -333,14 +284,14 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
                 
                 
                 
-                print(self.viewModel?.todays[todayIndex].todos)
-                self.viewModel?.deleteTodo(today: today, todo: (self.viewModel?.todays[todayIndex].todos[index])!)
+                print(self.viewModel.todays[todayIndex].todos)
+                self.viewModel.deleteTodo(today: today, todo: (self.viewModel.todays[todayIndex].todos[index]))
                 print("imdexpath: \(IndexPath(indexes: [0,index]))")
                 
                 
                 print("selsel",self.selectedRows)
                 
-                print("change:",self.viewModel?.todays)
+                print("change:",self.viewModel.todays)
                 self.plusButtonHidden()
                 print("kk",indexPath.row)
                 
@@ -367,7 +318,8 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
 //            smallBtn.setImage(UIImage(named : "unselectedImage"), for: .normal)
 //            smallBtn.setImage(UIImage(named : "selectedImage"), for: .selected)
 //            smallBtn.addTarget(self, action: #selector(checkBox(_:)),for: .touchUpInside)
-            guard let today = today ,let todo = viewModel?.getTodo(today: today, index: index) else {return UITableViewCell()}
+            guard let today = today  else {return UITableViewCell()}
+            let todo = viewModel.getTodo(today: today, index: index)
             print(todo.doOrNot)
                 
             //전체 버튼
@@ -426,8 +378,8 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
                     
                     
                     
-                    cell.yPosition = self.yPosition
-                    print("2번째:",yPosition)
+//                    cell.yPosition = self.yPosition
+//                    print("2번째:",yPosition)
                     
                     cell.todoName.isUserInteractionEnabled = true
                     cell.todoDetail.isUserInteractionEnabled = true
@@ -435,7 +387,7 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
                 }
             }
             
-            cell.todo = viewModel?.getTodo(today: today, index: index)
+            cell.todo = viewModel.getTodo(today: today, index: index)
             print(todo.doOrNot)
             cell.update(todo: todo)//print todo.bool
             
@@ -503,7 +455,7 @@ extension TodayCellView : TableCellDelegate {
     func tableCellChange(_ todo:Todo) {
         print("ssd")
         guard let today = today else {return}
-        viewModel?.updateTodo(today: today, todo: todo)
+        viewModel.updateTodo(today: today, todo: todo)
         //guard let today = today else {return}
         //let todos = viewModel?.todays[viewModel?.getIndex(today: today) ?? 0]
         

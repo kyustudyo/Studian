@@ -8,13 +8,15 @@
 import Foundation
 import UIKit
 
+private let TodayCell = "TodayCell"
+private let TodayCell2 = "TodayCell2"
 class StudianTodayViewController: UIViewController {
     
     // MARK: - Properties
     
     @IBOutlet weak var img: UIImageView!
     @IBOutlet weak var plusCellsBtn: UIButton!
-    var todayViewModel = TodayViewModel()
+    private let todayViewModel = TodayViewModel()
 
     lazy var editButton: UIButton = {
       let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
@@ -78,9 +80,17 @@ class StudianTodayViewController: UIViewController {
         self.navigationController?.navigationItem.largeTitleDisplayMode = .always
         self.navigationController?.navigationBar.prefersLargeTitles = true//아래 말고 여기에 선언해야 들어오자마자 크게 유지됨.
     }
+//    func checkUserDefaults(){
+//        let defaults = UserDefaults.standard
+//        let data = StorageManager().isOnboardingSeen()
+//        print("Debug: isOnboardingSeen:", data)
+//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+//        checkUserDefaults()
+        print("debug: getDate:",StorageManager().getLastOpenDate())
+        
         startIndicator()//custom
         prepareDarkMode()
         editButtonHidden()//많으면 추가 못하게.
@@ -104,35 +114,40 @@ extension StudianTodayViewController : UICollectionViewDataSource {
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.row % 2 == 0{
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TodayCell", for: indexPath) as? TodayCellView else {return UICollectionViewCell()}
-            let today = todayViewModel.todays[indexPath.item]
-            cell.yPosition = Int(cell.layer.position.y)
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayCell, for: indexPath) as? TodayCellView else {
+                return UICollectionViewCell()
+            }
+            
+            let today = todayViewModel.todays[indexPath.row]
             let image = todayViewModel.images[indexPath.row]
-            cell.updateUI(today: today,image: image)
-            cell.today = today
-            cell.delegate = self
-            cell.viewModel = todayViewModel
-            cell.tmpDelegate = self
+            
+            cell.indexRow = indexPath.row
+//            cell.updateUI()
+//            cell.today = today
+            
+            cell.goToDetailDelegate = self
+//            cell.viewModel = todayViewModel
+            cell.tmpDelegate = self//center
+            
             cell.deleteButtonTapHandler = {
                 self.todayViewModel.deleteToday(today)
                 self.todayViewModel.deleteImage(index: indexPath.row)
                 self.editButtonHidden()
                 self.collectionview.reloadData()
             }
+            
             cell.isInEditingMode = isEditing
+            
             return cell
         }
         else {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TodayCell2", for: indexPath) as? TodayCellView else {return UICollectionViewCell()}
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayCell2, for: indexPath) as? TodayCellView else {return UICollectionViewCell()}
             return cell
         }
     }
 }
 
 extension StudianTodayViewController : UIImagePickerControllerDelegate & UINavigationControllerDelegate {
-    func TodayCollectionChange() {
-        print("")
-    }
 
     @IBAction func plusCells(_ sender: UIButton) {
         
@@ -180,17 +195,29 @@ extension StudianTodayViewController : UIImagePickerControllerDelegate & UINavig
 }
 
 
-extension StudianTodayViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("index")
-    }
-}
+//extension StudianTodayViewController: UICollectionViewDelegate {
+//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+//        print("index")
+//    }
+//}
     
     
 
-extension StudianTodayViewController : goToDetailDelegate,EditTodayDetailViewControllerDelegate {
+extension StudianTodayViewController : GoToDetailDelegate,TodayDetailViewControllerDelegate {
+    
+    func gotoDetailVC(image:UIImage,index:Int) {
+        let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
+        guard let detailVC = storyboard.instantiateViewController(withIdentifier: "todayDetailViewController") as? todayDetailViewController else {return}//스토리보드에서 연결 안해도 이거면 갈 수 있다.
+        
+        detailVC.image = todayViewModel.images[index]
+        detailVC.index = index
+        detailVC.todayDetailViewControllerDelegate = self
+        detailVC.modalPresentationStyle = .overFullScreen//full screen 하면 detailview에서 색깔 십힘
+        present(detailVC, animated: true, completion: nil)
+
+    }
+    //today detail view controller
     func change(image: UIImage,index: Int) {//2가 곱해진 인덱스
-        print("ind",index)
         showLoadingAnimation()
         todayViewModel.editToday(image: image, index: index){ [weak self] in
             self?.reloadCell()
@@ -199,18 +226,7 @@ extension StudianTodayViewController : goToDetailDelegate,EditTodayDetailViewCon
         
     }
     
-    func gotoDetailVC(image:UIImage,index:Int) {
-        let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-        guard let detailVC = storyboard.instantiateViewController(withIdentifier: "todayDetailViewController") as? todayDetailViewController else {return}//스토리보드에서 연결 안해도 이거면 갈 수 있다.
-        detailVC.image = todayViewModel.images[index]
-        detailVC.index = index
-        detailVC.delegate = self
-        detailVC.modalPresentationStyle = .overFullScreen//full screen 하면 detailview에서 색깔 십힘
-        
-        
-        present(detailVC, animated: true, completion: nil)
-
-    }
+    
     
     
 }

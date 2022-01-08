@@ -28,7 +28,7 @@ class LoadingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         //storageManager.resetOnboardingSeen()
-        inOnboardingSeen = storageManager.inOnboardingSeen()
+        inOnboardingSeen = storageManager.isOnboardingSeen()
         
         
         

@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import Combine
 
-protocol EditTodayDetailViewControllerDelegate : class {
+protocol TodayDetailViewControllerDelegate : class {
     func change(image: UIImage,index: Int)
 }
 
@@ -56,7 +56,7 @@ class todayDetailViewController : UIViewController, UITextViewDelegate{
         if isImageChanged{
             if let index = index {
                 guard let image = image else{return}
-                delegate?.change(image: image,index: index)
+                todayDetailViewControllerDelegate?.change(image: image,index: index)
             }
             
         }
@@ -73,7 +73,7 @@ class todayDetailViewController : UIViewController, UITextViewDelegate{
     var viewModel :HeaderModel?
     var image: UIImage?
     private var subscribers = Set<AnyCancellable>()
-    weak var delegate : EditTodayDetailViewControllerDelegate?
+    weak var todayDetailViewControllerDelegate : TodayDetailViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
