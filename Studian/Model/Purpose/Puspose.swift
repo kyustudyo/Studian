@@ -10,9 +10,9 @@ import UIKit
 
 struct Purpose : Equatable, Codable{
     var id : Int
-    //let image: UIImage?
     var name: String
     var oneSenetence: String
+    
     mutating func update(name:String,oneSentence:String){
         self.name = name
         self.oneSenetence = oneSentence
@@ -21,13 +21,7 @@ struct Purpose : Equatable, Codable{
         self.id = id
         return self
     }
-//    init(id:Int,name:String,image:UIImage,oneSentence:String){
-//        self.id = id
-//        self.name = name
-//        self.oneSenetence = oneSentence
-//        self.image = UIImage(named: "1")
-//    }
-    
+
     static func == (lhs: Self, rhs: Self) -> Bool {
         return lhs.id == rhs.id
     }

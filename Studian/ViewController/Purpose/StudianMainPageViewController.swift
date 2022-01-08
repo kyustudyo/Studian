@@ -111,7 +111,7 @@ class StudianMainPageViewController: UIViewController {
     
     func fetchHeaderTexts(){
         DispatchQueue.global().async {
-            retrive("headerModel.txt", from: .documents, as: HeaderModel.self){
+            retrive(fileNavigation.header, from: .documents, as: HeaderModel.self){
                 [weak self] header in
                 DispatchQueue.main.async {
                     self?.headerModel = header
@@ -144,10 +144,7 @@ class StudianMainPageViewController: UIViewController {
     }
     
     // MARK: - LifeCycle
-//    override func viewDidDisappear(_ animated: Bool) {
-////        super.viewDidDisappear(animated)
-//        print("the overee")
-//    }
+    
     override func viewDidLoad() {
        
         super.viewDidLoad()
@@ -155,6 +152,7 @@ class StudianMainPageViewController: UIViewController {
         loadFile()
         purposeViewModel.refactorIndexes()
         startIndicator()
+        collectionview.alwaysBounceVertical = true
         navigationController?.navigationItem.largeTitleDisplayMode = .always
         navigationController?.navigationBar.prefersLargeTitles = true
         firstTime{

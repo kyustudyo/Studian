@@ -26,8 +26,8 @@ class TodayViewModel {
     var images : [UIImage] {
         return manager.images
     }
-    func loadPurposes2(completion:@escaping ()->Void){//escaping안하면안된다.
-        manager.retrieveTodo(completion2: completion)
+    func loadPurposes(completion: @escaping ()->Void){//escaping안하면안된다.
+        manager.retrieveTodo(completion: completion)
     }
     func addToday(_ today: Today){
         manager.addToday(today)
@@ -84,15 +84,12 @@ class TodayManager {
     var todays: [Today] = []
     var images: [UIImage] = []
      
-    func retrieveTodo(completion2: @escaping ()->Void) {//cell들에 할것
-        //var images : [UIImage]?
-        
+    func retrieveTodo(completion: @escaping ()->Void) {//cell들에 할것
         DispatchQueue.global().async {
-            retrive("todays.json", from: .documents, as: [Today].self,completion: { [weak self] todays in
+            retrive(fileNavigation.todays, from: .documents, as: [Today].self,completion: { [weak self] todays in
                 
                 self?.todays = todays
-                print("몇개@@",todays.count)// 곱하기 2 되어서 나온다.
-                print("몇개",todays)
+                print("DEBUG: count of todays: ",todays.count)// 곱하기 2 되어서 나온다.
                 if todays.count != 0{
                     todays.forEach{
                         
@@ -129,7 +126,7 @@ class TodayManager {
                 TodayManager.tableCellLastIdDict = LastIdDict
                 
                 DispatchQueue.main.async {
-                    completion2()
+                    completion()
                 }
             })
         }

@@ -283,7 +283,7 @@ class PurposeManager {
     func retrieveTodo(completion:@escaping ()->Void) {//cell들에 할것
 //        var images : [UIImage]?
         DispatchQueue.global().async {
-            retrive("purposes.json", from: .documents, as: [Purpose].self, completion: { [weak self] purposes in
+            retrive(fileNavigation.purposes, from: .documents, as: [Purpose].self, completion: { [weak self] purposes in
                 print("hi")
                 self?.purposes = purposes
                 print("hi",purposes.count)

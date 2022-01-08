@@ -8,21 +8,14 @@
 import Foundation
 import UIKit
 
-class StudianTodayViewController: UIViewController, tmpDelegate,UIAnimatable {
-    func connectPlz(index:Int) {//텍스트필드 접근시 키보드 올리면
-        self.collectionview.scrollToItem(at:IndexPath(item: index, section: 0), at: .centeredVertically, animated: false)//이 코드가 아니라 scrollToItem(at:Indexpath(index:index),at: .left....) 이거로 하면안된다. 위의 것은 된다.
-
-    }
+class StudianTodayViewController: UIViewController {
+    
+    // MARK: - Properties
+    
     @IBOutlet weak var img: UIImageView!
     @IBOutlet weak var plusCellsBtn: UIButton!
-    
-//    let menuButton:MenuButton = {
-//        let menuButton = MenuButton()
-//        menuButton.backgroundColor = .clear
-//        return menuButton
-//    }()
-    
-    
+    var todayViewModel = TodayViewModel()
+
     lazy var editButton: UIButton = {
       let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
       button.setTitle("Edit", for: .normal)
@@ -74,35 +67,34 @@ class StudianTodayViewController: UIViewController, tmpDelegate,UIAnimatable {
     }
  
     @IBOutlet var collectionview: UICollectionView!
-    var todayViewModel = TodayViewModel()
+    
     func prepareDarkMode() {
         editButton.setTitleColor(DefaultStyle.Colors.tint, for: .normal)//dark mode
         saveButton.setTitleColor(DefaultStyle.Colors.tint, for: .normal)//dark mode
     }
+    
     func configureUI(){
-        collectionview.alwaysBounceVertical = false
-        collectionview.dataSource = self
-        collectionview.delegate = self
+        collectionview.alwaysBounceVertical = true
+        self.navigationController?.navigationItem.largeTitleDisplayMode = .always
+        self.navigationController?.navigationBar.prefersLargeTitles = true//아래 말고 여기에 선언해야 들어오자마자 크게 유지됨.
     }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         startIndicator()//custom
         prepareDarkMode()
         editButtonHidden()//많으면 추가 못하게.
-        self.navigationController?.navigationItem.largeTitleDisplayMode = .always
-        self.navigationController?.navigationBar.prefersLargeTitles = true//아래 말고 여기에 선언해야 들어오자마자 크게 유지됨.
-        todayViewModel.loadPurposes2(completion:
+        configureUI()
+        todayViewModel.loadPurposes(completion:
                                         { [weak self] in
-            self?.navigationController?.navigationBar.topItem?.title = "Today..."
-            self?.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: self?.saveButton ?? UIButton())
-            self?.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: self?.editButton ?? UIButton())
-            self?.stopIndicator()
-            self?.collectionview.reloadData()})
+            guard let this = self else {return}
+            this.navigationController?.navigationBar.topItem?.title = "Today..."
+            this.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: this.saveButton ?? UIButton())
+            this.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: this.editButton ?? UIButton())
+            
+            this.stopIndicator()
+            this.collectionview.reloadData()})
     }
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
-        print("tototo")
-        self.view.endEditing(true)
-   }
 }
 
 
@@ -249,4 +241,12 @@ extension StudianTodayViewController: UICollectionViewDelegateFlowLayout {
         
     }
 }
-
+// MARK: - tmpDelegate
+extension StudianTodayViewController : tmpDelegate {
+    func connectPlz(index:Int) {//텍스트필드 접근시 키보드 올리면
+        self.collectionview.scrollToItem(at:IndexPath(item: index, section: 0), at: .centeredVertically, animated: false)//이 코드가 아니라 scrollToItem(at:Indexpath(index:index),at: .left....) 이거로 하면안된다. 위의 것은 된다.
+    }
+}
+// MARK: - UIAnimatable
+extension StudianTodayViewController : UIAnimatable {
+}
