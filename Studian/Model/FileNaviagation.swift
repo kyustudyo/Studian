@@ -8,70 +8,6 @@
 import Foundation
 import UIKit
 
-
-
-//enum fileNavigation  {
-//
-//    case todays
-//    case purposes
-//    case header
-//
-//    func getFile<T:Encodable>() -> fileInfo<T> {
-//        switch self{
-//        case .header :
-//            return fileInfo(fileName: fileName,
-//                            path: getPath(fileName),
-//                            dummy: headerDummy as? T)
-//        case .purposes :
-//            return fileInfo(fileName: fileName,
-//                            path: getPath(fileName),
-//                            dummy: purposeDummy as? T)
-//        case .todays :
-//            return fileInfo(fileName: fileName,
-//                            path: getPath(fileName),
-//                            dummy: todayDummy as? T)
-//        }
-//    }
-//
-//    var fileName : String {
-//        switch self {
-//        case .header: return "headerModel.txt"
-//        case .purposes: return "purposes.json"
-//        case .todays: return "todays.json"
-//        }
-//    }
-//
-//    var headerDummy : HeaderModel {
-//        HeaderModel(textViewText: "Until now but..", textFieldText1: "Engineer", textFieldText2: "For that day...",headerImage: nil)
-//    }
-//    var purposeDummy : [Purpose] {
-//        [Purpose(id: 0, name: "just do it", oneSenetence: "중요한건 방향!")]
-//    }
-//    var todayDummy : [Today] {
-//        [Today(id: 0, imageData: (UIImage(named: "today") ?? UIImage(systemName: "circle")!).pngData() ?? Data(), todos: [
-//            Todo(id: 0, todoName: "math homework", todoDetail: "page 1 ~ 30", doOrNot: true),
-//            Todo(id: 1, todoName: "", todoDetail: "", doOrNot: false),
-//            Todo(id: 2, todoName: "Test !", todoDetail: "At 3 pm", doOrNot: false),
-//            Todo(id: 3, todoName: "", todoDetail: "", doOrNot: false),
-//                          Todo(id: 4, todoName: "review", todoDetail: "30 minutes", doOrNot: true),
-//                          Todo(id: 5, todoName: "", todoDetail: "", doOrNot: false)
-//        ]),
-//
-//                          Today(id: 1, imageData: UIImage().pngData() ?? Data(), todos: [])
-//                                ]
-//    }
-//    func getPath(_ fileName:String)->String {
-//        let baseUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-//        let path = baseUrl.appendingPathComponent(fileName).path
-//        return path
-//    }
-//}
-
-
-
-
-
-
 protocol ConfigurableFile {
     associatedtype dummyType
     var fileName : String { get }
@@ -79,8 +15,6 @@ protocol ConfigurableFile {
     var dummy: dummyType { get }
     var type: fileNavigation { get }
 }
-
-
 
 enum fileNavigation  {
     case todays
@@ -142,9 +76,6 @@ struct headerFile: ConfigurableFile {
     
 }
 
-//func get_comparable_value<T:Comparable>() -> T {
-//  return 1 as! T
-//}
 struct purposesFile: ConfigurableFile {
     
     
@@ -240,14 +171,3 @@ class fileConfigurable : ConfigurableFile {
     }
 }
 
-
-//struct fileInfo<T:Encodable> :fileType {//T가 encodable이면 struct가 encodable.
-//    let fileName: String
-//    let path: String
-//    let dummy: T?
-//    init(fileName:String, path: String, dummy:T?){
-//        self.fileName = fileName
-//        self.path = path
-//        self.dummy = dummy
-//    }
-//}
