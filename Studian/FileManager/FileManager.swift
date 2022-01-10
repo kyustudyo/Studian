@@ -8,8 +8,6 @@
 import Foundation
 import UIKit
 struct Constants {
-    static let sampleFileName = "sampleFile"
-    
     static let HeaderDummy = HeaderModel(textViewText: "Until now but..", textFieldText1: "Engineer", textFieldText2: "For that day...",headerImage: nil)
     static let PurposeDummy = [Purpose(id: 0, name: "just do it", oneSenetence: "중요한건 방향!")]
     static let todayDummy = [Today(id: 0, imageData: (UIImage(named: "today") ?? UIImage(systemName: "circle")!).pngData() ?? Data(), todos: [
@@ -25,80 +23,63 @@ struct Constants {
                             ]
     
 }
-//func MakeDummyPurpose(){
-//
-//    let fileManager = FileManager.default
-//        let directoryURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-//
-//    let destinationURL = directoryURL.appendingPathComponent("purposes.json")
-//
-//    guard !fileManager.fileExists(atPath: destinationURL.path) else {
-//        print("이미존재")
-//        return
-//    }
-////    let image = UIImage(named: "woman") ?? UIImage(systemName: "person")!
-////    ImageFileManager.saveImageInDocumentDirectory(image: image, fileName: "-1.png")
-//
-//
-//    print("done")
-////    let image = ImageFileManager.loadImageFromDocumentDirectory(fileName: "PurposePicture.png")
-//    if let img0 = UIImage(named: "0") {
-//        ImageFileManager.saveImageInDocumentDirectory(image: img0, fileName: "0.png")
-//    }
-////    if let img1 = UIImage(named: "1") {
-////        ImageFileManager.saveImageInDocumentDirectory(image: img1, fileName: "1.png")
-////    }
-////    let Dummy = [Purpose(id: 0, name: "", oneSenetence: ""),
-////                 Purpose(id: 1, name: "", oneSenetence: "")]
-////        let Dummy = HeaderModel(textViewText: "Until now but..", textFieldText1: "Engineer", textFieldText2: "For that day...",headerImage: nil)
-//        //l/et Dummy = Purpose(id: , name: <#T##String#>, oneSenetence: <#T##String#>)
-////        let encoder = JSONEncoder()
-//        //let directoryURL = documentsURL.appendingPathComponent("Studian")
-////        if !fileManager.fileExists(atPath: directoryURL.path) {
-////                do {
-////                    try fileManager.createDirectory(atPath: directoryURL.path, withIntermediateDirectories: false, attributes: nil)
-////                } catch let e {
-////                    print(e.localizedDescription)
-////                }
-////        } else {print("i already have the directory")}
-//        // 4. 저장할 파일 이름 (확장자 필수)
-//
-////        let helloPath = directoryURL.appendingPathComponent("purposes.json")
-////
-////    do {
-////        let data = try encoder.encode(Dummy)
-////        print(data)
-//////        if FileManager.default.fileExists(atPath: helloPath.path) {
-//////            return
-//////        }
-////        FileManager.default.createFile(atPath: helloPath.path, contents: data, attributes: nil)
-//////        return Dummy
-////
-////    } catch let error {
-////        print("---> Failed to store msg: \(error.localizedDescription)")
-////    }
-//
-//}
+protocol MyEncodable: Encodable {
+    func toJSONData() -> Data?
+}
+
+extension MyEncodable {
+    func toJSONData() -> Data?{ try? JSONEncoder().encode(self) }
+}
 
 enum FileExistManager {
     case HeaderNO
     case PurposeNO
     case TodayNO
 }
+class TestClass2: NSObject, MyEncodable {
+    var x = 1
+    var y = 2
+}
+
+func decodeStickers<T : Decodable>(from data : Data) throws -> T
+{
+    return try JSONDecoder().decode(T.self, from: data)
+}
 
 func firstTime(completion:@escaping ()->Void){
-    var fileExists : [FileExistManager] = []
     let fileManager = FileManager.default
         let baseUrl = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+    let headerFile = fileConfigurable(headerFile())
+    let purposeFile = fileConfigurable(purposesFile())
+    let todayFile = fileConfigurable(todaysFile())
+    let jsonFiles = [headerFile, purposeFile, todayFile]
+    let imageFiles = fileNavigation.image.imageFiles
     
-    let headerPath = fileNavigation.header.path
-    let purposePath = fileNavigation.purposes.path
-    let todayPath = fileNavigation.todays.path
-    
-    for path in [headerPath, purposePath, todayPath]{
-        if !fileManager.fileExists(atPath: path){
-            //from this
+    let WorkGroup = DispatchGroup()
+    DispatchQueue.global().async(group:WorkGroup) {
+        for imageFile in imageFiles{
+            ImageFileManager.saveImageInDocumentDirectory(image: imageFile.value ?? UIImage(systemName: "person")!, fileName: imageFile.key)
         }
+    }
+    
+    for file in jsonFiles {
+        if !fileManager.fileExists(atPath: file.path){
+            //존재하지않는 것이 있을때.
+            let encoder = JSONEncoder()
+            let data = file.encodedData
+            fileManager.createFile(atPath: file.path, contents: data, attributes: nil)
+
+            
+            completion()
+            return
+//            do {
+////                var dataSource2: MyEncodable?
+////                dataSource2 = TestClass2()
+////                dataSource2?.toJSONData()
+//                let data = try encoder.encode(dummy)
+//            } catch let error {
+//                print("---> Failed to store msg: \(error.localizedDescription)")
+//            }
     }
     
     
@@ -187,6 +168,15 @@ func firstTime(completion:@escaping ()->Void){
     
 }
 
+func getEncoding<T:Encodable>(_ data : T) -> T{
+//    switch data {
+//    case is HeaderModel : return data as! T
+//    case is [Purpose] : return [Purpose] as! T
+//    case is [Today]: return [Today] as! T
+//    default : return nil
+//    }
+    return data
+}
 
 func saveFile(text:String){// no caller
     let fileManager = FileManager.default

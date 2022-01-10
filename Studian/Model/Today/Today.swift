@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-struct Today : Equatable, Codable {
+struct Today : Equatable, Codable, typeInjection {
     var id: Int
     var imageData : Data
     var todos : [Todo]

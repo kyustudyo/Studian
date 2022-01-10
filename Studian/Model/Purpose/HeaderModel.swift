@@ -7,7 +7,12 @@
 
 import Foundation
 import UIKit
-struct HeaderModel: Codable{
+
+protocol typeInjection: Encodable {
+    
+}
+
+struct HeaderModel: Decodable, Encodable, typeInjection{
     var textViewText : String?
     var textFieldText1: String?
     var textFieldText2: String?

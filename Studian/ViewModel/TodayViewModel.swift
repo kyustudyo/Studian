@@ -19,7 +19,7 @@ class TodayViewModel {
     }
     
     var countIsValid: Bool {
-        manager.todays.count < 12 ? true : false
+        manager.todays.count < 20 ? true : false
     }
     
     var images : [UIImage] {
