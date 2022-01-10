@@ -81,7 +81,7 @@ class TodayManager {
      
     func retrieveTodo(completion: @escaping ()->Void) {//cell들에 할것
         DispatchQueue.global().async {
-            retrive(fileNavigation.todays, from: .documents, as: [Today].self,completion: { [weak self] todays in
+            retrive(fileNavigation.todays.fileName, from: .documents, as: [Today].self,completion: { [weak self] todays in
                 
                 self?.todays = todays
                 print("DEBUG: count of todays: ",todays.count)// 곱하기 2 되어서 나온다.

@@ -77,6 +77,7 @@ protocol ConfigurableFile {
     var fileName : String { get }
     var path : String { get }
     var dummy: dummyType { get }
+    var type: fileNavigation { get }
 }
 
 
@@ -85,20 +86,32 @@ enum fileNavigation  {
     case todays
     case purposes
     case header
-    case image
+    
+    
     var fileName : String {
         switch self {
         case .header: return "headerModel.txt"
         case .purposes: return "purposes.json"
         case .todays: return "todays.json"
-        default : return "maybe images.."
+        
+        }
+    }
+    var imageName: String {
+        switch self {
+        case .header: return "PurposePicture.png"
+        case .purposes: return "0.png"
+        default: return ""
+        }
+    }
+    var image : UIImage {
+        switch self {
+        case .header : return UIImage(named: "woman") ?? UIImage(systemName: "circle")!
+        case .purposes : return UIImage(named: "0") ?? UIImage(systemName: "circle")!
+        default : return UIImage(systemName: "circle")!
         }
     }
     
-    var imageFiles: [String:UIImage?] {
-        ["0.png":UIImage(named: "0"),"PurposePicture.png":UIImage(named: "woman")]
-        
-    }
+    
     var path : String {
         let baseUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let path = baseUrl.appendingPathComponent(fileName).path
@@ -112,6 +125,11 @@ enum fileNavigation  {
 struct headerFile: ConfigurableFile {
     
     typealias dummyType = HeaderModel
+    
+    var type : fileNavigation {
+        fileNavigation.header
+    }
+    
     var fileName: String {
         fileNavigation.header.fileName
     }
@@ -131,6 +149,10 @@ struct purposesFile: ConfigurableFile {
     
     
     typealias dummyType = [Purpose]
+    
+    var type : fileNavigation {
+        fileNavigation.purposes
+    }
     var fileName: String {
         fileNavigation.purposes.fileName
     }
@@ -145,11 +167,14 @@ struct purposesFile: ConfigurableFile {
 struct todaysFile: ConfigurableFile {
     
     typealias dummyType = [Today]
+    var type : fileNavigation {
+        fileNavigation.todays
+    }
     var fileName: String {
         fileNavigation.todays.fileName
     }
     var path: String {
-        fileNavigation.todays.fileName
+        fileNavigation.todays.path
     }
     var dummy: dummyType {
         [Today(id: 0, imageData: (UIImage(named: "today") ?? UIImage(systemName: "circle")!).pngData() ?? Data(), todos: [
@@ -176,6 +201,7 @@ class fileConfigurable : ConfigurableFile {
     }
     
     typealias dummyType = Any
+    var type: fileNavigation
     var fileName: String
     var path: String
     var dummy: dummyType
@@ -184,13 +210,18 @@ class fileConfigurable : ConfigurableFile {
         self.fileName = configurableCell.fileName
         self.path = configurableCell.path
         self.dummy = configurableCell.dummy
+        self.type = configurableCell.type
+        
         switch configurableCell.dummy {
         case let dummy as HeaderModel:
             encodedData = getencodedData(from: dummy)
+//            print(encodedData)
         case let dummy as [Purpose]:
             encodedData = getencodedData(from: dummy)
+//            print(encodedData)
         case let dummy as [Today]:
             encodedData = getencodedData(from: dummy)
+//            print(encodedData)
         default:
             break
         }

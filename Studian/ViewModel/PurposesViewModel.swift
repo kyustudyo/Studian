@@ -135,7 +135,7 @@ class PurposeManager {
         return PurposeAndImage(purpose: purposes[id], image: images[id], index: id)
     }
     
-    func refactorIndexes(){
+    func imagesrefactorIndexes(){
         let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
 
         do {
@@ -190,7 +190,36 @@ class PurposeManager {
 //        try? destinationURL.setResourceValues(rv)
     }
     
-    
+    func refactorIndexes()  {
+        self.imagesrefactorIndexes()
+        let url : URL = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: .userDomainMask).first!
+        let destinationUrl = url.appendingPathComponent("purposes.json")
+        //    print("ssa",FileManager.default.fileExists(atPath: destinationUrl.path))
+        let decodedData : [Purpose] = [Purpose]()
+        if FileManager.default.fileExists(atPath: destinationUrl.path) {
+            
+            guard let data = FileManager.default.contents(atPath: destinationUrl.path) else {return}
+            
+            let decoder = JSONDecoder()
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .prettyPrinted
+            var inputData = [Purpose]()
+            do {
+                let decodedData = try decoder.decode([Purpose].self, from: data)
+                print("qqad",decodedData.count,decodedData)
+                
+                for (i,s) in decodedData.enumerated() {
+                    var purpose = s
+                    let singleData = purpose.updateId(id: i)
+                    inputData.append(singleData)
+                }
+                let data = try encoder.encode(inputData)
+                FileManager.default.createFile(atPath: destinationUrl.path, contents: data, attributes: nil)
+            } catch let error {
+                print("---> Failed to decode msg: \(error.localizedDescription)")
+            }
+        }
+    }
     
     func updatePurpose(_ purpose:Purpose){
         guard let index = purposes.firstIndex(of: purpose) else {return}
@@ -283,7 +312,8 @@ class PurposeManager {
     func retrieveTodo(completion:@escaping ()->Void) {//cell들에 할것
 //        var images : [UIImage]?
         DispatchQueue.global().async {
-            retrive(fileNavigation.purposes, from: .documents, as: [Purpose].self, completion: { [weak self] purposes in
+            
+            retrive(fileNavigation.purposes.fileName, from: .documents, as: [Purpose].self, completion: { [weak self] purposes in
                 print("hi")
                 self?.purposes = purposes
                 print("hi",purposes.count)

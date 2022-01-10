@@ -7,6 +7,12 @@
 
 import Foundation
 import UIKit
+
+typealias saveImageFuncType = (UIImage, String) -> URL?
+let saveImage : saveImageFuncType = { (uiimage, string) in
+    return ImageFileManager.saveImageInDocumentDirectory(image: uiimage, fileName: string)
+}
+
 struct Constants {
     static let HeaderDummy = HeaderModel(textViewText: "Until now but..", textFieldText1: "Engineer", textFieldText2: "For that day...",headerImage: nil)
     static let PurposeDummy = [Purpose(id: 0, name: "just do it", oneSenetence: "중요한건 방향!")]
@@ -46,32 +52,51 @@ func decodeStickers<T : Decodable>(from data : Data) throws -> T
     return try JSONDecoder().decode(T.self, from: data)
 }
 
-func firstTime(completion:@escaping ()->Void){
+
+
+
+func firstTime(completion: @escaping ()->Void){
+    
     let fileManager = FileManager.default
         let baseUrl = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+    
     let headerFile = fileConfigurable(headerFile())
     let purposeFile = fileConfigurable(purposesFile())
     let todayFile = fileConfigurable(todaysFile())
     let jsonFiles = [headerFile, purposeFile, todayFile]
-    let imageFiles = fileNavigation.image.imageFiles
+//    let headerImage = fileNavigation.headerImage
+//    let cellImage = fileNavigation.cellImage
     
     let WorkGroup = DispatchGroup()
-    DispatchQueue.global().async(group:WorkGroup) {
-        for imageFile in imageFiles{
-            ImageFileManager.saveImageInDocumentDirectory(image: imageFile.value ?? UIImage(systemName: "person")!, fileName: imageFile.key)
-        }
-    }
+    
+//    DispatchQueue.global().async(group:WorkGroup) {
+//        for imageFile in imageFiles{
+//
+//            ImageFileManager.saveImageInDocumentDirectory(image: imageFile.value ?? UIImage(systemName: "person")!, fileName: imageFile.key)
+//        }
+//    }
     
     for file in jsonFiles {
         if !fileManager.fileExists(atPath: file.path){
             //존재하지않는 것이 있을때.
-            let encoder = JSONEncoder()
-            let data = file.encodedData
-            fileManager.createFile(atPath: file.path, contents: data, attributes: nil)
-
+            DispatchQueue.global().async(group:WorkGroup){
+                let data = file.encodedData
+                print(data,file.path)
+                fileManager.createFile(atPath: file.path, contents: data, attributes: nil)
+            }
+            DispatchQueue.global().async(group:WorkGroup) {
+                if file.type == .header ||
+                    file.type == .purposes {
+                    saveImage(file.type.image,
+                              file.type.imageName)
+                }
+            }
+        }
+    }
+    WorkGroup.notify(queue: .main){
+        completion()
+    }
             
-            completion()
-            return
 //            do {
 ////                var dataSource2: MyEncodable?
 ////                dataSource2 = TestClass2()
@@ -80,124 +105,116 @@ func firstTime(completion:@escaping ()->Void){
 //            } catch let error {
 //                print("---> Failed to store msg: \(error.localizedDescription)")
 //            }
-    }
-    
-    
-    guard !fileManager.fileExists(atPath: headerPath) else {
-        if !fileManager.fileExists(atPath: purposePath) {
-            //혹시 purposes가 없는 상황
-            let encoder = JSONEncoder()
-            let PurposeDummy = Constants.PurposeDummy
-            do {
-                let data = try encoder.encode(PurposeDummy)
-                FileManager.default.createFile(atPath: purposePath, contents: data, attributes: nil)
-            } catch let error {
-                print("---> Failed to store msg: \(error.localizedDescription)")
-            }
-            
-        }
-        
-        completion()
-        return
-    }
-    
-    let datas: [String:UIImage?] = ["0.png":UIImage(named: "0"),"PurposePicture.png":UIImage(named: "woman")]
-    let WorkGroup = DispatchGroup()
-    DispatchQueue.global().async(group:WorkGroup) {
-        for data in datas{
-            ImageFileManager.saveImageInDocumentDirectory(image: data.value ?? UIImage(systemName: "person")!, fileName: data.key)
-        }
-    }
-
-    DispatchQueue.global().async(group: WorkGroup) {
-        let Dummy = Constants.HeaderDummy
-        let PurposeDummy = Constants.PurposeDummy
-        
-        var uiimage = UIImage()
-        if let image = UIImage(named: "today"){
-            uiimage = image
-        } else { uiimage = UIImage(systemName: "circle")!}
-        let todayDummy = [Today(id: 0, imageData: uiimage.pngData() ?? Data(), todos: [
-            Todo(id: 0, todoName: "math homework", todoDetail: "page 1 ~ 30", doOrNot: true),
-            Todo(id: 1, todoName: "", todoDetail: "", doOrNot: false),
-            Todo(id: 2, todoName: "Test !", todoDetail: "At 3 pm", doOrNot: false),
-            Todo(id: 3, todoName: "", todoDetail: "", doOrNot: false),
-                          Todo(id: 4, todoName: "review", todoDetail: "30 minutes", doOrNot: true),
-                          Todo(id: 5, todoName: "", todoDetail: "", doOrNot: false)
-        ]),
-            
-                          Today(id: 1, imageData: UIImage().pngData() ?? Data(), todos: [])
-                                ]
-       
-
-        let encoder = JSONEncoder()
-        let helloPath = baseUrl.appendingPathComponent("headerModel.txt")
-        let purposePath = baseUrl.appendingPathComponent("purposes.json")
-        let todayPath = baseUrl.appendingPathComponent("todays.json")
-        do {
-            let data = try encoder.encode(Dummy)
-            print(data)
-
-            FileManager.default.createFile(atPath: helloPath.path, contents: data, attributes: nil)
-        } catch let error {
-            print("---> Failed to store msg: \(error.localizedDescription)")
-        }
-        do {
-            let data = try encoder.encode(PurposeDummy)
-            print(data)
-  
-            FileManager.default.createFile(atPath: purposePath.path, contents: data, attributes: nil)
-        } catch let error {
-            print("---> Failed to store msg: \(error.localizedDescription)")
-        }
-        do {
-            let data = try encoder.encode(todayDummy)
-            print(data)
-
-            FileManager.default.createFile(atPath: todayPath.path, contents: data, attributes: nil)
-        } catch let error {
-            print("---> Failed to store msg: \(error.localizedDescription)")
-        }
-    }
-    
-    WorkGroup.notify(queue: .main){
-        completion()
-    }
     
     
     
-}
-
-func getEncoding<T:Encodable>(_ data : T) -> T{
-//    switch data {
-//    case is HeaderModel : return data as! T
-//    case is [Purpose] : return [Purpose] as! T
-//    case is [Today]: return [Today] as! T
-//    default : return nil
+//    guard !fileManager.fileExists(atPath: headerPath) else {
+//        if !fileManager.fileExists(atPath: purposePath) {
+//            //혹시 purposes가 없는 상황
+//            let encoder = JSONEncoder()
+//            let PurposeDummy = Constants.PurposeDummy
+//            do {
+//                let data = try encoder.encode(PurposeDummy)
+//                FileManager.default.createFile(atPath: purposePath, contents: data, attributes: nil)
+//            } catch let error {
+//                print("---> Failed to store msg: \(error.localizedDescription)")
+//            }
+//
+//        }
+//
+//        completion()
+//        return
 //    }
-    return data
+    
+//    let datas: [String:UIImage?] = ["0.png":UIImage(named: "0"),"PurposePicture.png":UIImage(named: "woman")]
+//    let WorkGroup = DispatchGroup()
+//    DispatchQueue.global().async(group:WorkGroup) {
+//        for data in datas{
+//            ImageFileManager.saveImageInDocumentDirectory(image: data.value ?? UIImage(systemName: "person")!, fileName: data.key)
+//        }
+//    }
+
+//    DispatchQueue.global().async(group: WorkGroup) {
+//        let Dummy = Constants.HeaderDummy
+//        let PurposeDummy = Constants.PurposeDummy
+//
+//        var uiimage = UIImage()
+//        if let image = UIImage(named: "today"){
+//            uiimage = image
+//        } else { uiimage = UIImage(systemName: "circle")!}
+//        let todayDummy = [Today(id: 0, imageData: uiimage.pngData() ?? Data(), todos: [
+//            Todo(id: 0, todoName: "math homework", todoDetail: "page 1 ~ 30", doOrNot: true),
+//            Todo(id: 1, todoName: "", todoDetail: "", doOrNot: false),
+//            Todo(id: 2, todoName: "Test !", todoDetail: "At 3 pm", doOrNot: false),
+//            Todo(id: 3, todoName: "", todoDetail: "", doOrNot: false),
+//                          Todo(id: 4, todoName: "review", todoDetail: "30 minutes", doOrNot: true),
+//                          Todo(id: 5, todoName: "", todoDetail: "", doOrNot: false)
+//        ]),
+//
+//                          Today(id: 1, imageData: UIImage().pngData() ?? Data(), todos: [])
+//                                ]
+//
+//
+//        let encoder = JSONEncoder()
+//        let helloPath = baseUrl.appendingPathComponent("headerModel.txt")
+//        let purposePath = baseUrl.appendingPathComponent("purposes.json")
+//        let todayPath = baseUrl.appendingPathComponent("todays.json")
+//        do {
+//            let data = try encoder.encode(Dummy)
+//            print(data)
+//
+//            FileManager.default.createFile(atPath: helloPath.path, contents: data, attributes: nil)
+//        } catch let error {
+//            print("---> Failed to store msg: \(error.localizedDescription)")
+//        }
+//        do {
+//            let data = try encoder.encode(PurposeDummy)
+//            print(data)
+//
+//            FileManager.default.createFile(atPath: purposePath.path, contents: data, attributes: nil)
+//        } catch let error {
+//            print("---> Failed to store msg: \(error.localizedDescription)")
+//        }
+//        do {
+//            let data = try encoder.encode(todayDummy)
+//            print(data)
+//
+//            FileManager.default.createFile(atPath: todayPath.path, contents: data, attributes: nil)
+//        } catch let error {
+//            print("---> Failed to store msg: \(error.localizedDescription)")
+//        }
+//    }
+    
+//    WorkGroup.notify(queue: .main){
+//        completion()
+//    }
+        
+        
+        
+    
 }
 
-func saveFile(text:String){// no caller
-    let fileManager = FileManager.default
-    let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
-    let directoryURL = documentsURL.appendingPathComponent("Studian")
-    if !fileManager.fileExists(atPath: directoryURL.path) {
-        do {
-            try fileManager.createDirectory(atPath: directoryURL.path, withIntermediateDirectories: false, attributes: nil)
-        } catch let e {
-            print(e.localizedDescription)
-        }
-    } else {print("i already have the directory")}
-    // 4. 저장할 파일 이름 (확장자 필수)
-    let helloPath = directoryURL.appendingPathComponent("new1.txt")
-    do {
-        // 4-1. 파일 생성
-        try text.write(to: helloPath, atomically: false, encoding: .utf8)
-    }catch let error as NSError {
-        print("Error creating File : \(error.localizedDescription)")
-    }
-}
+
+//func saveFile(text:String){// no caller
+//    let fileManager = FileManager.default
+//    let documentsURL = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
+//    let directoryURL = documentsURL.appendingPathComponent("Studian")
+//    if !fileManager.fileExists(atPath: directoryURL.path) {
+//        do {
+//            try fileManager.createDirectory(atPath: directoryURL.path, withIntermediateDirectories: false, attributes: nil)
+//        } catch let e {
+//            print(e.localizedDescription)
+//        }
+//    } else {print("i already have the directory")}
+//    // 4. 저장할 파일 이름 (확장자 필수)
+//    let helloPath = directoryURL.appendingPathComponent("new1.txt")
+//    do {
+//        // 4-1. 파일 생성
+//        try text.write(to: helloPath, atomically: false, encoding: .utf8)
+//    }catch let error as NSError {
+//        print("Error creating File : \(error.localizedDescription)")
+//    }
+//}
 enum Directory {
     case documents
     case caches
@@ -233,10 +250,10 @@ func store<T: Encodable>(_ obj: T, to directory: Directory, as fileName: String)
     
 }
 
-func retrive<T: Decodable>(_ fileName: fileNavigation, from directory: Directory, as type: T.Type, completion: @escaping (T)->Void) {
+func retrive<T: Decodable>(_ fileName: String, from directory: Directory, as type: T.Type, completion: @escaping (T)->Void) {
     
 //    DispatchQueue.global().async {
-    var url = directory.url.appendingPathComponent(fileName.rawValue, isDirectory: false)
+    let url = directory.url.appendingPathComponent(fileName, isDirectory: false)
         if !FileManager.default.fileExists(atPath: url.path){
         }
     
@@ -268,80 +285,47 @@ func remove(_ fileName: String, from directory: Directory) {
     }
 }
 
-func clear(_ directory: Directory) {
-    let url = directory.url
-    do {
-        let contents = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil, options: [])
-        for content in contents {
-            try FileManager.default.removeItem(at: content)
-        }
-    } catch {
-        print("---> Failed to clear directory ms: \(error.localizedDescription)")
-    }
-}
-
-func refactorPurposesIndex() -> String? {
-    let nsDocumentDirectory = FileManager.SearchPathDirectory.documentDirectory
-    let nsUserDomainMask = FileManager.SearchPathDomainMask.userDomainMask
-    let paths = NSSearchPathForDirectoriesInDomains(nsDocumentDirectory, nsUserDomainMask, true)
-    
-    if let dirPath = paths.first {
-        let file = URL(fileURLWithPath: dirPath).appendingPathComponent("purposes.json")
-        if let data = try? Data(contentsOf: file) {
-            let dataString = String(data: data, encoding: .utf8)
-            print("@",dataString)
-            return dataString
-        }
-        return nil
-    }
-    return nil
-}
-func loadFile()  {
-    let url : URL = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: .userDomainMask).first!
-    let destinationUrl = url.appendingPathComponent("purposes.json")
-//    print("ssa",FileManager.default.fileExists(atPath: destinationUrl.path))
-    let decodedData : [Purpose] = [Purpose]()
-    if FileManager.default.fileExists(atPath: destinationUrl.path) {
-        
-        guard let data = FileManager.default.contents(atPath: destinationUrl.path) else {return}
-        
-        let decoder = JSONDecoder()
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
-        var inputData = [Purpose]()
-        do {
-            let decodedData = try decoder.decode([Purpose].self, from: data)
-            print("qqad",decodedData.count,decodedData)
-
-            for (i,s) in decodedData.enumerated() {
-                var purpose = s
-                let singleData = purpose.updateId(id: i)
-                inputData.append(singleData)
-            }
-            let data = try encoder.encode(inputData)
-            FileManager.default.createFile(atPath: destinationUrl.path, contents: data, attributes: nil)
-            
-            
-        } catch let error {
-            print("---> Failed to decode msg: \(error.localizedDescription)")
-
-        }
-    }
-    
-      
-    
-    
-    
-                                    
-//    let encoder = JSONEncoder()
+//func clear(_ directory: Directory) {
+//    let url = directory.url
 //    do {
-//        let data = try encoder.encode(Dummy)
-//        print(data)
-//        FileManager.default.createFile(atPath: directoryURL.path, contents: data, attributes: nil)
-//    } catch let error {
-//        print("---> Failed to store msg: \(error.localizedDescription)")
+//        let contents = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil, options: [])
+//        for content in contents {
+//            try FileManager.default.removeItem(at: content)
+//        }
+//    } catch {
+//        print("---> Failed to clear directory ms: \(error.localizedDescription)")
 //    }
-}
+//}
+
+//func purposeJsonRefactorIndexes()  {
+//    let url : URL = FileManager.default.urls(for: FileManager.SearchPathDirectory.documentDirectory, in: .userDomainMask).first!
+//    let destinationUrl = url.appendingPathComponent("purposes.json")
+//    //    print("ssa",FileManager.default.fileExists(atPath: destinationUrl.path))
+//    let decodedData : [Purpose] = [Purpose]()
+//    if FileManager.default.fileExists(atPath: destinationUrl.path) {
+//        
+//        guard let data = FileManager.default.contents(atPath: destinationUrl.path) else {return}
+//        
+//        let decoder = JSONDecoder()
+//        let encoder = JSONEncoder()
+//        encoder.outputFormatting = .prettyPrinted
+//        var inputData = [Purpose]()
+//        do {
+//            let decodedData = try decoder.decode([Purpose].self, from: data)
+//            print("qqad",decodedData.count,decodedData)
+//            
+//            for (i,s) in decodedData.enumerated() {
+//                var purpose = s
+//                let singleData = purpose.updateId(id: i)
+//                inputData.append(singleData)
+//            }
+//            let data = try encoder.encode(inputData)
+//            FileManager.default.createFile(atPath: destinationUrl.path, contents: data, attributes: nil)
+//        } catch let error {
+//            print("---> Failed to decode msg: \(error.localizedDescription)")
+//        }
+//    }
+//}
 
 func getDocumentsDirectory() -> URL {
     // find all possible documents directories for this user

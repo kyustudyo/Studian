@@ -111,7 +111,7 @@ class StudianMainPageViewController: UIViewController {
     
     func fetchHeaderTexts(){
         DispatchQueue.global().async {
-            retrive(fileNavigation.header, from: .documents, as: HeaderModel.self){
+            retrive(fileNavigation.header.fileName, from: .documents, as: HeaderModel.self){
                 [weak self] header in
                 DispatchQueue.main.async {
                     self?.headerModel = header
@@ -149,7 +149,7 @@ class StudianMainPageViewController: UIViewController {
        
         super.viewDidLoad()
         print("the overee")
-        loadFile()
+        
         purposeViewModel.refactorIndexes()
         startIndicator()
         collectionview.alwaysBounceVertical = true
