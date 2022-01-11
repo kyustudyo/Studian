@@ -240,8 +240,9 @@ extension StudianTodayViewController: UICollectionViewDelegateFlowLayout {
 }
 // MARK: - tmpDelegate
 extension StudianTodayViewController : TodayCellCenterDelegate {
-    func DoCollectionViewCenter(index:Int) {//텍스트필드 접근시 키보드 올리면
-        self.collectionview.scrollToItem(at:IndexPath(item: index, section: 0), at: .centeredVertically, animated: false)//이 코드가 아니라 scrollToItem(at:Indexpath(index:index),at: .left....) 이거로 하면안된다. 위의 것은 된다.
+    func doCollectionViewCenter(index:Int) {//텍스트필드 접근시 키보드 올리면
+//        let index = (index-1 >= 0 ? index - 1 : 0)
+        self.collectionview.scrollToItem(at:IndexPath(item: index, section: 0), at: .centeredVertically, animated: true)//이 코드가 아니라 scrollToItem(at:Indexpath(index:index),at: .left....) 이거로 하면안된다. 위의 것은 된다.
     }
 }
 // MARK: - UIAnimatable

@@ -14,28 +14,22 @@ import Foundation
 import UIKit
 //collectionview
 protocol TodayCellCenterDelegate : class {
-    func DoCollectionViewCenter(index  :Int)
+    func doCollectionViewCenter(index  :Int)
 }
 protocol GoToDetailDelegate : class {
     func gotoDetailVC(image:UIImage,index:Int)
 }
 
 class TodayCellView :
-    UICollectionViewCell, TableViewCenterDelegate{
-    
-    func setViewCenter() {
-        self.todayCellCenterDelegate?.DoCollectionViewCenter(index: indexRow ?? 0)
-    }
+    UICollectionViewCell{
 
     @IBOutlet weak var plusBtn: UIButton!
     
     weak var todayCellCenterDelegate : TodayCellCenterDelegate?
     weak var goToDetailDelegate : GoToDetailDelegate?
-    
     @IBOutlet weak var removeBtn: UIButton!
     var deleteButtonTapHandler: (() -> Void)?
-    //@IBOutlet weak var checkMark: UILabel?
-    
+
     var indexRow : Int? {
         didSet{
             today = viewModel.todays[indexRow ?? 0]
@@ -67,12 +61,12 @@ class TodayCellView :
         
         let index = viewModel.getIndex(today: today)
 
-        print(viewModel.todays)
-        print("sel row",selectedRows)
+//        print(viewModel.todays)
+//        print("sel row",selectedRows)
         //print("today:",today)
         tv?.reloadData()
-        let countN = (viewModel.todays[index].todos.count ?? 0)
-        print("co:", countN)
+        let countN = (viewModel.todays[index].todos.count )
+//        print("co:", countN)
         let endIndex = IndexPath(row: countN-2,section:  0 )//더하면 맨 아래로
         self.tv?.scrollToRow(at: endIndex, at: .top, animated: true)
         plusButtonHidden()
@@ -80,9 +74,8 @@ class TodayCellView :
     
     func plusButtonHidden(){//6개 까지만 추가가능.
         guard let today = today else {return}
-        let index = viewModel.getIndex(today: today)
         if isInEditingMode {
-            if viewModel.todays[index].todos.count ?? 0 > 10 {
+            if viewModel.getNumberOfTodos(today: today) > 10 {
                 plusBtn.isHidden = true
             }
             else {plusBtn.isHidden = false}
@@ -95,28 +88,14 @@ class TodayCellView :
     
     var isInEditingMode: Bool = false {
         didSet {
-            print("!isin = : \(!isInEditingMode) 따라서 checkmark.ishhidden도." )//누르면 이것이 false
-            
-            //또누르면 true 즉 숨겨라. 숨길때 라벨을 바꾸버리자.
-//            plusBtn.isHidden = isInEditingMode
-            //print("plus ishidden",plusBtn.isHidden)
             removeBtn.isHidden = !isInEditingMode//collection view의 리무브버튼
             plusButtonHidden()//collection view plus button 확인
             tv?.reloadData() // edit 눌렀을때 삭제 모양 나오게하기위해.
-            
-            //checkMark?.isHidden = !isInEditingMode
-//            if !isInEditingMode {
-//                if checkMark
-//                checkMark?.text = "ddd"
-//
-//            }
+
         }
     }
     
     @IBOutlet weak var tv: UITableView?
-    
-    //@IBOutlet var chkBox: UIButton!
-    
 
     @IBOutlet weak var TodayImg : UIImageView!
     
@@ -124,29 +103,6 @@ class TodayCellView :
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){ self.endEditing(true) }
 
-    
-    
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        TodayImg?.layer.cornerRadius = 10
-        tv?.separatorColor = UIColor.clear
-    }
-    
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        //cell.backgroundColor = .blue
-    }
-    
-    override var isSelected: Bool {
-        didSet {
-            print("isselected바뀜 현재 isinedit: \(isInEditingMode)")
-            if isInEditingMode {
-                print("isselected: \(isSelected) isinediting : \(isInEditingMode)")
-                //checkMark?.text = isSelected ? "✓" : "○"
-            }
-        }
-    }
-    
     @objc func touchToPickPhoto(image:UIImage,index:Int) {
         guard let today = today else {
             return
@@ -160,201 +116,78 @@ class TodayCellView :
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(touchToPickPhoto))
         TodayImg.addGestureRecognizer(tapGesture)
         TodayImg.isUserInteractionEnabled = true
+        TodayImg.layer.cornerRadius = 10
         TodayImg.image = image.fixOrientation()
-        selectedRows = []//그린으로 변화시켜놓은 애를 삭제하면 selectedrows가 한칸 씩 밀리고,
-        //에딧버튼에서 나가면 updateUI함수를 호출하므로 새로 selecterows를 만든다.
-        for (index,todo) in today.todos.enumerated() {
-            if todo.doOrNot {
-                let indexPath = IndexPath(indexes: [0,index])
-                if !selectedRows.contains(indexPath){
-                    selectedRows.append(indexPath)
-                }
-                
-            }
-        }
-        print("todos,selected rows: ",selectedRows)
-        
+        tv?.separatorColor = UIColor.clear
+        selectedRows = viewModel.getIndexesOfDoSelect(today: today)
         plusButtonHidden()
     }
+    
+    //MARK: - Helpers
+        
+        @objc func checkBox(_ sender: UIButton){
+            sender.isSelected = !sender.isSelected
+            guard let tv = tv, let today = today else {return}
+            let point = sender.convert(CGPoint.zero, to: tv)
+            guard let indxPath = tv.indexPathForRow(at: point) else {return}//거기에 해당하는 인덱스패스
+            let todo = viewModel.getTodo(today: today, index: indxPath.row)
+            if selectedRows.contains(indxPath) {//그린 이야?
+                guard let index = selectedRows.firstIndex(of: indxPath) else { return }
+                selectedRows.remove(at: index)
+                viewModel.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: false))
+            }
+            else {//빨강 이야?
+                selectedRows.append(indxPath)
+                viewModel.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: true))
+            }
+            tv.reloadRows(at: [indxPath], with: .automatic)
+        }
+    
 }
 
-//table
+// MARK: - UITableViewDataSource, UITableViewDelegate
 extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
-    
-    
-    
-    
-//    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        //tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-//        if indexPath.row % 2 == 0 {
-//            tableView.cellForRow(at: indexPath)?.accessoryView?.isHidden = false
-//        }
-//    }
-//
-//    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
-//        if indexPath.row % 2 == 0 {
-//            tableView.cellForRow(at: indexPath)?.accessoryView?.isHidden = true
-//        }
-//
-//
-//    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         guard let today = today else {return 0}
-        
-//        print("보여줘야할:\(number)")
         let number = viewModel.getNumberOfTodos(today: today)
-        return number 
-        
+        return number
     }
     
-    //collectionview check box
-    @objc func checkBox(_ sender: UIButton){
-        
-        sender.isSelected = !sender.isSelected
-        print("주의1: sender_isselected:\(sender.isSelected)")
-        let point = sender.convert(CGPoint.zero, to: tv!)
-        let indxPath = tv!.indexPathForRow(at: point)//거기에 해당하는 인덱스패스
+
     
-        print("기존 selected:\(selectedRows)")
-        print("indexpath:",indxPath!)
-        guard let today = today  else {return}
-        
-        let todo = viewModel.getTodo(today: today, index: indxPath!.row)
-        
-        print("pass?")
-        print("통과이후와 indexpath",selectedRows,indxPath)
-        
-        if selectedRows.contains(indxPath!) {//그린 이야?
-            
-                       selectedRows.remove(at: selectedRows.index(of: indxPath!)!)
-            viewModel.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: false))
-            
-        }
-        else {//빨강 이야?
-                 selectedRows.append(indxPath!)
-                viewModel.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: true))
-               }
-        
-        print(selectedRows)
-        print("indexpat\(indxPath!)")//전체 컬렉션뷰가 커지면 체크박스 바뀌는 속도 느려짐.
-               tv!.reloadRows(at: [indxPath!], with: .automatic)
-    }
-    
-    //tableview
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //return UITableViewCell()
         if indexPath.row % 2 == 0 {
             let index = indexPath.row
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "TodayTableCell", for: indexPath) as? TodayTableCell else {return UITableViewCell()}
-            guard let smallBtn = cell.contentView.viewWithTag(2) as? UIButton else { return UITableViewCell()}
             
-            //print("sdsds",isInEditingMode)
-            
-            cell.checkButton?.isHidden = isInEditingMode
-            cell.removeButton?.isHidden = !isInEditingMode
-
+            cell.isInEditingMode = isInEditingMode
             cell.centerDelegate = self
             
-            cell.deleteButtonTapHandler = {
+            cell.deleteButtonTapHandler = {//@@
                 guard let today = self.today else {return}
-                let todayIndex = self.viewModel.getIndex(today: today) ?? 0
+                let todayIndex = self.viewModel.getIndex(today: today)
                 
-                
-                //print("change:",self.viewModel?.todays)
-                print("indexpath:\(indexPath.row)")
-                print("todos:",today.todos)
-                
-                //print("today.todos:\(today.todos)")
-                
-                
-//                let todo = self.viewModel?.getTodo(today: today, index: indexPath.row)
-//                let indexpa = IndexPath(index: todo?.id ?? 0)
-                print("i want to zegu:",indexPath.row)
                 self.selectedRows.removeAll {$0 == IndexPath(indexes: [0,indexPath.row])}
-                
-                
-                
-                print(self.viewModel.todays[todayIndex].todos)
-                self.viewModel.deleteTodo(today: today, todo: (self.viewModel.todays[todayIndex].todos[index]))
-                print("imdexpath: \(IndexPath(indexes: [0,index]))")
-                
-                
-                print("selsel",self.selectedRows)
-                
-                print("change:",self.viewModel.todays)
+                self.viewModel.deleteTodo(today: today,
+                                          todo: (self.viewModel.todays[todayIndex].todos[index]))
                 self.plusButtonHidden()
-                print("kk",indexPath.row)
-             
                 self.tv?.reloadData()
                 if indexPath.row > 0 {//아래쪽에 있다면 지우면 올라오도록.
-                    //let countN = (self.viewModel?.todays[index].todos.count ?? 0)
                     let endIndex = IndexPath(row: indexPath.row - 2 ,section:  0 )//더하면 맨 아래로
                     self.tv?.scrollToRow(at: endIndex, at: .top, animated: true)
                 }
-                //@@
             }
             guard let today = today  else {return UITableViewCell()}
             let todo = viewModel.getTodo(today: today, index: index)
-            
-            if !isInEditingMode {//edit모드 아닐때만 테이블셀 클릭 시 초록색
-                if let bigBtn = cell.contentView.viewWithTag(1) as? UIButton {
-                    bigBtn.isEnabled = true
-                    bigBtn.addTarget(self, action: #selector(checkBox(_:)),for: .touchUpInside)
-                    bigBtn.isUserInteractionEnabled = true
-                    cell.todoName.isUserInteractionEnabled = false
-                    cell.todoDetail.isUserInteractionEnabled = false
-                }
+
+            if let bigBtn = cell.contentView.viewWithTag(1) as? UIButton {
+                bigBtn.addTarget(self, action: #selector(checkBox(_:)),for: .touchUpInside)
             }
-            else if isInEditingMode {
-                if let bigBtn = cell.contentView.viewWithTag(1) as? UIButton {
-                    
-                    
-                    
-                    
-                    bigBtn.isUserInteractionEnabled = false
-                    bigBtn.isEnabled = false
-                    
-                    
-                    
-                    
-//                    cell.yPosition = self.yPosition
-//                    print("2번째:",yPosition)
-                    
-                    cell.todoName.isUserInteractionEnabled = true
-                    cell.todoDetail.isUserInteractionEnabled = true
-                    
-                }
-            }
+
             cell.toDoViewModel = ToDoViewModel(toDo: todo)
-//            cell.todo = viewModel.getTodo(today: today, index: index)
-//            print(todo.doOrNot)
-//            cell.update(todo: todo)//print todo.bool
-            
-            //red green 바꾸었으므로 새로운 todo 얻기
             cell.delegate = self
-            
-            //print("todos",today?.todos)
-            //print("index",index)
-            
-            
-           
-            
-            
-//            cell.accessoryView = CheckMarkView.init()
-//            cell.accessoryView?.isHidden = true
-            
-            cell.backgroundColor = UIColor.white
-            //cell.layer.masksToBounds = true
-            //cell.layer.borderWidth = 100
-    //        cell.topInset = 20
-    //        cell.bottomInset = 20
-            
-            cell.layer.borderColor = UIColor.black.cgColor
-            cell.layer.borderWidth = 0.5
-            cell.layer.cornerRadius = 10
-            cell.clipsToBounds = true
-            
             return cell
         }
         
@@ -364,19 +197,7 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
             cell.accessoryView?.isHidden = true
             return cell
         }
-        
-        
-        
-        
     }
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        print("@@@@indexpath@@@@:\(indexPath.row)")
-        //tv?.scrollToRow(at: indexPath, at: .middle, animated: true)
-        //print("dodo")
-    }
-    
-    
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.row % 2 == 0 {
@@ -388,20 +209,24 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
     }
     
     
+    
 
     
 }
-extension TodayCellView : TableCellDelegate {
-    func tableCellChange(_ todo:Todo) {
-        guard let today = today else {return}
-        viewModel.updateTodo(today: today, todo: todo)
-        //guard let today = today else {return}
-        //let todos = viewModel?.todays[viewModel?.getIndex(today: today) ?? 0]
+// MARK: - TableViewCenterDelegate
+
+extension TodayCellView : TableViewCenterDelegate {
+    func setViewCenter() {
+        self.todayCellCenterDelegate?.doCollectionViewCenter(index: indexRow ?? 0)
     }
 }
 
-extension TodayCellView: UITextFieldDelegate {
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        print("in tableview... textfield modified")
+// MARK: - TableCellChangeDelegate
+
+extension TodayCellView : TableCellChangeDelegate {
+    func tableCellChange(_ todo:Todo) {
+        guard let today = today else {return}
+        viewModel.updateTodo(today: today, todo: todo)
     }
 }
+

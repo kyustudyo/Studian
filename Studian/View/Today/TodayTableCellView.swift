@@ -6,25 +6,40 @@
 //
 
 import UIKit
-protocol TableCellDelegate: class {
+protocol TableCellChangeDelegate: class {
     func tableCellChange(_ todo : Todo)
 }
 
 protocol TableViewCenterDelegate : class {
     func setViewCenter()
 }
+protocol TableViewCheckBoxDelegate : AnyObject {
+    func checkBoxInTableView()
+}
 
 class TodayTableCell : UITableViewCell {
     
-//    @IBOutlet weak var todayDo: UILabel!
-//    @IBOutlet weak var todayDoDetail: UILabel!
+    // MARK: - Properties
+    
     @IBOutlet weak var checkButton : UIButton? 
     @IBOutlet weak var removeButton: UIButton?
+    
     @IBOutlet weak var todoName: UITextField! {
         didSet {
             todoName.getCustomTextFieldSetting()
             todoName.delegate = self//notification달기위해.
-            
+        }
+    }
+    
+    var isInEditingMode : Bool = false{
+        didSet {
+            checkButton?.isHidden = isInEditingMode
+            removeButton?.isHidden = !isInEditingMode
+            guard let btn = contentView.viewWithTag(1) as? UIButton else {return}
+            btn.isEnabled = !isInEditingMode
+            btn.isUserInteractionEnabled = !isInEditingMode
+            todoName.isUserInteractionEnabled = isInEditingMode
+            todoDetail.isUserInteractionEnabled = isInEditingMode
         }
     }
     @IBOutlet weak var todoDetail: UITextField! {
@@ -34,47 +49,34 @@ class TodayTableCell : UITableViewCell {
         }
     }
     weak var centerDelegate :TableViewCenterDelegate?
-    weak var delegate: TableCellDelegate?
+    weak var delegate: TableCellChangeDelegate?
     var toDoViewModel: ToDoViewModel? {
         didSet {
+            
             update()
         }
     }
     var deleteButtonTapHandler: (()->Void)?
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        //checkButton?.setImage(UIImage(named: "checkmark.seal"), for: .selected)
-        checkButton?.setTitle("", for: .normal)
-        removeButton?.setTitle("", for: .normal)
-    }
+    // MARK: - Helpers
     
     func update(){
+        backgroundColor = UIColor.white
+        layer.borderColor = UIColor.black.cgColor
+        layer.borderWidth = 0.5
+        layer.cornerRadius = 10
+        clipsToBounds = true
+        
         guard let toDoViewModel = toDoViewModel else {return}
         todoName.text = toDoViewModel.toDoName
         todoDetail.text = toDoViewModel.toDoDetail
         checkButton?.tintColor = toDoViewModel.doOrNotColor
-    }
-
     
-
-
+    }
     
     @IBAction func removeTableCell(_ sender: Any) {
         deleteButtonTapHandler?()
     }
-    
-//    override func layoutMarginsDidChange() {
-//        super.layoutMarginsDidChange()
-////        self.layoutMargins = UIEdgeInsets(top: topInset, left: leftInset, bottom: bottomInset, right: rightInset)
-//    }
-//
-//
-//    override func layoutSubviews() {
-//        super.layoutSubviews()
-//        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5))
-//
-//    }
 }
 
 // MARK: - UITextFieldDelegate
@@ -103,42 +105,10 @@ extension TodayTableCell : UITextFieldDelegate {
     }
 
 
-    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
             textField.resignFirstResponder()
             return true
         }
     
-//    func configureNotificationObservers(){
-//        todoName.addTarget(self,
-//                           action: #selector(textDidEnd),
-//                           for: .editingDidEnd)
-//        todoDetail.addTarget(self,
-//                             action: #selector(textDidEnd),
-//                             for: .editingDidEnd)
-//    }
-    
-    
-//    @objc func textDidEnd(sender:UITextField){
-//        if sender == todoName {
-//            todo?.update(todoName: sender.text ?? "",
-//                         todoDetail: todoDetail.text ?? "",
-//                         doOrNot: false)
-//        }
-//        else if sender == todoDetail {
-//            todo?.update(todoName: todoName.text ?? "",
-//                         todoDetail: sender.text ?? "",
-//                         doOrNot: false)
-//        }
-//        guard let todo = todo else {return}
-//
-//        delegate?.tableCellChange(todo)
-//    }
-//    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
-//      print("textFieldShouldBeginEditing:")
-//      return true
-//      }
-
-
 }
 

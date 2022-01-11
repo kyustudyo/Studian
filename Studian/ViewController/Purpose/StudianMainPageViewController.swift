@@ -188,7 +188,7 @@ extension StudianMainPageViewController: EditTextViewControllerDelegate {
         showLoadingAnimation()
         let workGroup = DispatchGroup()
         DispatchQueue.global().async(group: workGroup) { [weak self] in
-            store(self?.headerModel, to: .documents, as: "headerModel.txt")
+            store(self?.headerModel, to: .documents, as: .header)
         }
         workGroup.notify(queue: .main){ [weak self] in
             self?.collectionview.reloadData()
@@ -308,7 +308,7 @@ extension StudianMainPageViewController: EditHedeaderProfileDelegate {
             headerModel.textFieldText2 = vm.textFieldText2
             //collectionview.reloadData()//위에거 하면 깜박이는데 이거하면 깜박안함.
             DispatchQueue.global().async(group: workGroup) {
-                store(self.headerModel, to: .documents, as: "headerModel.txt")
+                store(self.headerModel, to: .documents, as: .header)
             }
 //        }
         

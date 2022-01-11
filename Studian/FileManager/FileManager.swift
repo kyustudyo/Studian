@@ -84,8 +84,8 @@ enum Directory {
 }
 
 
-func store<T: Encodable>(_ obj: T, to directory: Directory, as fileName: String) {
-    let url = directory.url.appendingPathComponent(fileName, isDirectory: false)
+func store<T: Encodable>(_ obj: T, to directory: Directory, as fileNavigation: fileNavigation) {
+    let url = directory.url.appendingPathComponent(fileNavigation.fileName, isDirectory: false)
     //print("---> save to here: \(url)")
     let encoder = JSONEncoder()
     encoder.outputFormatting = .prettyPrinted

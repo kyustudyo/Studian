@@ -257,7 +257,7 @@ class PurposeManager {
         images.append(image)
         let workGroup = DispatchGroup()
         DispatchQueue.global().async(group:workGroup) {
-            store(self.purposes, to: .documents, as: "purposes.json")
+            store(self.purposes, to: .documents, as: .purposes)
             print("저장1",self.purposes.count)
         }
         DispatchQueue.global().async(group:workGroup) {
@@ -305,7 +305,7 @@ class PurposeManager {
 //    }
     
     func savePurposes() {
-        store(purposes, to: .documents, as: "purposes.json")
+        store(purposes, to: .documents, as: .purposes)
     }
     
     

@@ -67,6 +67,9 @@ class TodayViewModel {
     func editToday(image:UIImage, index: Int,completion:@escaping ()->Void){
         manager.editToday(image: image, index: index,completion: completion)
     }
+    func getIndexesOfDoSelect(today:Today)->[IndexPath]{
+        manager.getIndexesOfDoSelect(today: today)
+    }
 }
 
 class TodayManager {
@@ -78,6 +81,7 @@ class TodayManager {
     
     var todays: [Today] = []
     var images: [UIImage] = []
+    
     
     func retrieveTodo(completion: @escaping ()->Void) {//cell들에 할것
         DispatchQueue.global().async {
@@ -131,9 +135,6 @@ class TodayManager {
     func createIndexAndData(image: UIImage) -> Today {
     let nextId = TodayManager.lastId + 2 //인덱스 하나 추가해야하므로
         TodayManager.lastId = nextId
-        
-        
-        
     let imageData = image.pngData()!
     return Today(id: nextId, imageData: imageData, todos: [])
         
@@ -170,18 +171,14 @@ class TodayManager {
         //print("update:\(TodayManager.shared.todays)")
     }
     func updateTodo(today:Today,todo: Todo){
-        guard let todayIndex = todays.firstIndex(of: today) else {return}
-        guard let todoIndex = todays[todayIndex].todos.firstIndex(where: { to in
-            todo.id == to.id
-        }) else {return}
+        guard let todayIndex = todays.firstIndex(of: today),
+              let todoIndex = todays[todayIndex].todos.firstIndex(where: { component in
+            todo.id == component.id}) else {return}
+        
         
         todays[todayIndex].todos[todoIndex].configure(todoName: todo.todoName, todoDetail: todo.todoDetail,doOrNot: todo.doOrNot)
         
     }
-//
-//    func createTableCell(today:Today)->Today{
-//        let nextId = TodayManager.tableCellLastIdArray
-//    }
     
     func addToday(_ today: Today) {
         todays.append(today)
@@ -215,39 +212,37 @@ class TodayManager {
     func saveTodays(completion:@escaping ()->Void) {
         let workGroup = DispatchGroup()
         DispatchQueue.global().async(group: workGroup) {
-            store(self.todays, to: .documents, as: "todays.json")
+            store(self.todays, to: .documents, as: fileNavigation.todays)
         }
         workGroup.notify(queue: .main) {
             completion()
         }
-        
-        
+
     }
     func getIndex(_ today : Today) -> Int {
          return todays.firstIndex(of: today) ?? 0
     }
     
     func getTodo(today:Today,index:Int)->Todo{
-        let todos = todays[getIndex(today) ?? 0].todos
+        let todos = todays[getIndex(today)].todos
         let todo = todos[index]
         return todo
     }
     
     func deleteToday(_ today : Today) {
-        // [x] TODO: delete 로직 추가
         todays = todays.filter { $0.id != today.id && $0.id != today.id + 1 }
-//        images = images.filter{ UIImage(data: today.imageData) != $0 }
-        //두개를 지우기위해.
-//        if let index = todos.firstIndex(of: todo) {
-//            todos.remove(at: index)
-//        }
-        
-        //saveTodays()
-        
     }
     
-//    func saveImages() {
-//            ImageFileManager.saveImageInDocumentDirectory(image: <#T##UIImage#>, fileName: <#T##String#>)
-//    }
-    
+    func getIndexesOfDoSelect(today:Today)->[IndexPath]{
+        var selectedRows = [IndexPath]()
+        for (index,todo) in today.todos.enumerated() {
+            if todo.doOrNot {
+                let indexPath = IndexPath(indexes: [0,index])
+                if !selectedRows.contains(indexPath){
+                    selectedRows.append(indexPath)
+                }
+            }
+        }
+        return selectedRows
+    }
 }
