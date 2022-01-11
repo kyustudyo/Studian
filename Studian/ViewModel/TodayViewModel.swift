@@ -78,7 +78,7 @@ class TodayManager {
     
     var todays: [Today] = []
     var images: [UIImage] = []
-     
+    
     func retrieveTodo(completion: @escaping ()->Void) {//cell들에 할것
         DispatchQueue.global().async {
             retrive(fileNavigation.todays.fileName, from: .documents, as: [Today].self,completion: { [weak self] todays in
@@ -87,19 +87,10 @@ class TodayManager {
                 print("DEBUG: count of todays: ",todays.count)// 곱하기 2 되어서 나온다.
                 if todays.count != 0{
                     todays.forEach{
-                        
-        //                guard let image = ImageFileManager.loadImageFromDocumentDirectory(fileName: "\($0.id).png") else {return}
-                        print($0.imageData.description)
-                        //if $0.imageData.description != "30242712 bytes" {
+
                             let image = UIImage(data: $0.imageData) ?? UIImage()
                         self?.images.append(image)
-                        //}
-                        
-        //                images.append(image)
                     }
-                    
-                    print("총몇개 d:\(self?.images.count)")
-                    
                 }
                 
                 let lastId = todays.last?.id ?? 0
@@ -148,9 +139,6 @@ class TodayManager {
         
     }
     
-    
-    
-    
     func getNumberOfTodos(today:Today) -> Int {
         let today = todays.first {$0.id == today.id}
         return today?.todos.count ?? 0
@@ -187,10 +175,7 @@ class TodayManager {
             todo.id == to.id
         }) else {return}
         
-        todays[todayIndex].todos[todoIndex].update(todoName: todo.todoName, todoDetail: todo.todoDetail,doOrNot: todo.doOrNot)
-        
-            //saveTodays()
-        
+        todays[todayIndex].todos[todoIndex].configure(todoName: todo.todoName, todoDetail: todo.todoDetail,doOrNot: todo.doOrNot)
         
     }
 //

@@ -39,7 +39,6 @@ class StudianTodayViewController: UIViewController {
       return button
     }()
     
-    
     func reloadCell(){
         collectionview.reloadData()
     }
@@ -112,6 +111,7 @@ extension StudianTodayViewController : UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return todayViewModel.todays.count
     }
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if indexPath.row % 2 == 0{
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayCell, for: indexPath) as? TodayCellView else {
@@ -127,17 +127,14 @@ extension StudianTodayViewController : UICollectionViewDataSource {
             
             cell.goToDetailDelegate = self
 //            cell.viewModel = todayViewModel
-            cell.tmpDelegate = self//center
-            
+            cell.todayCellCenterDelegate = self//center
             cell.deleteButtonTapHandler = {
                 self.todayViewModel.deleteToday(today)
                 self.todayViewModel.deleteImage(index: indexPath.row)
                 self.editButtonHidden()
                 self.collectionview.reloadData()
             }
-            
             cell.isInEditingMode = isEditing
-            
             return cell
         }
         else {
@@ -194,15 +191,6 @@ extension StudianTodayViewController : UIImagePickerControllerDelegate & UINavig
     }
 }
 
-
-//extension StudianTodayViewController: UICollectionViewDelegate {
-//    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        print("index")
-//    }
-//}
-    
-    
-
 extension StudianTodayViewController : GoToDetailDelegate,TodayDetailViewControllerDelegate {
     
     func gotoDetailVC(image:UIImage,index:Int) {
@@ -223,12 +211,7 @@ extension StudianTodayViewController : GoToDetailDelegate,TodayDetailViewControl
             self?.reloadCell()
             self?.hideLoadingAnimation()
         }
-        
     }
-    
-    
-    
-    
 }
 
 
@@ -238,9 +221,7 @@ extension StudianTodayViewController: UICollectionViewDelegateFlowLayout {
         if indexPath.row % 2 == 0 {
             let width: CGFloat = (collectionView.bounds.width - (20 * 2))
             let height: CGFloat = width/2.5
-            
             return CGSize(width: width, height: height)
-            
         }
         else {
             let width: CGFloat = (collectionView.bounds.width - (20 * 2))
@@ -258,11 +239,12 @@ extension StudianTodayViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 // MARK: - tmpDelegate
-extension StudianTodayViewController : tmpDelegate {
-    func connectPlz(index:Int) {//텍스트필드 접근시 키보드 올리면
+extension StudianTodayViewController : TodayCellCenterDelegate {
+    func DoCollectionViewCenter(index:Int) {//텍스트필드 접근시 키보드 올리면
         self.collectionview.scrollToItem(at:IndexPath(item: index, section: 0), at: .centeredVertically, animated: false)//이 코드가 아니라 scrollToItem(at:Indexpath(index:index),at: .left....) 이거로 하면안된다. 위의 것은 된다.
     }
 }
 // MARK: - UIAnimatable
 extension StudianTodayViewController : UIAnimatable {
 }
+

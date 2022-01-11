@@ -60,12 +60,8 @@ class StudianMainPageViewController: UIViewController {
     }
     
     @IBAction func EditHeaderProfile(_ sender: UIButton) {
-        print("headerprofile")
         let navigationController = UINavigationController(rootViewController: EditHedeaderProfileViewController())
         let vc = navigationController.viewControllers.first! as? EditHedeaderProfileViewController
-        
-//        let vc =EditHedeaderProfileViewController()
-        
 
         vc?.FirstTextField.text = headerModel.textFieldText1
         vc?.SecondTextField.text = headerModel.textFieldText2

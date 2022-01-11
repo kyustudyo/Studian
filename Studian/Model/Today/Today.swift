@@ -36,7 +36,7 @@ struct Todo : Codable {
     var todoDetail : String
     var doOrNot : Bool
     
-    mutating func update(todoName:String,todoDetail:String,doOrNot:Bool){
+    mutating func configure(todoName:String,todoDetail:String,doOrNot:Bool){
         self.todoName = todoName
         self.todoDetail = todoDetail
         self.doOrNot = doOrNot

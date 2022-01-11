@@ -95,7 +95,6 @@ func store<T: Encodable>(_ obj: T, to directory: Directory, as fileName: String)
             try FileManager.default.removeItem(at: url)
         }
         FileManager.default.createFile(atPath: url.path, contents: data, attributes: nil)
-        print("sd")
     } catch let error {
         print("---> Failed to store msg: \(error.localizedDescription)")
     }
@@ -104,7 +103,6 @@ func store<T: Encodable>(_ obj: T, to directory: Directory, as fileName: String)
 
 func retrive<T: Decodable>(_ fileName: String, from directory: Directory, as type: T.Type, completion: @escaping (T)->Void) {
     
-//    DispatchQueue.global().async {
     let url = directory.url.appendingPathComponent(fileName, isDirectory: false)
         if !FileManager.default.fileExists(atPath: url.path){
         }
