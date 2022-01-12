@@ -119,31 +119,18 @@ class OnboardingViewController: UIViewController,UIAnimatable {
             if self.currentPage < self.items.count - 1 {
                 self.updateBackgroundImage(index: self.currentPage + 1)//index초과하면 크래쉬남.
             }
-            
-//            if self.currentPage < self.items.count - 1 {
-//                self.updateBackgroundImage(index: self.currentPage + 1)
-//            }
-
             UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: .curveEaseInOut, animations: {
                 self.detailLabel.alpha = 0
                 self.detailLabel.transform = CGAffineTransform(translationX: 0, y: -550)
             }) { _ in
-                print("the end")
                 self.currentPage += 1
-               
-                //self.setupScreen(index: self.currentPage)
+
                 if self.isOverLastItem() {
                     self.showLoadingAnimation()
                     
                     self.navigationManager.show(screen: .mainApp, inController: self)
-                    
-                    
-                    //self.showMainApp()
                 } else {
-                    //self.showLoadingAnimation()
-                    
                     self.setupScreen(index: self.currentPage)
-                   // self.hideLoadingAnimation()
                 }
             }
         }

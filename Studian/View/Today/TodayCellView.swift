@@ -12,24 +12,21 @@
 
 import Foundation
 import UIKit
-//collectionview
-protocol TodayCellCenterDelegate : class {
+
+protocol TodayCellCenterDelegate : AnyObject {
     func doCollectionViewCenter(index  :Int)
 }
-protocol GoToDetailDelegate : class {
+
+protocol GoToDetailDelegate : AnyObject {
     func gotoDetailVC(image:UIImage,index:Int)
 }
 
 class TodayCellView :
     UICollectionViewCell{
 
-    @IBOutlet weak var plusBtn: UIButton!
-    
     weak var todayCellCenterDelegate : TodayCellCenterDelegate?
     weak var goToDetailDelegate : GoToDetailDelegate?
-    @IBOutlet weak var removeBtn: UIButton!
     var deleteButtonTapHandler: (() -> Void)?
-
     var indexRow : Int? {
         didSet{
             today = viewModel.todays[indexRow ?? 0]
@@ -37,40 +34,23 @@ class TodayCellView :
             updateUI()
         }
     }
-    
     private var viewModel = TodayViewModel()
     private var today : Today?
     private var image : UIImage?
-    
-    @IBAction func removeCell(_ sender: UIButton) {
-        deleteButtonTapHandler?()
+    var selectedRows = [IndexPath]()
+    var isInEditingMode: Bool = false {
+        didSet {
+            removeBtn.isHidden = !isInEditingMode//collection
+            tv?.reloadData() // edit 눌렀을때 삭제 모양 나오게하기위해.
+        }
     }
     
-    @IBAction func plusTableCell(_ sender: Any) {
-        print("click")
-        guard let today = today else {return}
-        print("in")
-        TodayManager.shared.createTableCell(today: today)//index 올림
+    @IBOutlet weak var removeBtn: UIButton!
+    @IBOutlet weak var tv: UITableView?
+    @IBOutlet weak var TodayImg : UIImageView!
+    @IBOutlet weak var plusBtn: UIButton!
     
-        guard let nextId = TodayManager.tableCellLastIdDict[today.id] else {return}
-        
-       
-        let todo = Todo(id: nextId, todoName: "one", todoDetail: "two",doOrNot: false)
-        viewModel.updateTodate(today: today, todo: todo)//추가
-        //self.today = today
-        
-        let index = viewModel.getIndex(today: today)
-
-//        print(viewModel.todays)
-//        print("sel row",selectedRows)
-        //print("today:",today)
-        tv?.reloadData()
-        let countN = (viewModel.todays[index].todos.count )
-//        print("co:", countN)
-        let endIndex = IndexPath(row: countN-2,section:  0 )//더하면 맨 아래로
-        self.tv?.scrollToRow(at: endIndex, at: .top, animated: true)
-        plusButtonHidden()
-    }
+    //MARK: - Helpers
     
     func plusButtonHidden(){//6개 까지만 추가가능.
         guard let today = today else {return}
@@ -83,25 +63,7 @@ class TodayCellView :
         else {
             plusBtn.isHidden = true
         }
-        
     }
-    
-    var isInEditingMode: Bool = false {
-        didSet {
-            removeBtn.isHidden = !isInEditingMode//collection view의 리무브버튼
-            plusButtonHidden()//collection view plus button 확인
-            tv?.reloadData() // edit 눌렀을때 삭제 모양 나오게하기위해.
-
-        }
-    }
-    
-    @IBOutlet weak var tv: UITableView?
-
-    @IBOutlet weak var TodayImg : UIImageView!
-    
-    var selectedRows = [IndexPath]()
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){ self.endEditing(true) }
 
     @objc func touchToPickPhoto(image:UIImage,index:Int) {
         guard let today = today else {
@@ -120,42 +82,54 @@ class TodayCellView :
         TodayImg.image = image.fixOrientation()
         tv?.separatorColor = UIColor.clear
         selectedRows = viewModel.getIndexesOfDoSelect(today: today)
-        plusButtonHidden()
+        
     }
     
-    //MARK: - Helpers
-        
-        @objc func checkBox(_ sender: UIButton){
-            sender.isSelected = !sender.isSelected
-            guard let tv = tv, let today = today else {return}
-            let point = sender.convert(CGPoint.zero, to: tv)
-            guard let indxPath = tv.indexPathForRow(at: point) else {return}//거기에 해당하는 인덱스패스
-            let todo = viewModel.getTodo(today: today, index: indxPath.row)
-            if selectedRows.contains(indxPath) {//그린 이야?
-                guard let index = selectedRows.firstIndex(of: indxPath) else { return }
-                selectedRows.remove(at: index)
-                viewModel.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: false))
-            }
-            else {//빨강 이야?
-                selectedRows.append(indxPath)
-                viewModel.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: true))
-            }
-            tv.reloadRows(at: [indxPath], with: .automatic)
+    @objc func checkBox(_ sender: UIButton){
+        sender.isSelected = !sender.isSelected
+        guard let tv = tv, let today = today else {return}
+        let point = sender.convert(CGPoint.zero, to: tv)
+        guard let indxPath = tv.indexPathForRow(at: point) else {return}//거기에 해당하는 인덱스패스
+        let todo = viewModel.getTodo(today: today, index: indxPath.row)
+        if selectedRows.contains(indxPath) {//그린 이야?
+            guard let index = selectedRows.firstIndex(of: indxPath) else { return }
+            selectedRows.remove(at: index)
+            viewModel.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: false))
         }
+        else {//빨강 이야?
+            selectedRows.append(indxPath)
+            viewModel.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: true))
+        }
+        tv.reloadRows(at: [indxPath], with: .automatic)
+    }
     
+    @IBAction func removeCell(_ sender: UIButton) {
+        deleteButtonTapHandler?()
+    }
+    
+    // MARK: - plusTableCell
+    @IBAction func plusTableCell(_ sender: Any) {
+        guard let today = today else {return}
+        viewModel.createTableCell(today: today)
+        guard let nextId = TodayManager.tableCellLastIdDict[today.id] else {return}
+        let todo = Todo(id: nextId, todoName: "one", todoDetail: "two",doOrNot: false)
+        viewModel.updateTodate(today: today, todo: todo)//추가
+        tv?.reloadData()//추가했으므로.
+        let index = viewModel.getIndex(today: today)
+        let countN = (viewModel.todays[index].todos.count )
+        let endIndex = IndexPath(row: countN-2,section:  0 )//더하면 맨 아래로
+        self.tv?.scrollToRow(at: endIndex, at: .top, animated: true)
+    }
 }
 
 // MARK: - UITableViewDataSource, UITableViewDelegate
 extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        plusButtonHidden()//reload할때마다 또는 todo개수가 0 개일때도 호출되도록.
         guard let today = today else {return 0}
         let number = viewModel.getNumberOfTodos(today: today)
         return number
     }
-    
-
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //return UITableViewCell()
         if indexPath.row % 2 == 0 {
@@ -164,7 +138,6 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
             
             cell.isInEditingMode = isInEditingMode
             cell.centerDelegate = self
-            
             cell.deleteButtonTapHandler = {//@@
                 guard let today = self.today else {return}
                 let todayIndex = self.viewModel.getIndex(today: today)
@@ -172,7 +145,6 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
                 self.selectedRows.removeAll {$0 == IndexPath(indexes: [0,indexPath.row])}
                 self.viewModel.deleteTodo(today: today,
                                           todo: (self.viewModel.todays[todayIndex].todos[index]))
-                self.plusButtonHidden()
                 self.tv?.reloadData()
                 if indexPath.row > 0 {//아래쪽에 있다면 지우면 올라오도록.
                     let endIndex = IndexPath(row: indexPath.row - 2 ,section:  0 )//더하면 맨 아래로
@@ -207,11 +179,6 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
             return 10
         }
     }
-    
-    
-    
-
-    
 }
 // MARK: - TableViewCenterDelegate
 

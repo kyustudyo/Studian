@@ -70,6 +70,10 @@ class TodayViewModel {
     func getIndexesOfDoSelect(today:Today)->[IndexPath]{
         manager.getIndexesOfDoSelect(today: today)
     }
+    
+    func createTableCell (today:Today) {
+        manager.createTableCell(today: today)
+    }
 }
 
 class TodayManager {
@@ -85,13 +89,14 @@ class TodayManager {
     
     func retrieveTodo(completion: @escaping ()->Void) {//cell들에 할것
         DispatchQueue.global().async {
-            retrive(fileNavigation.todays.fileName, from: .documents, as: [Today].self,completion: { [weak self] todays in
-                
+            retrive(fileNavigation.todays.fileName,
+                    from: .documents,
+                    as: [Today].self,
+                    completion: { [weak self] todays in
                 self?.todays = todays
                 print("DEBUG: count of todays: ",todays.count)// 곱하기 2 되어서 나온다.
                 if todays.count != 0{
                     todays.forEach{
-
                             let image = UIImage(data: $0.imageData) ?? UIImage()
                         self?.images.append(image)
                     }
@@ -102,32 +107,22 @@ class TodayManager {
                 var todoIds = Array<Int>()
                 for i in 0..<todays.count {
                     let id = todays[i].id
-                    
                     for todo in todays[i].todos{
                         todoIds.append(todo.id)
                     }
                     let lastId = todoIds.max() ?? 0
-                    let numberOfTodo = todays[i].todos.count
-                    
-        //            LastIdDict.updateValue(numberOfTodo, forKey: id)
                     LastIdDict.updateValue(lastId, forKey: id)
                 }
                 TodayManager.lastId = lastId
                 TodayManager.tableCellLastIdDict = LastIdDict
-                
+                print("lastId",lastId,"lastIdDict:",LastIdDict,LastIdDict.count)
                 DispatchQueue.main.async {
                     completion()
                 }
             })
         }
-        
-        
-        
     }
     func deleteImage(index:Int){
-        print("delete index ", index)
-        print("delete index2 ",images.count)
-        print("delete index3 ",index/2)
         images.remove(at: (index))
         images.remove(at: (index))
     }
@@ -151,15 +146,12 @@ class TodayManager {
         //현재 껐다켰을 때 이전이 12,13 까지 만들어놨다면 다시 들어오면 15,16 이렇게 만드는데
         //딱히 문제없어서 그냥 두었다. 나중에 문제 발생시 수정.
         TodayManager.tableCellLastIdDict[today.id] = nextId
-        print("nextId",nextId)
-        //return today
+       
     }
     func updateToday (today: Today, todo: Todo){//사실상 추가
         guard let index = todays.firstIndex(of: today) else {return}
         todays[index].add(todo: todo)
-        todays[index].add(todo: Todo(id: todo.id + 1, todoName: "", todoDetail: "",doOrNot: false))
-        //saveTodays()
-        print("update:\(TodayManager.shared.todays)")
+        todays[index].add(todo: Todo(id: todo.id + 1, todoName: "", todoDetail: "",doOrNot: false))//dummy.
     }
     func deleteTodo(today:Today,todo:Todo){
         guard let index = todays.firstIndex(of: today) else {return}

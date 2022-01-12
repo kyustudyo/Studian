@@ -21,16 +21,14 @@ class TodayTableCell : UITableViewCell {
     
     // MARK: - Properties
     
-    @IBOutlet weak var checkButton : UIButton? 
-    @IBOutlet weak var removeButton: UIButton?
-    
-    @IBOutlet weak var todoName: UITextField! {
+    weak var centerDelegate :TableViewCenterDelegate?
+    weak var delegate: TableCellChangeDelegate?
+    var toDoViewModel: ToDoViewModel? {
         didSet {
-            todoName.getCustomTextFieldSetting()
-            todoName.delegate = self//notification달기위해.
+            update()
         }
     }
-    
+    var deleteButtonTapHandler: (()->Void)?
     var isInEditingMode : Bool = false{
         didSet {
             checkButton?.isHidden = isInEditingMode
@@ -42,21 +40,24 @@ class TodayTableCell : UITableViewCell {
             todoDetail.isUserInteractionEnabled = isInEditingMode
         }
     }
+    
+    @IBOutlet weak var checkButton : UIButton? 
+    @IBOutlet weak var removeButton: UIButton?
+    @IBOutlet weak var todoName: UITextField! {
+        didSet {
+            todoName.getCustomTextFieldSetting()
+            todoName.delegate = self//notification달기위해.
+        }
+    }
     @IBOutlet weak var todoDetail: UITextField! {
         didSet {
             todoDetail.getCustomTextFieldSetting()
             todoDetail.delegate = self
         }
     }
-    weak var centerDelegate :TableViewCenterDelegate?
-    weak var delegate: TableCellChangeDelegate?
-    var toDoViewModel: ToDoViewModel? {
-        didSet {
-            
-            update()
-        }
-    }
-    var deleteButtonTapHandler: (()->Void)?
+    
+    
+    
     
     // MARK: - Helpers
     
@@ -85,16 +86,11 @@ extension TodayTableCell : UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         centerDelegate?.setViewCenter()
     }
-    func textFieldDidChangeSelection(_ textField: UITextField) {
-        print("r")
-    }
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard let viewModel = toDoViewModel,
                 let delegate = delegate else {return}
         var todo = viewModel.toDo
         let text = textField.text ?? ""
-        print("기존todo:",todo)
-        print("내가쓴것:",text)
         if textField == todoName {
             todo = viewModel.configureToDo(toDo: todo,
                                     text: text, textKinds: .toDoName)
@@ -105,8 +101,7 @@ extension TodayTableCell : UITextFieldDelegate {
         delegate.tableCellChange(todo)
     }
 
-
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {//완료 누를 때.
             textField.resignFirstResponder()
             return true
         }

@@ -235,7 +235,6 @@ extension StudianTodayViewController: UICollectionViewDelegateFlowLayout {
             return CGSize(width: width, height: CGFloat(height))
             
         }
-        
     }
 }
 // MARK: - tmpDelegate
