@@ -88,8 +88,8 @@ class StudianTodayViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 //        checkUserDefaults()
-        print("debug: getDate:",StorageManager().getLastOpenDate())
         
+        print("it's gonna be a Debug")
         startIndicator()//custom
         prepareDarkMode()
         editButtonHidden()//많으면 추가 못하게.
