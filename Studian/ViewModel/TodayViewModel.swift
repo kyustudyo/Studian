@@ -177,7 +177,7 @@ class TodayManager {
         
         
         todays[todayIndex].todos[todoIndex].configure(todoName: todo.todoName, todoDetail: todo.todoDetail,doOrNot: todo.doOrNot)
-        
+        print("변경후:",todays[todayIndex].todos[todoIndex])
     }
     
     func addToday(_ today: Today) {

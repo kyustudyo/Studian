@@ -8,13 +8,13 @@
 import Foundation
 import UIKit
 
-struct ToDoViewModel {
+class ToDoViewModel {
     enum textKinds {
         case toDoName
         case toDoDetail
         
     }
-    let toDo : Todo
+    var toDo : Todo
     
     init(toDo: Todo) {
         self.toDo = toDo
@@ -34,6 +34,7 @@ struct ToDoViewModel {
     
     func configureToDo(toDo:Todo, text:String, textKinds:textKinds)->Todo {
         var toDo = toDo
+        
         switch textKinds {
         case .toDoName:
             toDo.configure(todoName: text,
@@ -44,6 +45,10 @@ struct ToDoViewModel {
                            todoDetail: text,
                            doOrNot: toDo.doOrNot)
         }
+        print("textKinds:",textKinds,
+              "내가쓴것:",text,
+              "todo.name:",toDo.todoName,
+              "todo.detail:",toDo.todoDetail)
         return toDo
     }
 }

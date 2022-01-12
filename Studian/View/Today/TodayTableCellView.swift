@@ -85,22 +85,23 @@ extension TodayTableCell : UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
         centerDelegate?.setViewCenter()
     }
-    
+    func textFieldDidChangeSelection(_ textField: UITextField) {
+        print("r")
+    }
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard let viewModel = toDoViewModel,
                 let delegate = delegate else {return}
         var todo = viewModel.toDo
         let text = textField.text ?? ""
-        
+        print("기존todo:",todo)
+        print("내가쓴것:",text)
         if textField == todoName {
             todo = viewModel.configureToDo(toDo: todo,
                                     text: text, textKinds: .toDoName)
-            
         }
         else if textField == todoDetail {
             todo = viewModel.configureToDo(toDo: todo, text: text, textKinds: .toDoDetail)
         }
-        
         delegate.tableCellChange(todo)
     }
 

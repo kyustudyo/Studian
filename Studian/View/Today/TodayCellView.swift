@@ -227,6 +227,7 @@ extension TodayCellView : TableCellChangeDelegate {
     func tableCellChange(_ todo:Todo) {
         guard let today = today else {return}
         viewModel.updateTodo(today: today, todo: todo)
+        tv?.reloadData()//table cell에 새로운 todo viewmodel을 넣어주기 위함.
     }
 }
 
