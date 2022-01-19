@@ -251,14 +251,8 @@ extension EditHedeaderProfileViewController : UIImagePickerControllerDelegate & 
         } else if let possibleImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             newImage = possibleImage.fixOrientation() // 원본 이미지가 있을 경우
         }
-        
-        //showLoadingAnimation()//  안먹힘
         plusPhotoButton.setImage(newImage.withRenderingMode(.alwaysOriginal), for: .normal)
         headerModel?.headerImage = newImage.pngData()
-        
-//        ImageFileManager.saveImageInDocumentDirectory(image: fixedImage!, fileName: "PurposePicture.png")
-        //hideLoadingAnimation()
-        
         plusPhotoButton.layer.borderColor = UIColor.white.cgColor
         plusPhotoButton.layer.borderWidth = 3.0
         plusPhotoButton.layer.cornerRadius = 50
