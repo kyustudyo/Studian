@@ -12,9 +12,9 @@ import RxSwift
 import RxCocoa
 
 class todayDetailViewController : UIViewController, UITextViewDelegate{
-    private let selectedImageSubject = PublishSubject<(UIImage,Int)>()
-    var selectedImage: Observable<(UIImage,Int)> {
-        return selectedImageSubject.asObservable()
+    private let imageAndIndexSubject = PublishSubject<(UIImage,Int)>()
+    var imageAndIndex: Observable<(UIImage,Int)> {
+        return imageAndIndexSubject.asObservable()
     }
     
     private var isImageChanged = false
@@ -54,7 +54,7 @@ class todayDetailViewController : UIViewController, UITextViewDelegate{
         dismiss(animated: true, completion: nil)//여기잇어도 되나?
         if isImageChanged {
             if let index = index, let image = image {
-                selectedImageSubject.onNext((image,index))
+                imageAndIndexSubject.onNext((image,index))
             }
         }
     }

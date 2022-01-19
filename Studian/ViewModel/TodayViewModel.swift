@@ -54,7 +54,6 @@ class TodayViewModel {
         return manager.getIndex(today)
     }
     
-    
     func getTodo(today:Today,index:Int)->Todo {
         manager.getTodo(today: today, index: index)
     }
