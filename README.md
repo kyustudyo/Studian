@@ -1,6 +1,6 @@
 # Studian2
 
-기존 작성한 코드에서 Refactoring중 사항입니다.
+기존 작성한 코드에서 Refactoring중 입니다.
 
 Codable을 이용한 device내에 저장 -> Database를 이용한 device내에 저장
 
