@@ -13,7 +13,7 @@ import RxCocoa
 //protocol PlusMainCellsDelegate: class {
 //    func PlusCell(purpose:Purpose,image:UIImage)
 //}
-class PlusMainCellsViewController : UIViewController, UIAnimatable{
+class PlusMainCellsViewController : UIViewController {
     
     // MARK: - Properties
     
@@ -45,6 +45,7 @@ class PlusMainCellsViewController : UIViewController, UIAnimatable{
 
     var FirstTextField = CustomTextField(placeholder: "Main Something")
     var SecondTextField = CustomTextField(placeholder: "Sub Something")
+    
     private let completeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Complete!", for: .normal)
@@ -52,19 +53,16 @@ class PlusMainCellsViewController : UIViewController, UIAnimatable{
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         button.backgroundColor = .systemGreen
         button.setTitleColor(.white, for: .normal)
-        //button.layer.masksToBounds = true
         button.setHeight(height: 40)
         button.isEnabled = true
         button.addTarget(self, action: #selector(complete), for: .touchUpInside)
         return button
     }()
     
-    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("the overee")
         navigationController?.isNavigationBarHidden = true
         configureNotificationObservers()
         configureUI()
@@ -211,13 +209,8 @@ extension PlusMainCellsViewController : UIImagePickerControllerDelegate & UINavi
         plusPhotoButton.layer.borderColor = UIColor.white.cgColor
         plusPhotoButton.layer.borderWidth = 3.0
         plusPhotoButton.layer.cornerRadius = 50
-//        print("current: ",plusPhotoButton.currentImage,plusPhotoButton.imageView?.tag)
         dismiss(animated: true, completion: nil)
     }
-    
-    
-    
-    
 }
 
 // MARK: - UIGestureRecognizerDelegate
@@ -234,5 +227,9 @@ extension PlusMainCellsViewController :UIGestureRecognizerDelegate{
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         return touch.view == self.view
     }
+    
+}
+
+extension PlusMainCellsViewController: UIAnimatable {
     
 }
