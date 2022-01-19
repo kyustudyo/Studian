@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-struct Today : Equatable, Codable, typeInjection {
+struct Today : Equatable, Codable {
     var id: Int
     var imageData : Data
     var todos : [Todo]
@@ -27,8 +27,8 @@ struct Today : Equatable, Codable, typeInjection {
     mutating func editImage(image:UIImage){
         self.imageData = image.pngData() ?? Data()
     }
-    
 }
+
 struct Todo : Codable {
     
     var id : Int

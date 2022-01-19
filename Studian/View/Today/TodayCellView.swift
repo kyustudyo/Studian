@@ -4,14 +4,10 @@
 //
 //  Created by 이한규 on 2021/10/23.
 //
-//  MainPageTableCell.swift
-//  Studian
-//
-//  Created by 이한규 on 2021/10/22.
-//
-
 import Foundation
 import UIKit
+import RxSwift
+import RxCocoa
 
 protocol TodayCellCenterDelegate : AnyObject {
     func doCollectionViewCenter(index  :Int)
@@ -23,9 +19,13 @@ protocol GoToDetailDelegate : AnyObject {
 
 class TodayCellView :
     UICollectionViewCell{
-
     weak var todayCellCenterDelegate : TodayCellCenterDelegate?
-    weak var goToDetailDelegate : GoToDetailDelegate?
+    
+    private let imageAndIndexSubject = PublishSubject<(UIImage,Int)>()
+    var imageAndIndex: Observable<(UIImage,Int)> {
+        return imageAndIndexSubject.asObservable()
+    }
+    
     var deleteButtonTapHandler: (() -> Void)?
     var indexRow : Int? {
         didSet{
@@ -65,14 +65,16 @@ class TodayCellView :
         }
     }
 
-    @objc func touchToPickPhoto(image:UIImage,index:Int) {
+    @objc func touchToPickPhoto(image:UIImage) {
         guard let today = today else {
             return
         }
+        
         let index = viewModel.getIndex(today: today)
-        goToDetailDelegate?.gotoDetailVC(image:image,index: index)
+        imageAndIndexSubject.onNext((image,index))
+//        goToDetailDelegate?.gotoDetailVC(image:image,index: index)
     }
-    
+
     func updateUI(){
         guard let image = image, let today = today else {return}
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(touchToPickPhoto))
@@ -82,7 +84,6 @@ class TodayCellView :
         TodayImg.image = image.fixOrientation()
         tv?.separatorColor = UIColor.clear
         selectedRows = viewModel.getIndexesOfDoSelect(today: today)
-        
     }
     
     @objc func checkBox(_ sender: UIButton){

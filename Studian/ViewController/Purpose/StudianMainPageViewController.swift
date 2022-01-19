@@ -7,13 +7,18 @@
 
 import UIKit
 import MBProgressHUD
+import RxSwift
+import RxCocoa
 
 class StudianMainPageViewController: UIViewController {
     
     // MARK: - Properties
     
+    let disposeBag = DisposeBag()
+    
     var headerModel = HeaderModel(textViewText: nil, textFieldText1: nil, textFieldText2: nil,headerImage: nil)
     var purposeViewModel = PurposesViewModel()
+    
     var headerImage = UIImage()
     var activityIndicator:UIActivityIndicatorView = UIActivityIndicatorView()
     @IBOutlet weak var collectionview: UICollectionView!
@@ -50,11 +55,19 @@ class StudianMainPageViewController: UIViewController {
     }
     
     @IBAction func EditCellsBtn(_ sender: UIButton) {
-        print(PurposeManager.lastId)
         let navigationController = UINavigationController(rootViewController: PlusMainCellsViewController())
         let vc = navigationController.viewControllers.first! as? PlusMainCellsViewController
-        vc?.delegate = self
+
         vc?.viewModel = purposeViewModel
+        vc?.plusViewModel.subscribe(onNext:{ [weak self] in
+            self?.showLoadingAnimation()
+            self?.purposeViewModel.addPurposeAndImage(purpose: $0.purpose, image: $0.image) {
+                self?.editButtonHidden()
+                self?.reloadCell()
+                self?.clearTmpDirectory()
+                self?.hideLoadingAnimation()
+            }
+        })
         navigationController.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
         self.present(navigationController,animated: true,completion: nil)
     }
@@ -93,18 +106,13 @@ class StudianMainPageViewController: UIViewController {
             setEditing(true, animated: false)
             sender.isSelected = true
         }
-        
-//        collectionview.allowsMultipleSelection = sender.isSelected
         reloadCell()
-        
     }
     
     func reloadCell(){
         collectionview.reloadData()
     }
-    
-    
-    
+     
     func fetchHeaderTexts(){
         DispatchQueue.global().async {
             retrive(fileNavigation.header.fileName, from: .documents, as: HeaderModel.self){
@@ -115,9 +123,8 @@ class StudianMainPageViewController: UIViewController {
                 }
             }
         }
-            
-        print("\(headerModel.textViewText)")
     }
+    
     func clearTmpDirectory(){
         DispatchQueue.global().async {
             FileManager.default.clearTmpDirectory()
@@ -144,8 +151,6 @@ class StudianMainPageViewController: UIViewController {
     override func viewDidLoad() {
        
         super.viewDidLoad()
-        print("the overee")
-        
         purposeViewModel.refactorIndexes()
         startIndicator()
         collectionview.alwaysBounceVertical = true
@@ -165,10 +170,7 @@ class StudianMainPageViewController: UIViewController {
             self.editCellsBtn.isHidden = true
             self.purposeViewModel.loadPurposes2 { [weak self] in
                 self?.reloadCell()
-
-
                 self?.navigationController?.navigationBar.topItem?.title = "Purpose"
-
                 self?.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: self?.editButton ?? UIButton())
                 self?.navigationController?.navigationBar.prefersLargeTitles = true
                 self?.navigationController?.navigationItem.largeTitleDisplayMode = .automatic
@@ -320,56 +322,46 @@ extension StudianMainPageViewController: EditHedeaderProfileDelegate {
         
     }
 }
-// MARK: - PurposeDetailVIewControllerDelegate
-extension StudianMainPageViewController:  PurposeDetailVIewControllerDelegate {
-    func changeDetail(purpose:Purpose,image:UIImage,indexInt:Int,isTextsChanged:Bool,isImageChanged:Bool) {
-        showLoadingAnimation()
-        let workGroup = DispatchGroup()
-        
-        if isImageChanged {
-            DispatchQueue.global().async(group:workGroup) { [weak self] in
-                self?.purposeViewModel.updateImage(purpose: purpose, image: image, index: indexInt){
-                        }
-            }
-        }
-        if isTextsChanged {
-            DispatchQueue.global().async(group: workGroup) { [weak self] in
-                self?.purposeViewModel.updatePurpose(purpose)
-            }
-        }
-        workGroup.notify(queue: .main){ [weak self] in
-            self?.reloadCell()
-            self?.hideLoadingAnimation()
-        }
-    }
-}
 
 // MARK: - UICollectionViewDelegate
 
 extension StudianMainPageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print(editButton.isSelected)
-        //guard !(editButton.isSelected) else {return}//수정중일때는 못들어가도록.
-        print("누를 때 player가도록 설정됨.")
-        
+    
         let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
         guard let detailVC = storyboard.instantiateViewController(withIdentifier: "PurposeDetailVIewController") as? PurposeDetailVIewController else {return}//스토리보드에서 연결 안해도 이거면 갈 수 있다.
-        //let purposeAndImage = purposeViewModel.purposeAndImage(id: indexPath.item)
-        //detailVC.purposeAndImage = purposeAndImage
+
         detailVC.viewModel = purposeViewModel
         detailVC.index = indexPath.item
         detailVC.purpose = purposeViewModel.purposes[indexPath.row]
-        detailVC.delegate = self
-        detailVC.modalPresentationStyle = .overFullScreen//full screen 하면 detailview에서 색깔 십힘
-//        guard let purpose = purposeViewModel.purposes[indexPath.item]  else {return}
-        
-        
-            present(detailVC, animated: true, completion: nil)
+        detailVC.detailViewModel.subscribe(onNext:{ [weak self] in
+            self?.showLoadingAnimation()
+            let workGroup = DispatchGroup()
+            let index = $0.indexInt
+            let purpose = $0.purpose
+            let image = $0.image
             
+            if $0.isImageChanged {
+                DispatchQueue.global().async(group:workGroup) { [weak self] in
+                    self?.purposeViewModel.updateImage(purpose: purpose, image: image, index: index){
+                            }
+                }
+            }
+            if $0.isTextsChagned {
+                DispatchQueue.global().async(group: workGroup) { [weak self] in
+                    self?.purposeViewModel.updatePurpose(purpose)
+                }
+            }
+            workGroup.notify(queue: .main){ [weak self] in
+                self?.reloadCell()
+                self?.hideLoadingAnimation()
+            }
         
-//        playerVC.simplePlayer.replaceCurrentItem(with: item)
+        }).disposed(by: disposeBag)
+        
+        detailVC.modalPresentationStyle = .overFullScreen//full
+            present(detailVC, animated: true, completion: nil)
 
-        
     }
 }
 
@@ -391,22 +383,10 @@ extension StudianMainPageViewController: UICollectionViewDelegateFlowLayout {
     
 }
 
-// MARK: - PlusMainCellsDelegate
+// MARK: - UIAnimatable
 
-extension StudianMainPageViewController: PlusMainCellsDelegate,UIAnimatable {
+extension StudianMainPageViewController:  UIAnimatable {
 
-    func PlusCell(purpose:Purpose,image:UIImage){
-        showLoadingAnimation()
-        purposeViewModel.addPurposeAndImage(purpose: purpose, image: image) { [weak self] in
-            self?.editButtonHidden()
-            self?.reloadCell()
-            self?.clearTmpDirectory()
-            self?.hideLoadingAnimation()
-        }
-        
-    }
-    
-    
 }
 
 

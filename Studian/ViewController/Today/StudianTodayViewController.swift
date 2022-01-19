@@ -7,13 +7,16 @@
 
 import Foundation
 import UIKit
+import RxSwift
+import RxCocoa
 
 private let TodayCell = "TodayCell"
 private let TodayCell2 = "TodayCell2"
+private let todayDetailVC = "todayDetailViewController"
 class StudianTodayViewController: UIViewController {
     
     // MARK: - Properties
-    
+    let disposeBag = DisposeBag()
     @IBOutlet weak var img: UIImageView!
     @IBOutlet weak var plusCellsBtn: UIButton!
     private let todayViewModel = TodayViewModel()
@@ -42,6 +45,7 @@ class StudianTodayViewController: UIViewController {
     func reloadCell(){
         collectionview.reloadData()
     }
+    
     @objc func saveSelector(_ sender: UIButton){
         showLoadingAnimation()
         self.todayViewModel.saveTodays{ [weak self] in
@@ -77,19 +81,11 @@ class StudianTodayViewController: UIViewController {
     func configureUI(){
         collectionview.alwaysBounceVertical = true
         self.navigationController?.navigationItem.largeTitleDisplayMode = .always
-        self.navigationController?.navigationBar.prefersLargeTitles = true//아래 말고 여기에 선언해야 들어오자마자 크게 유지됨.
+        self.navigationController?.navigationBar.prefersLargeTitles = true
     }
-//    func checkUserDefaults(){
-//        let defaults = UserDefaults.standard
-//        let data = StorageManager().isOnboardingSeen()
-//        print("Debug: isOnboardingSeen:", data)
-//    }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-//        checkUserDefaults()
-        print("debug: getDate:",StorageManager().getLastOpenDate())
-        
         startIndicator()//custom
         prepareDarkMode()
         editButtonHidden()//많으면 추가 못하게.
@@ -98,8 +94,8 @@ class StudianTodayViewController: UIViewController {
                                         { [weak self] in
             guard let this = self else {return}
             this.navigationController?.navigationBar.topItem?.title = "Today..."
-            this.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: this.saveButton ?? UIButton())
-            this.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: this.editButton ?? UIButton())
+            this.navigationItem.leftBarButtonItem = UIBarButtonItem(customView: this.saveButton )
+            this.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: this.editButton )
             
             this.stopIndicator()
             this.collectionview.reloadData()})
@@ -119,14 +115,26 @@ extension StudianTodayViewController : UICollectionViewDataSource {
             }
             
             let today = todayViewModel.todays[indexPath.row]
-            let image = todayViewModel.images[indexPath.row]
-            
             cell.indexRow = indexPath.row
-//            cell.updateUI()
-//            cell.today = today
+            cell.imageAndIndex.subscribe(onNext:{ [weak self] in
+                let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
+                guard let detailVC = storyboard.instantiateViewController(withIdentifier: todayDetailVC) as? todayDetailViewController else {return}//스토리보드에서 연결 안해도 이거면 갈 수 있다.
+                detailVC.image = self?.todayViewModel.images[$0.1]
+                detailVC.index = $0.1
+                detailVC.imageAndIndex
+                    .subscribe(onNext:{ [weak self] in
+                        self?.showLoadingAnimation()
+                        self?.todayViewModel.editToday(image: $0.0, index: $0.1){ [weak self] in
+                            self?.reloadCell()
+                            self?.hideLoadingAnimation()
+                        }
+                    }).disposed(by: self?.disposeBag ?? DisposeBag())
+                
+                detailVC.modalPresentationStyle = .overFullScreen
+                self?.present(detailVC, animated: true, completion: nil)
+
+            }).disposed(by: disposeBag)
             
-            cell.goToDetailDelegate = self
-//            cell.viewModel = todayViewModel
             cell.todayCellCenterDelegate = self//center
             cell.deleteButtonTapHandler = {
                 self.todayViewModel.deleteToday(today)
@@ -148,7 +156,6 @@ extension StudianTodayViewController : UIImagePickerControllerDelegate & UINavig
 
     @IBAction func plusCells(_ sender: UIButton) {
         
-        print("select")
         showLoadingAnimation()
         let imagePickerController = UIImagePickerController()
         imagePickerController.delegate = self
@@ -158,7 +165,7 @@ extension StudianTodayViewController : UIImagePickerControllerDelegate & UINavig
     }
 
     func editButtonHidden() {
-//        print(isEditing)
+
         if isEditing {
             plusCellsBtn.isHidden = !todayViewModel.countIsValid
         }
@@ -166,23 +173,23 @@ extension StudianTodayViewController : UIImagePickerControllerDelegate & UINavig
             self.plusCellsBtn.isHidden = true
         }
         
-        
     }
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         dismiss(animated: true, completion: nil)
         showLoadingAnimation()
         let workGroup = DispatchGroup()
         DispatchQueue.global().async(group:workGroup) { [weak self] in
-            let image = info[.originalImage] as? UIImage
+            
             var newImage = UIImage()
             if let possibleImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage {
-                newImage = possibleImage.fixOrientation() // 수정된 이미지가 있을 경우
+                newImage = possibleImage.fixOrientation()
             } else if let possibleImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
                 newImage = possibleImage.fixOrientation() // 원본 이미지가 있을 경우
             }
             let today = TodayManager.shared.createIndexAndData(image: newImage)
             self?.todayViewModel.addToday(today)
         }
+        
         workGroup.notify(queue: .main) { [weak self] in
             self?.editButtonHidden()
             self?.reloadCell()
@@ -191,59 +198,33 @@ extension StudianTodayViewController : UIImagePickerControllerDelegate & UINavig
     }
 }
 
-extension StudianTodayViewController : GoToDetailDelegate,TodayDetailViewControllerDelegate {
-    
-    func gotoDetailVC(image:UIImage,index:Int) {
-        let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-        guard let detailVC = storyboard.instantiateViewController(withIdentifier: "todayDetailViewController") as? todayDetailViewController else {return}//스토리보드에서 연결 안해도 이거면 갈 수 있다.
-        
-        detailVC.image = todayViewModel.images[index]
-        detailVC.index = index
-        detailVC.todayDetailViewControllerDelegate = self
-        detailVC.modalPresentationStyle = .overFullScreen//full screen 하면 detailview에서 색깔 십힘
-        present(detailVC, animated: true, completion: nil)
-
-    }
-    //today detail view controller
-    func change(image: UIImage,index: Int) {//2가 곱해진 인덱스
-        showLoadingAnimation()
-        todayViewModel.editToday(image: image, index: index){ [weak self] in
-            self?.reloadCell()
-            self?.hideLoadingAnimation()
-        }
-    }
-}
-
-
 
 extension StudianTodayViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width: CGFloat = (collectionView.bounds.width - (20 * 2))
         if indexPath.row % 2 == 0 {
-            let width: CGFloat = (collectionView.bounds.width - (20 * 2))
+            
             let height: CGFloat = width/2.5
             return CGSize(width: width, height: height)
         }
         else {
-            let width: CGFloat = (collectionView.bounds.width - (20 * 2))
-//            let height: CGFloat = width/2.5
             var height = 10
-            print("last", indexPath.row)
-            print("\(todayViewModel.todays.count-1)")
             if indexPath.row == todayViewModel.todays.count-1 {
                 height = 300
             }//마지막 셀의 아래에 큰 스페이스를 줘서 키보드 올라갈때 여유 생기게 한다.
             return CGSize(width: width, height: CGFloat(height))
-            
         }
     }
 }
-// MARK: - tmpDelegate
+
+// MARK: - TodayCellCenterDelegate
 extension StudianTodayViewController : TodayCellCenterDelegate {
-    func doCollectionViewCenter(index:Int) {//텍스트필드 접근시 키보드 올리면
-//        let index = (index-1 >= 0 ? index - 1 : 0)
-        self.collectionview.scrollToItem(at:IndexPath(item: index, section: 0), at: .centeredVertically, animated: true)//이 코드가 아니라 scrollToItem(at:Indexpath(index:index),at: .left....) 이거로 하면안된다. 위의 것은 된다.
+    func doCollectionViewCenter(index:Int) {
+        self.collectionview.scrollToItem(at:IndexPath(item: index, section: 0), at: .centeredVertically, animated: true)
+        //이 코드가 아니라 scrollToItem(at:Indexpath(index:index),at: .left....) 이거로 하면안된다. 위의 것은 된다.
     }
 }
+
 // MARK: - UIAnimatable
 extension StudianTodayViewController : UIAnimatable {
 }

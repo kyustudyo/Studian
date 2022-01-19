@@ -8,8 +8,8 @@
 import Foundation
 import UIKit
 
-struct Purpose : Equatable, Codable, typeInjection{
-    var id : Int
+struct Purpose : Equatable, Codable{
+    var id : Int = -1
     var name: String
     var oneSenetence: String
     

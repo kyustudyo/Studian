@@ -7,17 +7,23 @@
 
 import UIKit
 import MBProgressHUD
+import RxSwift
+import RxCocoa
 
-protocol PlusMainCellsDelegate: class {
-    func PlusCell(purpose:Purpose,image:UIImage)
-}
-class PlusMainCellsViewController : UIViewController, UIAnimatable{
+//protocol PlusMainCellsDelegate: class {
+//    func PlusCell(purpose:Purpose,image:UIImage)
+//}
+class PlusMainCellsViewController : UIViewController {
     
     // MARK: - Properties
     
-    weak var delegate : PlusMainCellsDelegate?
+    private let plusViewModelSubject = PublishSubject<PurposePlusViewModel>()
+    var plusViewModel : Observable<PurposePlusViewModel> {
+        plusViewModelSubject.asObservable()
+    }
+    let disposeBag = DisposeBag()
     weak var viewModel :PurposesViewModel?
-    var purpose = Purpose(id: -1, name: "", oneSenetence: "")
+    var purpose = Purpose(name: "", oneSenetence: "")
     private let containerView : UIView = {
         let uiView = UIView()
         uiView.backgroundColor = .groupTableViewBackground
@@ -37,8 +43,9 @@ class PlusMainCellsViewController : UIViewController, UIAnimatable{
         return button
     }()
 
-    var FirstTextField = CustomTextField(placeholder: "Something")
-    var SecondTextField = CustomTextField(placeholder: "Anything")
+    var FirstTextField = CustomTextField(placeholder: "Main Something")
+    var SecondTextField = CustomTextField(placeholder: "Sub Something")
+    
     private let completeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Complete!", for: .normal)
@@ -46,24 +53,20 @@ class PlusMainCellsViewController : UIViewController, UIAnimatable{
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         button.backgroundColor = .systemGreen
         button.setTitleColor(.white, for: .normal)
-        //button.layer.masksToBounds = true
         button.setHeight(height: 40)
         button.isEnabled = true
-        button.addTarget(self, action: #selector(handleRegistration), for: .touchUpInside)
+        button.addTarget(self, action: #selector(complete), for: .touchUpInside)
         return button
     }()
-    
     
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("the overee")
         navigationController?.isNavigationBarHidden = true
         configureNotificationObservers()
         configureUI()
         tapGesture()
-        //configureNotificationObservers()
     }
 
     func configureUI(){
@@ -103,30 +106,38 @@ class PlusMainCellsViewController : UIViewController, UIAnimatable{
     
 // MARK: Helpers
     
-    @objc func handleRegistration(){
-        print("sdsdsd")
-        //print(UIApplication.topViewController())
-        navigationController?.popViewController(animated: true)//없어도된다.
-        guard let image = plusPhotoButton.imageView?.image else {return}//플러스버튼에 이미지는 원래있다.
+    func textFieldRxSwift(){
+        FirstTextField.rx.controlEvent(.editingChanged)
+            .asObservable()
+            .map{self.FirstTextField.text ?? ""}
+            .subscribe(onNext: { text in
+                self.purpose = Purpose( name: text, oneSenetence: self.SecondTextField.text ?? "")
+                
+            }).disposed(by: disposeBag)
+        
+        SecondTextField.rx.controlEvent(.editingChanged)
+            .asObservable()
+            .map{self.SecondTextField.text ?? ""}
+            .subscribe(onNext: { text in
+                self.purpose = Purpose( name: self.FirstTextField.text ?? "", oneSenetence: text)
+            }).disposed(by: disposeBag)
+    }
+    
+    @objc func complete(){
+    
+        
+        guard let image = plusPhotoButton.imageView?.image, let viewModel = viewModel else {return}//플러스버튼에 이미지는 원래있다.
         if plusPhotoButton.imageView?.tag == 1 {//사진넣으면 태그 1되도록해놨다.
-            let resultPurpose = PurposeManager.shared.createPurpose(name: purpose.name, oneSentence: purpose.oneSenetence)//id가 한번만 생길 수 있도록.
-//            viewModel?.addPurpose(resultPurpose)
-//            viewModel?.addImage(image)//파일저장까지 포함
-            delegate?.PlusCell(purpose: resultPurpose, image: image)
+            let resultPurpose = viewModel.createPurpose(name: purpose.name, oneSentence: purpose.oneSenetence)//id가 한번만 생길 수 있도록.
+            plusViewModelSubject.onNext(PurposePlusViewModel(purpose: resultPurpose, image: image))
         }
-        //image nothing
+
         else {//태그가 -1 일때
             //이미지가 없는데 뭐라고 썼다면 이미지를 랜덤하게 만든다.
-            print("사진없다.")
-            print("현재 \(PurposeManager.lastId)")
             if purpose.name == "" && purpose.oneSenetence == "" {return}
-            print("사진없는데 말이 있다")
             let image = UIImage(systemName: "circle")!
-            let resultPurpose = PurposeManager.shared.createPurpose(name: purpose.name, oneSentence: purpose.oneSenetence)//id가 한번만 생길 수 있도록.
-//            viewModel?.addPurpose(resultPurpose)
-//            viewModel?.addImage(image)//파일저장까지 포함
-            
-            delegate?.PlusCell(purpose: resultPurpose, image: image)
+            let resultPurpose = viewModel.createPurpose(name: purpose.name, oneSentence: purpose.oneSenetence)//id가 한번만 생길 수 있도록.
+            plusViewModelSubject.onNext(PurposePlusViewModel(purpose: resultPurpose, image: image))
         }
         dismiss(animated: true, completion: nil)
     }
@@ -144,42 +155,28 @@ extension PlusMainCellsViewController {
     }
     
     @objc func adjustInputView(noti:Notification) {
-        guard let userInfo = noti.userInfo else { return }
-        // [x] TODO: 키보드 높이에 따른 인풋뷰 위치 변경
-        guard let keyboardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
         
+        guard let userInfo = noti.userInfo else { return }
+        guard let keyboardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
         if noti.name == UIResponder.keyboardWillShowNotification {
-            
-            print("go")
-            let adjustmentHeight = keyboardFrame.height//원래
-            //            print("1", keyboardFrame.height, view.safeAreaInsets.bottom)
-            let viewPoint = view.bounds.height
-            let SecondTextFieldHeight = SecondTextField.bounds.height
-            print(SecondTextFieldHeight)
-            let SecondTextFieldPoint = SecondTextField.convert(view.frame.origin, to: nil)
-            print(SecondTextFieldPoint)
-            let smallTextViewPoint = completeButton.convert(view.frame.origin, to: nil)
-            print(smallTextViewPoint)
-            //            let smallTextViewHeight = completeButton.bounds.height
-            print(smallTextViewPoint)
-            let HeightFromTop = SecondTextFieldHeight + SecondTextFieldPoint.y
-            let HeightFromBottom = viewPoint - HeightFromTop
-            let diff = adjustmentHeight - HeightFromBottom
+            let completeButtonHeight = completeButton.bounds.height
+            let completeButtonPoint = completeButton.convert(view.frame.origin, to: nil)
+            let HeightFromTop = completeButtonHeight + completeButtonPoint.y
+            let HeightFromBottom = view.bounds.height - HeightFromTop
+            let diff = keyboardFrame.height - HeightFromBottom
             if view.frame.origin.y == 0{
                 self.view.frame.origin.y -= diff
             }//diff 는 맨아래 텍스트뷰 맨아래 위치와 키보드 올라올 때 부족한 차이.
-            //if절이 없다면 계속 올린다.
         } else if noti.name == UIResponder.keyboardWillHideNotification {
             if view.frame.origin.y != 0{
                 self.view.frame.origin.y = 0
             }
-            
         }
     }
     
     @objc func textDidChange(sender: UITextField){
         if sender == FirstTextField {
-            purpose = Purpose(id: -1, name: sender.text!, oneSenetence: SecondTextField.text!)//이렇게 안하고 아래처럼하면 누를때마다 id 올라간다.
+            purpose = Purpose(id: -1, name: sender.text!, oneSenetence: SecondTextField.text!)
         }
         else if sender == SecondTextField {
             purpose = Purpose(id: -1, name: FirstTextField.text!, oneSenetence: sender.text!)
@@ -212,13 +209,8 @@ extension PlusMainCellsViewController : UIImagePickerControllerDelegate & UINavi
         plusPhotoButton.layer.borderColor = UIColor.white.cgColor
         plusPhotoButton.layer.borderWidth = 3.0
         plusPhotoButton.layer.cornerRadius = 50
-//        print("current: ",plusPhotoButton.currentImage,plusPhotoButton.imageView?.tag)
         dismiss(animated: true, completion: nil)
     }
-    
-    
-    
-    
 }
 
 // MARK: - UIGestureRecognizerDelegate
@@ -235,5 +227,9 @@ extension PlusMainCellsViewController :UIGestureRecognizerDelegate{
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         return touch.view == self.view
     }
+    
+}
+
+extension PlusMainCellsViewController: UIAnimatable {
     
 }
