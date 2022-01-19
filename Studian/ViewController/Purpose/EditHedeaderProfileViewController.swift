@@ -173,40 +173,23 @@ extension EditHedeaderProfileViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(adjustInputView), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     @objc func adjustInputView(noti:Notification) {
-        guard let userInfo = noti.userInfo else { return }
-        // [x] TODO: 키보드 높이에 따른 인풋뷰 위치 변경
-        guard let keyboardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
         
+        guard let userInfo = noti.userInfo else { return }
+        guard let keyboardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
         if noti.name == UIResponder.keyboardWillShowNotification {
-           
-            print("go")
-            let adjustmentHeight = keyboardFrame.height
-//            bigTextView.centerY(inView: containerView)
-            let viewPoint = view.bounds.height
-            let FirstTextFieldHeight = FirstTextField.bounds.height
-            let FirstTextFieldPoint = FirstTextField.convert(view.frame.origin, to: nil)
-            let SecondTextFieldPoint =  completeButton.convert(view.frame.origin, to: nil)
-            let SecondTextFieldHeight = completeButton.bounds.height
-            
-            let HeightFromTop = SecondTextFieldHeight + SecondTextFieldPoint.y
-            let HeightFromBottom = viewPoint - HeightFromTop
-            let diff = adjustmentHeight - HeightFromBottom
-            print(adjustmentHeight)
-            print(diff)
+            let completeButtonHeight = completeButton.bounds.height
+            let completeButtonPoint = completeButton.convert(view.frame.origin, to: nil)
+            let HeightFromTop = completeButtonHeight + completeButtonPoint.y
+            let HeightFromBottom = view.bounds.height - HeightFromTop
+            let diff = keyboardFrame.height - HeightFromBottom
             if view.frame.origin.y == 0{
-                        let doneButtonHeight = CGFloat(50)
-                        self.view.frame.origin.y -=  ( diff - doneButtonHeight )
-                    }//diff 는 맨아래 텍스트뷰 맨아래 위치와 키보드 올라올 때 부족한 차이.
-            //if절이 없다면 계속 올린다.
-
+                self.view.frame.origin.y -= diff
+            }//diff 는 맨아래 텍스트뷰 맨아래 위치와 키보드 올라올 때 부족한 차이.
         } else if noti.name == UIResponder.keyboardWillHideNotification {
             if view.frame.origin.y != 0{
-                        self.view.frame.origin.y = 0 //88픽셀 올려라.
-                    }
-            print("hide")
-
+                self.view.frame.origin.y = 0
+            }
         }
-
     }
 
     override func viewDidDisappear(_ animated: Bool) {//@@@

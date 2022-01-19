@@ -238,8 +238,8 @@
             filePath = "Studian/ViewModel/PurposesViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "106"
-            endingLineNumber = "106"
+            startingLineNumber = "108"
+            endingLineNumber = "108"
             landmarkName = "updatePurpose(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -254,8 +254,8 @@
             filePath = "Studian/ViewModel/PurposesViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "107"
-            endingLineNumber = "107"
+            startingLineNumber = "109"
+            endingLineNumber = "109"
             landmarkName = "PurposesViewModel"
             landmarkType = "3">
          </BreakpointContent>
@@ -494,8 +494,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "269"
-            endingLineNumber = "269"
+            startingLineNumber = "268"
+            endingLineNumber = "268"
             landmarkName = "collectionView(_:viewForSupplementaryElementOfKind:at:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -542,9 +542,9 @@
             filePath = "Studian/ViewController/Purpose/EditHedeaderProfileViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "218"
-            endingLineNumber = "218"
-            landmarkName = "textDidChange(sender:)"
+            startingLineNumber = "201"
+            endingLineNumber = "201"
+            landmarkName = "adjustInputView(noti:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -558,9 +558,9 @@
             filePath = "Studian/ViewController/Purpose/EditHedeaderProfileViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "219"
-            endingLineNumber = "219"
-            landmarkName = "textDidChange(sender:)"
+            startingLineNumber = "202"
+            endingLineNumber = "202"
+            landmarkName = "adjustInputView(noti:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -574,9 +574,9 @@
             filePath = "Studian/ViewController/Purpose/EditHedeaderProfileViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "214"
-            endingLineNumber = "214"
-            landmarkName = "viewDidDisappear(_:)"
+            startingLineNumber = "197"
+            endingLineNumber = "197"
+            landmarkName = "adjustInputView(noti:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -590,9 +590,9 @@
             filePath = "Studian/ViewController/Purpose/EditHedeaderProfileViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "213"
-            endingLineNumber = "213"
-            landmarkName = "viewDidDisappear(_:)"
+            startingLineNumber = "196"
+            endingLineNumber = "196"
+            landmarkName = "adjustInputView(noti:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -798,8 +798,8 @@
             filePath = "Studian/ViewController/Purpose/PurposeDetailVIewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "210"
-            endingLineNumber = "210"
+            startingLineNumber = "201"
+            endingLineNumber = "201"
             landmarkName = "imagePickerController(_:didFinishPickingMediaWithInfo:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1004,8 +1004,8 @@
             filePath = "Studian/ViewController/Purpose/PurposeDetailVIewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "162"
-            endingLineNumber = "162"
+            startingLineNumber = "150"
+            endingLineNumber = "150"
             landmarkName = "configureUI()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1020,8 +1020,8 @@
             filePath = "Studian/ViewController/Purpose/PurposeDetailVIewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "132"
-            endingLineNumber = "132"
+            startingLineNumber = "120"
+            endingLineNumber = "120"
             landmarkName = "configureUI()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1100,8 +1100,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "406"
-            endingLineNumber = "406">
+            startingLineNumber = "393"
+            endingLineNumber = "393">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1114,8 +1114,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "404"
-            endingLineNumber = "404"
+            startingLineNumber = "391"
+            endingLineNumber = "391"
             landmarkName = "unknown"
             landmarkType = "0">
          </BreakpointContent>
@@ -1146,8 +1146,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "94"
-            endingLineNumber = "94"
+            startingLineNumber = "102"
+            endingLineNumber = "102"
             landmarkName = "editSelector(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1162,8 +1162,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "98"
-            endingLineNumber = "98"
+            startingLineNumber = "106"
+            endingLineNumber = "106"
             landmarkName = "editSelector(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1226,8 +1226,8 @@
             filePath = "Studian/ViewController/Purpose/PlusMainCellsViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "141"
-            endingLineNumber = "141"
+            startingLineNumber = "154"
+            endingLineNumber = "154"
             landmarkName = "configureNotificationObservers()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1242,8 +1242,8 @@
             filePath = "Studian/ViewController/Purpose/PlusMainCellsViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "143"
-            endingLineNumber = "143"
+            startingLineNumber = "156"
+            endingLineNumber = "156"
             landmarkName = "configureNotificationObservers()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1258,8 +1258,8 @@
             filePath = "Studian/ViewModel/PurposesViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "92"
-            endingLineNumber = "92"
+            startingLineNumber = "94"
+            endingLineNumber = "94"
             landmarkName = "deletePurpose(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1402,8 +1402,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "151"
-            endingLineNumber = "151"
+            startingLineNumber = "153"
+            endingLineNumber = "153"
             landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1642,8 +1642,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "258"
-            endingLineNumber = "258"
+            startingLineNumber = "257"
+            endingLineNumber = "257"
             landmarkName = "collectionView(_:viewForSupplementaryElementOfKind:at:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1658,8 +1658,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "305"
-            endingLineNumber = "305"
+            startingLineNumber = "304"
+            endingLineNumber = "304"
             landmarkName = "completeTextsOrImage(vm:isTextsChanged:isImageChanged:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1674,8 +1674,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "142"
-            endingLineNumber = "142"
+            startingLineNumber = "144"
+            endingLineNumber = "144"
             landmarkName = "fetchHeaderImage()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1690,8 +1690,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "141"
-            endingLineNumber = "141"
+            startingLineNumber = "143"
+            endingLineNumber = "143"
             landmarkName = "fetchHeaderImage()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1706,8 +1706,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "118"
-            endingLineNumber = "118"
+            startingLineNumber = "121"
+            endingLineNumber = "121"
             landmarkName = "fetchHeaderTexts()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1722,8 +1722,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "119"
-            endingLineNumber = "119"
+            startingLineNumber = "122"
+            endingLineNumber = "122"
             landmarkName = "fetchHeaderTexts()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1738,9 +1738,9 @@
             filePath = "Studian/ViewController/Purpose/EditHedeaderProfileViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "255"
-            endingLineNumber = "255"
-            landmarkName = "imagePickerController(_:didFinishPickingMediaWithInfo:)"
+            startingLineNumber = "238"
+            endingLineNumber = "238"
+            landmarkName = "handleSelectPhoto()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1754,9 +1754,9 @@
             filePath = "Studian/ViewController/Purpose/EditHedeaderProfileViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "256"
-            endingLineNumber = "256"
-            landmarkName = "imagePickerController(_:didFinishPickingMediaWithInfo:)"
+            startingLineNumber = "239"
+            endingLineNumber = "239"
+            landmarkName = "handleSelectPhoto()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1770,8 +1770,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "75"
-            endingLineNumber = "75"
+            startingLineNumber = "83"
+            endingLineNumber = "83"
             landmarkName = "EditHeaderProfile(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1786,8 +1786,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "76"
-            endingLineNumber = "76"
+            startingLineNumber = "84"
+            endingLineNumber = "84"
             landmarkName = "EditHeaderProfile(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1802,8 +1802,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "224"
-            endingLineNumber = "224"
+            startingLineNumber = "223"
+            endingLineNumber = "223"
             landmarkName = "collectionView(_:cellForItemAt:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1850,8 +1850,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "320"
-            endingLineNumber = "320"
+            startingLineNumber = "319"
+            endingLineNumber = "319"
             landmarkName = "completeTextsOrImage(vm:isTextsChanged:isImageChanged:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1866,8 +1866,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "321"
-            endingLineNumber = "321"
+            startingLineNumber = "320"
+            endingLineNumber = "320"
             landmarkName = "completeTextsOrImage(vm:isTextsChanged:isImageChanged:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1930,8 +1930,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "152"
-            endingLineNumber = "152"
+            startingLineNumber = "154"
+            endingLineNumber = "154"
             landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1946,8 +1946,8 @@
             filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "153"
-            endingLineNumber = "153"
+            startingLineNumber = "155"
+            endingLineNumber = "155"
             landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
@@ -2426,9 +2426,41 @@
             filePath = "Studian/ViewController/Purpose/PurposeDetailVIewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "187"
-            endingLineNumber = "187"
+            startingLineNumber = "178"
+            endingLineNumber = "178"
             landmarkName = "dismissViewController()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "1270723A-31D9-44B0-A071-8656AF1E63AD"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Studian/ViewController/Purpose/PurposeDetailVIewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "90"
+            endingLineNumber = "90"
+            landmarkName = "tapDone(sender:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "EB76AE2E-32E4-46FD-B6F6-50207B2A0E08"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Studian/ViewController/Purpose/StudianMainPageViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "163"
+            endingLineNumber = "163"
+            landmarkName = "viewDidLoad()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

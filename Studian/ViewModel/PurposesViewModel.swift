@@ -56,7 +56,9 @@ class PurposesViewModel {
         return false
     }
     
-    
+    func createPurpose(name: String?, oneSentence: String?) -> Purpose {
+        manager.createPurpose(name: name, oneSentence: oneSentence)
+    }
     var mainPurpose = Purpose(id: 1, name: "3", oneSenetence: "4")
     
     private let manager = PurposeManager.shared
@@ -125,11 +127,9 @@ class PurposeManager {
     var images: [UIImage] = []
     //var images2 : [customImage] = []
     func createPurpose(name: String?, oneSentence: String?) -> Purpose {
-        // [x] TODO: create로직 추가
-        
         let nextId = PurposeManager.lastId + 1
         PurposeManager.lastId = nextId
-        return Purpose(id: nextId, name: name!, oneSenetence: oneSentence!)
+        return Purpose(id: nextId, name: name ?? "", oneSenetence: oneSentence!)
     }
     func purposeAndImage(id: Int) -> PurposeAndImage{
         return PurposeAndImage(purpose: purposes[id], image: images[id], index: id)

@@ -11,19 +11,16 @@ import Combine
 import RxCocoa
 import RxSwift
 
-class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDelegate {
-    @Published private var bigTextView = CustomTextView()
-    @Published private var smallTextView = CustomTextView()
-    //var purposeAndImage : PurposeAndImage!//사용안함.
+class PurposeDetailVIewController: UIViewController {
+
     var viewModel : PurposesViewModel!
     var index : Int!
-    private var subscribers = Set<AnyCancellable>()
     private var image = UIImage()
     private var isImageChanged = false
     private var isTextsChanged = false
     let disposeBag = DisposeBag()
-    var FirstTextField = CustomTextField(placeholder: "Something")
-    var SecondTextField = CustomTextField(placeholder: "Anything")
+    var FirstTextField = CustomTextField(placeholder: "Main something")
+    var SecondTextField = CustomTextField(placeholder: "Sub something")
     
     private let detailViewModelSubject = PublishSubject<PurposeDatailViewModel>()
     var detailViewModel : Observable<PurposeDatailViewModel> {
@@ -58,7 +55,7 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         button.tintColor = .white
         button.addTarget(self, action: #selector(handleSelectPhoto), for: .touchUpInside)
         button.layer.cornerRadius = 15
-        button.clipsToBounds = true//이걸해야 동그라게 나온다. 안에들어갈 사진들이.
+        button.clipsToBounds = true
         return button
     }()
 
@@ -67,9 +64,6 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         print("the overee")
         configureUI()
         setupGestures()
-        smallTextView.delegate = self
-        bigTextView.delegate = self
-        textViewDone()
         configureNotificationObservers()
         textFieldRxSwift()
     }
@@ -92,15 +86,9 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
             }).disposed(by: disposeBag)
     }
     
-    func textViewDone(){
-        FirstTextField.addDoneButtonOnKeyboard()
-        SecondTextField.addDoneButtonOnKeyboard()
-    }
-    
     @objc func tapDone(sender: Any) {
         self.view.endEditing(true)
     }
-    
     
     func configureNotificationObservers(){
         NotificationCenter.default.addObserver(self, selector: #selector(adjustInputView), name: UIResponder.keyboardWillShowNotification, object: nil)//키보드 뜰때 --을 해라.
@@ -167,6 +155,9 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         
         containerView.addSubview(stackView)
         stackView.anchor(top: containerView.topAnchor, left: containerView.leftAnchor, bottom: containerView.bottomAnchor, right: containerView.rightAnchor, paddingTop: 24, paddingLeft: 24, paddingBottom: 24, paddingRight: 24)
+        
+        FirstTextField.addDoneButtonOnKeyboard()
+        SecondTextField.addDoneButtonOnKeyboard()
           
     }
     @objc func complete(){
@@ -213,23 +204,9 @@ extension PurposeDetailVIewController : UIImagePickerControllerDelegate & UINavi
         isImageChanged = true
         dismiss(animated: true, completion: nil)
     }
-    
-    private func setSwipeGestures(){//사용안함.
-        let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(respondToSwipeGesture(_ : )))
-        swipeDown.direction = UISwipeGestureRecognizer.Direction.down
-        self.view.addGestureRecognizer(swipeDown)
-    }
-    @objc func respondToSwipeGesture(_ gesture: UIGestureRecognizer){
-        if let swipeGesture = gesture as? UISwipeGestureRecognizer {
-            switch swipeGesture.direction {
-            case .down :
-                dismissViewController()
-            default: break
-            }
-        }
-    }
-    
-    
 }
 
+extension PurposeDetailVIewController : UIAnimatable {
+    
+}
 

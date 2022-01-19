@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 struct Purpose : Equatable, Codable{
-    var id : Int
+    var id : Int = -1
     var name: String
     var oneSenetence: String
     

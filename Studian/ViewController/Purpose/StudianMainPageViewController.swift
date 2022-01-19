@@ -55,11 +55,19 @@ class StudianMainPageViewController: UIViewController {
     }
     
     @IBAction func EditCellsBtn(_ sender: UIButton) {
-        print(PurposeManager.lastId)
         let navigationController = UINavigationController(rootViewController: PlusMainCellsViewController())
         let vc = navigationController.viewControllers.first! as? PlusMainCellsViewController
-        vc?.delegate = self
+
         vc?.viewModel = purposeViewModel
+        vc?.plusViewModel.subscribe(onNext:{ [weak self] in
+            self?.showLoadingAnimation()
+            self?.purposeViewModel.addPurposeAndImage(purpose: $0.purpose, image: $0.image) {
+                self?.editButtonHidden()
+                self?.reloadCell()
+                self?.clearTmpDirectory()
+                self?.hideLoadingAnimation()
+            }
+        })
         navigationController.modalPresentationStyle = UIModalPresentationStyle.overFullScreen
         self.present(navigationController,animated: true,completion: nil)
     }
@@ -98,18 +106,13 @@ class StudianMainPageViewController: UIViewController {
             setEditing(true, animated: false)
             sender.isSelected = true
         }
-        
-//        collectionview.allowsMultipleSelection = sender.isSelected
         reloadCell()
-        
     }
     
     func reloadCell(){
         collectionview.reloadData()
     }
-    
-    
-    
+     
     func fetchHeaderTexts(){
         DispatchQueue.global().async {
             retrive(fileNavigation.header.fileName, from: .documents, as: HeaderModel.self){
@@ -120,9 +123,8 @@ class StudianMainPageViewController: UIViewController {
                 }
             }
         }
-            
-        print("\(headerModel.textViewText)")
     }
+    
     func clearTmpDirectory(){
         DispatchQueue.global().async {
             FileManager.default.clearTmpDirectory()
@@ -168,10 +170,7 @@ class StudianMainPageViewController: UIViewController {
             self.editCellsBtn.isHidden = true
             self.purposeViewModel.loadPurposes2 { [weak self] in
                 self?.reloadCell()
-
-
                 self?.navigationController?.navigationBar.topItem?.title = "Purpose"
-
                 self?.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: self?.editButton ?? UIButton())
                 self?.navigationController?.navigationBar.prefersLargeTitles = true
                 self?.navigationController?.navigationItem.largeTitleDisplayMode = .automatic
@@ -384,22 +383,10 @@ extension StudianMainPageViewController: UICollectionViewDelegateFlowLayout {
     
 }
 
-// MARK: - PlusMainCellsDelegate
+// MARK: - UIAnimatable
 
-extension StudianMainPageViewController: PlusMainCellsDelegate,UIAnimatable {
+extension StudianMainPageViewController:  UIAnimatable {
 
-    func PlusCell(purpose:Purpose,image:UIImage){
-        showLoadingAnimation()
-        purposeViewModel.addPurposeAndImage(purpose: purpose, image: image) { [weak self] in
-            self?.editButtonHidden()
-            self?.reloadCell()
-            self?.clearTmpDirectory()
-            self?.hideLoadingAnimation()
-        }
-        
-    }
-    
-    
 }
 
 
