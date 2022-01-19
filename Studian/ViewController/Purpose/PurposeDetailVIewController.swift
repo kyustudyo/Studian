@@ -11,8 +11,6 @@ import Combine
 import RxCocoa
 import RxSwift
 
-
-
 class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDelegate {
     @Published private var bigTextView = CustomTextView()
     @Published private var smallTextView = CustomTextView()
@@ -23,6 +21,9 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
     private var image = UIImage()
     private var isImageChanged = false
     private var isTextsChanged = false
+    let disposeBag = DisposeBag()
+    var FirstTextField = CustomTextField(placeholder: "Something")
+    var SecondTextField = CustomTextField(placeholder: "Anything")
     
     private let detailViewModelSubject = PublishSubject<PurposeDatailViewModel>()
     var detailViewModel : Observable<PurposeDatailViewModel> {
@@ -35,6 +36,7 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         uiView.backgroundColor = .groupTableViewBackground
         return uiView
     }()
+    
     private let completeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Complete!", for: .normal)
@@ -69,59 +71,37 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         bigTextView.delegate = self
         textViewDone()
         configureNotificationObservers()
-        observeForm()
+        textFieldRxSwift()
     }
     
-    func observeForm(){
-        NotificationCenter.default.publisher(for: UITextView.textDidChangeNotification, object: smallTextView).compactMap {
-            ($0.object as? UITextView)?.text
-        }
-        .sink { [weak self] (text) in
-            guard let bigTextView = self?.bigTextView,
-                  let viewModel = self?.viewModel,
-                  let index = self?.index else {return}
-            let purpose = Purpose(id:viewModel.purposes[index].id , name: text, oneSenetence: bigTextView.text)
-            self?.isTextsChanged = true
-            print(purpose)
-            self?.purpose = purpose
-        }.store(in: &subscribers)
+    func textFieldRxSwift(){
+        FirstTextField.rx.controlEvent(.editingChanged)
+            .asObservable()
+            .map{self.FirstTextField.text}
+            .subscribe(onNext: { text in
+                self.purpose =  Purpose(id:self.viewModel.purposes[self.index].id , name: text ?? " ", oneSenetence: self.SecondTextField.text ?? " ")
+                self.isTextsChanged = true
+            }).disposed(by: disposeBag)
         
-        NotificationCenter.default.publisher(for: UITextView.textDidChangeNotification, object: bigTextView).compactMap {
-            
-            ($0.object as? UITextView)?.text
-        }.sink { [weak self] (text) in
-
-            print("\(text)")
-            guard let smallTextView = self?.smallTextView,
-                  let viewModel = self?.viewModel,
-                  let index = self?.index else {return}
-            let purpose = Purpose(id:viewModel.purposes[index].id , name: smallTextView.text, oneSenetence: text)
-            self?.isTextsChanged = true
-            print(purpose)
-            self?.purpose = purpose
-
-        }.store(in: &subscribers)
+        SecondTextField.rx.controlEvent(.editingChanged)
+            .asObservable()
+            .map{self.SecondTextField.text}
+            .subscribe(onNext: { text in
+                self.purpose =  Purpose(id:self.viewModel.purposes[self.index].id , name: self.FirstTextField.text ?? " ", oneSenetence: text ?? " ")
+                self.isTextsChanged = true
+            }).disposed(by: disposeBag)
     }
     
     func textViewDone(){
-        self.bigTextView.addDoneButton(title: "Done", target: self, selector: #selector(tapDone(sender:)))
-        self.smallTextView.addDoneButton(title: "Done", target: self, selector: #selector(tapDone(sender:)))
+        FirstTextField.addDoneButtonOnKeyboard()
+        SecondTextField.addDoneButtonOnKeyboard()
     }
+    
     @objc func tapDone(sender: Any) {
-            //print("done!!")
-            self.view.endEditing(true)
-        }
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if(text == "\n") {
-                    textView.resignFirstResponder()
-                    return false
-                }
-                return true
+        self.view.endEditing(true)
     }
-    func textViewDidEndEditing(_ textView: UITextView) {
-        
-        print("end")
-    }
+    
+    
     func configureNotificationObservers(){
         NotificationCenter.default.addObserver(self, selector: #selector(adjustInputView), name: UIResponder.keyboardWillShowNotification, object: nil)//키보드 뜰때 --을 해라.
         NotificationCenter.default.addObserver(self, selector: #selector(adjustInputView), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -131,11 +111,10 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         
         guard let userInfo = noti.userInfo else { return }
         guard let keyboardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
-        
         if noti.name == UIResponder.keyboardWillShowNotification {
-            let bigTextViewHeight = bigTextView.bounds.height
-            let bigTextViewPoint = bigTextView.convert(view.frame.origin, to: nil)
-            let HeightFromTop = bigTextViewHeight + bigTextViewPoint.y
+            let completeButtonHeight = completeButton.bounds.height
+            let completeButtonPoint = completeButton.convert(view.frame.origin, to: nil)
+            let HeightFromTop = completeButtonHeight + completeButtonPoint.y
             let HeightFromBottom = view.bounds.height - HeightFromTop
             let diff = keyboardFrame.height - HeightFromBottom
             if view.frame.origin.y == 0{
@@ -146,7 +125,6 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
                 self.view.frame.origin.y = 0
             }
         }
-        
     }
 
     func configureUI() {
@@ -162,8 +140,8 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         
         let stackView = UIStackView(arrangedSubviews: [
             plusPhotoButton,
-            smallTextView,
-            bigTextView,
+            FirstTextField,
+            SecondTextField,
             completeButton
         ])
         
@@ -171,22 +149,21 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         stackView.spacing = 12
         stackView.alignment = .center
         stackView.distribution = .fill
+        
         completeButton.anchor( left: stackView.leftAnchor, right: stackView.rightAnchor, paddingLeft:10 , paddingRight:10)
         plusPhotoButton.setHeight(height: UIScreen.main.bounds.height/3)
         plusPhotoButton.setWidth(width: UIScreen.main.bounds.height/3)
-        bigTextView.setHeight(height: 60)
-        smallTextView.setHeight(height: 60)
-        bigTextView.anchor( left: stackView.leftAnchor, right: stackView.rightAnchor, paddingLeft:10 , paddingRight:10)
-        smallTextView.anchor( left: stackView.leftAnchor, right: stackView.rightAnchor, paddingLeft:10 , paddingRight:10 )
+        FirstTextField.anchor( left: stackView.leftAnchor, right: stackView.rightAnchor, paddingLeft:10 , paddingRight:10)
+        SecondTextField.anchor( left: stackView.leftAnchor, right: stackView.rightAnchor, paddingLeft:10 , paddingRight:10 )
+        
         let image = viewModel.images[index]//수정전 코드.
         let fixedImage = image.fixOrientation()//90도 회전하는 것 방지하는 코드.
         showLoadingAnimation()
         plusPhotoButton.setImage(fixedImage.withRenderingMode(.alwaysOriginal), for: .normal)
         hideLoadingAnimation()
-        smallTextView.text = viewModel.purposes[index].name//수정후 코드
-        smallTextView.isEditable = true
-        bigTextView.text = viewModel.purposes[index].oneSenetence//수정후 코드
-        bigTextView.isEditable = true
+        FirstTextField.text = viewModel.purposes[index].name//수정후 코드
+        
+        SecondTextField.text = viewModel.purposes[index].oneSenetence//수정후 코드
         
         containerView.addSubview(stackView)
         stackView.anchor(top: containerView.topAnchor, left: containerView.leftAnchor, bottom: containerView.bottomAnchor, right: containerView.rightAnchor, paddingTop: 24, paddingLeft: 24, paddingBottom: 24, paddingRight: 24)
@@ -194,9 +171,7 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
     }
     @objc func complete(){
         if let purpose = purpose {
-            
             detailViewModelSubject.onNext(PurposeDatailViewModel(purpose: purpose, image: image, indexInt: index, isTextsChagned: isTextsChanged, isImageChanged: isImageChanged))
-
         }
         dismiss(animated: true, completion: nil)
     }

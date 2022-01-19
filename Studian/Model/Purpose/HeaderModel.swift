@@ -8,11 +8,8 @@
 import Foundation
 import UIKit
 
-protocol typeInjection: Encodable {
-    
-}
 
-struct HeaderModel: Decodable, Encodable, typeInjection{
+struct HeaderModel: Decodable, Encodable{
     var textViewText : String?
     var textFieldText1: String?
     var textFieldText2: String?

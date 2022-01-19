@@ -798,8 +798,8 @@
             filePath = "Studian/ViewController/Purpose/PurposeDetailVIewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "235"
-            endingLineNumber = "235"
+            startingLineNumber = "210"
+            endingLineNumber = "210"
             landmarkName = "imagePickerController(_:didFinishPickingMediaWithInfo:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1004,8 +1004,8 @@
             filePath = "Studian/ViewController/Purpose/PurposeDetailVIewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "184"
-            endingLineNumber = "184"
+            startingLineNumber = "162"
+            endingLineNumber = "162"
             landmarkName = "configureUI()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1020,8 +1020,8 @@
             filePath = "Studian/ViewController/Purpose/PurposeDetailVIewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "154"
-            endingLineNumber = "154"
+            startingLineNumber = "132"
+            endingLineNumber = "132"
             landmarkName = "configureUI()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1116,8 +1116,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "404"
             endingLineNumber = "404"
-            landmarkName = "StudianMainPageViewController"
-            landmarkType = "21">
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -2413,6 +2413,22 @@
             startingLineNumber = "72"
             endingLineNumber = "72"
             landmarkName = "touchToPickPhoto(image:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "8AE69180-85BB-4BD9-B444-E4A00A00BE3A"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Studian/ViewController/Purpose/PurposeDetailVIewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "187"
+            endingLineNumber = "187"
+            landmarkName = "dismissViewController()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
