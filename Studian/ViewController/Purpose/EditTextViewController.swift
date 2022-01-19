@@ -31,10 +31,10 @@ class EditTextViewController : UIViewController, UITextViewDelegate{
         //button.layer.masksToBounds = true
         button.setHeight(height: 40)
         button.isEnabled = true
-        button.addTarget(self, action: #selector(handleRegistration), for: .touchUpInside)
+        button.addTarget(self, action: #selector(complete), for: .touchUpInside)
         return button
     }()
-    @objc func handleRegistration(){
+    @objc func complete(){
         print("sdsdsd")
         //print(UIApplication.topViewController())
 //        navigationController?.popViewController(animated: true)

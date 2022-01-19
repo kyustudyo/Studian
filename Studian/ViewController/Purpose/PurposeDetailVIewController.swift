@@ -43,7 +43,7 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         //button.layer.masksToBounds = true
         button.setHeight(height: 40)
         button.isEnabled = true
-        button.addTarget(self, action: #selector(handleRegistration), for: .touchUpInside)
+        button.addTarget(self, action: #selector(complete), for: .touchUpInside)
         return button
     }()
     
@@ -299,7 +299,7 @@ class PurposeDetailVIewController: UIViewController,UIAnimatable,UITextViewDeleg
         
         
     }
-    @objc func handleRegistration(){
+    @objc func complete(){
         print("sdsdsd")
         
         

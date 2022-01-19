@@ -57,7 +57,7 @@ class EditHedeaderProfileViewController : UIViewController,UIAnimatable,UIGestur
         //button.layer.masksToBounds = true
         button.setHeight(height: 40)
         button.isEnabled = true
-        button.addTarget(self, action: #selector(handleRegistration), for: .touchUpInside)
+        button.addTarget(self, action: #selector(complete), for: .touchUpInside)
         return button
     }()
     private func setupGestures() {
@@ -78,23 +78,12 @@ class EditHedeaderProfileViewController : UIViewController,UIAnimatable,UIGestur
         return touch.view == self.view
     }
     
-    @objc func handleRegistration(){//@@@
-        print("sdsdsd")
-        //print(UIApplication.topViewController())
+    @objc func complete(){//@@@
         navigationController?.popViewController(animated: true)
         dismiss(animated: true, completion: nil)
-        
-        
-        //
         if let headerModel = headerModel {
             delegate?.completeTextsOrImage(vm: headerModel, isTextsChanged: isTextsChagned, isImageChanged: isImageChanged)
         }
-        
-//        delegate?.completeTwoTexts(vm: headerModel!)
-        
-        
-        //print(UIApplication.topViewController())
-        //dismiss(animated: true, completion: nil)
     }
     
     

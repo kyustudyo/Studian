@@ -27,9 +27,9 @@ enum fileNavigation  {
         case .header: return "headerModel.txt"
         case .purposes: return "purposes.json"
         case .todays: return "todays.json"
-        
         }
     }
+    
     var imageName: String {
         switch self {
         case .header: return "PurposePicture.png"
@@ -37,6 +37,7 @@ enum fileNavigation  {
         default: return ""
         }
     }
+    
     var image : UIImage {
         switch self {
         case .header : return UIImage(named: "woman") ?? UIImage(systemName: "circle")!
@@ -44,7 +45,6 @@ enum fileNavigation  {
         default : return UIImage(systemName: "circle")!
         }
     }
-    
     
     var path : String {
         let baseUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -70,6 +70,7 @@ struct headerFile: ConfigurableFile {
     var path: String {
         fileNavigation.header.path
     }
+    
     var dummy: dummyType {
         HeaderModel(textViewText: "Until now but..", textFieldText1: "Engineer", textFieldText2: "For that day...",headerImage: nil)
     }

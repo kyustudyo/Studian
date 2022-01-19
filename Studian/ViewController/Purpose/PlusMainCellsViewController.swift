@@ -49,7 +49,7 @@ class PlusMainCellsViewController : UIViewController, UIAnimatable{
         //button.layer.masksToBounds = true
         button.setHeight(height: 40)
         button.isEnabled = true
-        button.addTarget(self, action: #selector(handleRegistration), for: .touchUpInside)
+        button.addTarget(self, action: #selector(complete), for: .touchUpInside)
         return button
     }()
     
@@ -103,7 +103,7 @@ class PlusMainCellsViewController : UIViewController, UIAnimatable{
     
 // MARK: Helpers
     
-    @objc func handleRegistration(){
+    @objc func complete(){
         print("sdsdsd")
         //print(UIApplication.topViewController())
         navigationController?.popViewController(animated: true)//없어도된다.

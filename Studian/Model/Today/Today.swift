@@ -27,8 +27,8 @@ struct Today : Equatable, Codable, typeInjection {
     mutating func editImage(image:UIImage){
         self.imageData = image.pngData() ?? Data()
     }
-    
 }
+
 struct Todo : Codable {
     
     var id : Int
