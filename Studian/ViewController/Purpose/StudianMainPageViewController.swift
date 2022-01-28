@@ -9,6 +9,8 @@ import UIKit
 import MBProgressHUD
 import RxSwift
 import RxCocoa
+import CoreData
+
 
 class StudianMainPageViewController: UIViewController {
     
@@ -16,9 +18,11 @@ class StudianMainPageViewController: UIViewController {
     
     let disposeBag = DisposeBag()
     
-    var headerModel = HeaderModel(textViewText: nil, textFieldText1: nil, textFieldText2: nil,headerImage: nil)
-    var purposeViewModel = PurposesViewModel()
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    var headerModels = [HeaderModel2]()
     
+    var headerModel = HeaderModel()
+    var purposeViewModel = PurposesViewModel()
     var headerImage = UIImage()
     var activityIndicator:UIActivityIndicatorView = UIActivityIndicatorView()
     @IBOutlet weak var collectionview: UICollectionView!
@@ -45,9 +49,21 @@ class StudianMainPageViewController: UIViewController {
     @IBAction func EditTextViewBtn(_ sender: UIButton) {
         let navigationController = UINavigationController(rootViewController: EditTextViewController())
         let vc = navigationController.viewControllers.first! as? EditTextViewController
-        vc?.viewModel = headerModel
-        vc?.delegate = self
         
+        vc?.textObserver.subscribe(onNext:{ text in
+            self.headerModel.textViewText = text
+            self.showLoadingAnimation()
+            let workGroup = DispatchGroup()
+            DispatchQueue.global().async(group: workGroup) { [weak self] in
+                store(self?.headerModel, to: .documents, as: .header)
+            }
+            workGroup.notify(queue: .main){ [weak self] in
+                self?.collectionview.reloadData()
+                self?.hideLoadingAnimation()
+            }
+        }).disposed(by: disposeBag)
+        
+        vc?.text = headerModel.textViewText
         vc?.modalPresentationStyle = .overFullScreen//full screen 하면 detailview에서 색깔 십힘
         navigationController.modalPresentationStyle = .overFullScreen
         self.present(navigationController,animated: true,completion: nil)
@@ -86,6 +102,29 @@ class StudianMainPageViewController: UIViewController {
     }
     
     // MARK: - Helpers
+    @IBAction func showSql(_ sender: UIButton) {
+//        let newHeader = HeaderModel2(context: context)
+//        newHeader.headerImage = Data()
+//        newHeader.textFieldText1 = "hi"
+//        newHeader.textFieldText2 = "bye"
+//        newHeader.textViewText = "??"
+//        do {
+//            try context.save()
+//        } catch {
+//            print("Error saving category \(error)")
+//        }
+    }
+    
+    @IBAction func loadSql(_ sender: UIButton) {
+//        let request : NSFetchRequest<HeaderModel2> = HeaderModel2.fetchRequest()
+//        do{
+//            headerModels = try context.fetch(request)
+//        } catch {
+//            print("Error loading categories \(error)")
+//        }
+//        print(headerModels.count)
+    }
+    
     
     @objc func editSelector(_ sender: UIButton) {
         if sender.isSelected == true {
@@ -181,24 +220,6 @@ class StudianMainPageViewController: UIViewController {
     
 }
 
-// MARK: - EditTextViewControllerDelegate
-
-extension StudianMainPageViewController: EditTextViewControllerDelegate {
-    func change(text:String?) {
-        
-        headerModel.textViewText = text!
-        showLoadingAnimation()
-        let workGroup = DispatchGroup()
-        DispatchQueue.global().async(group: workGroup) { [weak self] in
-            store(self?.headerModel, to: .documents, as: .header)
-        }
-        workGroup.notify(queue: .main){ [weak self] in
-            self?.collectionview.reloadData()
-            self?.hideLoadingAnimation()
-        }
-
-    }
-}
 // MARK: - UICollectionViewDataSource
 
 extension StudianMainPageViewController :UICollectionViewDataSource {
@@ -264,22 +285,8 @@ extension StudianMainPageViewController {
             header.purposeName?.text = headerModel.textFieldText1
             header.Onesentence?.text = headerModel.textFieldText2
             header.headerModel = headerModel
+         
             
-            //headerview를 보면 있는데,여기서 뭔가 이동을 하기원하므로 여기 헨들러가 있는듯.
-            print("taphanldddder")
-            header.tapHandler = { headerModel in
-                print("ttttt")
-                let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
-                guard let detailVC = storyboard.instantiateViewController(withIdentifier: "PurposeDetailVIewController") as? PurposeDetailVIewController else {return}
-                
-//                let playerStoryboard = UIStoryboard.init(name: "Player", bundle: nil)
-//                //Player는 저 아래에도 있다. Player는 파일이름.
-//                guard let playerVC = playerStoryboard.instantiateViewController(identifier: "PlayerViewController") as? PlayerViewController else { return }
-                //let item = trackManager.tracks[indexPath.item]
-                //simplePlayer는 싱글톤.
-               // header는 어디로가게 할까?
-                //self.present(detailVC, animated: true, completion: nil)
-            }
             //교수
             return header
         default:
@@ -371,11 +378,6 @@ extension StudianMainPageViewController: UICollectionViewDelegate {
 extension StudianMainPageViewController: UICollectionViewDelegateFlowLayout {
     // 셀 사이즈 어떻게 할까?
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        // 20<좌측마진> - card(width) - 20<카드간간격> - card(width) - 20<오른쪽마진>
-        //ㅣlet itemSpacing:CGFloat = 20
-        //let margin: CGFloat = 20
-        //let width = (collectionView.bounds.width - itemspacing - 2*margin)/2
-        //let height = width + 60  //고정높이
         let width: CGFloat = (collectionView.bounds.width - (20 * 3))/2
         let height: CGFloat = width + 35
         return CGSize(width: width, height: height)

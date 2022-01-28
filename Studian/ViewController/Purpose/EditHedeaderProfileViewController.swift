@@ -16,6 +16,7 @@ class EditHedeaderProfileViewController : UIViewController,UIAnimatable,UIGestur
     
     weak var delegate : EditHedeaderProfileDelegate?
     var headerModel :HeaderModel?
+    
     private let containerView : UIView = {
         let uiView = UIView()
         uiView.backgroundColor = .groupTableViewBackground

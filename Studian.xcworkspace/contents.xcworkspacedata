@@ -2,6 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Studian/Supoort/HeaderModel2+CoreDataClass.swift">
+   </FileRef>
+   <FileRef
+      location = "group:Studian/Supoort/HeaderModel2+CoreDataProperties.swift">
+   </FileRef>
+   <FileRef
       location = "group:Studian.xcodeproj">
    </FileRef>
    <FileRef

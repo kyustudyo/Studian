@@ -621,15 +621,35 @@
                                     <action selector="EditCellsBtn:" destination="A3K-8j-l4c" eventType="touchUpInside" id="NTc-vq-wu0"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xF0-fl-kZ9">
+                                <rect key="frame" x="16" y="548" width="67" height="31"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                <connections>
+                                    <action selector="showSql:" destination="A3K-8j-l4c" eventType="touchUpInside" id="tfZ-J2-V70"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fBj-6D-Ro7">
+                                <rect key="frame" x="154" y="548" width="67" height="31"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Button"/>
+                                <connections>
+                                    <action selector="loadSql:" destination="A3K-8j-l4c" eventType="touchUpInside" id="wJu-Wd-5qi"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="jy5-hY-jvX"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="bEj-aU-DXJ" firstAttribute="width" secondItem="bEj-aU-DXJ" secondAttribute="height" multiplier="1:1" id="6cG-rH-biG"/>
+                            <constraint firstItem="fBj-6D-Ro7" firstAttribute="centerY" secondItem="xF0-fl-kZ9" secondAttribute="centerY" id="83s-73-e9n"/>
                             <constraint firstItem="iJO-aI-KrZ" firstAttribute="top" secondItem="jy5-hY-jvX" secondAttribute="top" id="OAN-lc-MjG"/>
+                            <constraint firstItem="xF0-fl-kZ9" firstAttribute="leading" secondItem="jy5-hY-jvX" secondAttribute="leading" constant="16" id="T5o-2L-AU7"/>
                             <constraint firstItem="jy5-hY-jvX" firstAttribute="bottom" secondItem="iJO-aI-KrZ" secondAttribute="bottom" constant="7" id="YuW-6w-KaL"/>
+                            <constraint firstItem="xF0-fl-kZ9" firstAttribute="centerY" secondItem="bEj-aU-DXJ" secondAttribute="centerY" id="a1g-qQ-YaM"/>
                             <constraint firstItem="iJO-aI-KrZ" firstAttribute="leading" secondItem="jy5-hY-jvX" secondAttribute="leading" id="bFU-fN-tdc"/>
                             <constraint firstItem="jy5-hY-jvX" firstAttribute="trailing" secondItem="iJO-aI-KrZ" secondAttribute="trailing" id="fWW-JN-Rfb"/>
+                            <constraint firstItem="fBj-6D-Ro7" firstAttribute="centerX" secondItem="iJO-aI-KrZ" secondAttribute="centerX" id="iz2-hb-MI8"/>
                             <constraint firstItem="jy5-hY-jvX" firstAttribute="trailing" secondItem="bEj-aU-DXJ" secondAttribute="trailing" constant="16" id="j9O-Mq-6VC"/>
                             <constraint firstItem="jy5-hY-jvX" firstAttribute="bottom" secondItem="bEj-aU-DXJ" secondAttribute="bottom" constant="16" id="zVF-aK-jhl"/>
                         </constraints>
