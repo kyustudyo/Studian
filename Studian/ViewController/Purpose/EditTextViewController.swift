@@ -114,15 +114,7 @@ class EditTextViewController : UIViewController, UITextViewDelegate{
         
         
     }
-//    func observeForm(){////여기에 하면 한 문자쓸때마다
-//        NotificationCenter.default.publisher(for: UITextView.textDidChangeNotification, object: textView).compactMap{
-//            ($0.object as? UITextView)?.text
-//        }.sink{ (text) in
-//            //self.TextViewText = text
-//            self.delegate?.change(text: text)
-//            //print("\(text)")
-//        }.store(in: &subscribers)
-//    }
+
     func configureNotificationObservers(){
         NotificationCenter.default.addObserver(self, selector: #selector(adjustInputView), name: UIResponder.keyboardWillShowNotification, object: nil)//키보드 뜰때 --을 해라.
         NotificationCenter.default.addObserver(self, selector: #selector(adjustInputView), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -160,15 +152,7 @@ class EditTextViewController : UIViewController, UITextViewDelegate{
                     }//diff 는 맨아래 텍스트뷰 맨아래 위치와 키보드 올라올 때 부족한 차이.
             //if절이 없다면 계속 올린다.
             
-//            print(viewPoint)
-//            print(bigTextViewHeight)
-//            print(bigTextViewPoint.y)
-//            print(smallTextViewPoint.y)
-//            containerView.centerY(inView: view, constant: <#T##CGFloat#>)
-            
-//            containerView.layoutIfNeeded()
-//            view.layoutIfNeeded()
-//            inputViewBottom.constant = adjustmentHeight
+
         } else if noti.name == UIResponder.keyboardWillHideNotification {
             if view.frame.origin.y != 0{
                         self.view.frame.origin.y = 0 //88픽셀 올려라.
@@ -179,9 +163,7 @@ class EditTextViewController : UIViewController, UITextViewDelegate{
 //            view.layoutIfNeeded()
 //            inputViewBottom.constant = 0
         }
-//        if view.frame.origin.y == 0{
-//            self.view.frame.origin.y -= 120 //88픽셀 올려라.화면이 올라가서 텍스트 가 좀 보이도록.
-//        }
+
     }
 }
 
