@@ -103,26 +103,26 @@ class StudianMainPageViewController: UIViewController {
     
     // MARK: - Helpers
     @IBAction func showSql(_ sender: UIButton) {
-        let newHeader = HeaderModel2(context: context)
-        newHeader.headerImage = Data()
-        newHeader.textFieldText1 = "hi"
-        newHeader.textFieldText2 = "bye"
-        newHeader.textViewText = "??"
-        do {
-            try context.save()
-        } catch {
-            print("Error saving category \(error)")
-        }
+//        let newHeader = HeaderModel2(context: context)
+//        newHeader.headerImage = Data()
+//        newHeader.textFieldText1 = "hi"
+//        newHeader.textFieldText2 = "bye"
+//        newHeader.textViewText = "??"
+//        do {
+//            try context.save()
+//        } catch {
+//            print("Error saving category \(error)")
+//        }
     }
     
     @IBAction func loadSql(_ sender: UIButton) {
-        let request : NSFetchRequest<HeaderModel2> = HeaderModel2.fetchRequest()
-        do{
-            headerModels = try context.fetch(request)
-        } catch {
-            print("Error loading categories \(error)")
-        }
-        print(headerModels.count)
+//        let request : NSFetchRequest<HeaderModel2> = HeaderModel2.fetchRequest()
+//        do{
+//            headerModels = try context.fetch(request)
+//        } catch {
+//            print("Error loading categories \(error)")
+//        }
+//        print(headerModels.count)
     }
     
     
