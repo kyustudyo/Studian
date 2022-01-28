@@ -157,11 +157,7 @@ class EditTextViewController : UIViewController, UITextViewDelegate{
             if view.frame.origin.y != 0{
                         self.view.frame.origin.y = 0 //88픽셀 올려라.
                     }
-            print("hide")
-//            containerView.centerY(inView: view)
-//            containerView.layoutIfNeeded()
-//            view.layoutIfNeeded()
-//            inputViewBottom.constant = 0
+
         }
 
     }
