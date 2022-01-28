@@ -7,14 +7,16 @@
 
 import Foundation
 import UIKit
-import Combine
-
-protocol EditTextViewControllerDelegate: class {
-    func change(text:String?)
-}
+import RxSwift
 
 class EditTextViewController : UIViewController, UITextViewDelegate{
-    private var isTextChanged = false
+    
+    private let textSubject = PublishSubject<String>()
+    var textObserver : Observable<String> {
+        textSubject.asObservable()
+    }
+    let disposeBag = DisposeBag()
+    
     private let containerView : UIView = {
         let uiView = UIView()
         uiView.backgroundColor = .groupTableViewBackground
@@ -24,32 +26,22 @@ class EditTextViewController : UIViewController, UITextViewDelegate{
         let button = UIButton(type: .system)
         button.setTitle("Complete!", for: .normal)
         button.layer.cornerRadius = 11
-        
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         button.backgroundColor = .systemGreen
         button.setTitleColor(.white, for: .normal)
-        //button.layer.masksToBounds = true
         button.setHeight(height: 40)
         button.isEnabled = true
         button.addTarget(self, action: #selector(complete), for: .touchUpInside)
         return button
     }()
     @objc func complete(){
-        print("sdsdsd")
-        //print(UIApplication.topViewController())
-//        navigationController?.popViewController(animated: true)
-        delegate?.change(text: textView.text)
+        textSubject.onNext(textView.text)
         dismiss(animated: true, completion: nil)
-//        delegate?.completeTwoTexts(vm: headerModel!)
-        //print(UIApplication.topViewController())
-        //dismiss(animated: true, completion: nil)
+
     }
     private let textView = CustomTextView()
-    var viewModel :HeaderModel?
-    var TextViewText: String?
-    private var subscribers = Set<AnyCancellable>()
-    weak var delegate : EditTextViewControllerDelegate?
-    
+    var headerModel :HeaderModel?
+    var text: String?
     override func viewDidLoad() {
         super.viewDidLoad()
         print("the overee")
@@ -96,7 +88,7 @@ class EditTextViewController : UIViewController, UITextViewDelegate{
         containerView.setWidth(width: UIScreen.main.bounds.width - 50)
         containerView.backgroundColor = UIColor(displayP3Red: 239/255, green: 239/255, blue: 244/255, alpha: 1)
 //        textView.text = TextViewText ?? ""
-        textView.text = viewModel?.textViewText ?? ""
+        textView.text = text ?? ""
         let stackView = UIStackView(arrangedSubviews: [
             textView,
             completeButton
