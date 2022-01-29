@@ -10,9 +10,6 @@ protocol TableCellChangeDelegate: class {
     func tableCellChange(_ todo : Todo)
 }
 
-protocol TableViewCenterDelegate : class {
-    func setViewCenter()
-}
 protocol TableViewCheckBoxDelegate : AnyObject {
     func checkBoxInTableView()
 }
@@ -20,14 +17,14 @@ protocol TableViewCheckBoxDelegate : AnyObject {
 class TodayTableCell : UITableViewCell {
     
     // MARK: - Properties
-    
-    weak var centerDelegate :TableViewCenterDelegate?
+
     weak var delegate: TableCellChangeDelegate?
     var toDoViewModel: ToDoViewModel? {
         didSet {
             update()
         }
     }
+    var indexRow:Int?
     var deleteButtonTapHandler: (()->Void)?
     var isInEditingMode : Bool = false{
         didSet {
@@ -84,7 +81,10 @@ class TodayTableCell : UITableViewCell {
 
 extension TodayTableCell : UITextFieldDelegate {
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        centerDelegate?.setViewCenter()
+//        centerDelegate?.setViewCenter()
+        
+        NotificationCenter.default.post(name: NSNotification.Name("setCenterView"), object: nil,userInfo: ["setCenterView":indexRow ?? 0])
+        
     }
     func textFieldDidEndEditing(_ textField: UITextField) {
         guard let viewModel = toDoViewModel,

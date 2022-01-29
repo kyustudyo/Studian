@@ -153,11 +153,7 @@ class OnboardingViewController: UIViewController,UIAnimatable {
                               animations: nil,
                               completion: nil)//부드럽게 넘어가기위해서
         }
-        
     }
-
-    
-
 }
 
 struct OnboardingItem {

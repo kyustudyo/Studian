@@ -99,6 +99,14 @@ class StudianTodayViewController: UIViewController {
             
             this.stopIndicator()
             this.collectionview.reloadData()})
+        
+        NotificationCenter.default.addObserver(forName: NSNotification.Name("setCenterView"), object: nil, queue: .main, using: {(noti) in
+            if let int = noti.userInfo?["setCenterView"] as? Int{
+                print("on")
+                self.collectionview.scrollToItem(at:IndexPath(item: int, section: 0), at: .centeredVertically, animated: true)
+            }
+            
+        })
     }
 }
 
@@ -134,8 +142,7 @@ extension StudianTodayViewController : UICollectionViewDataSource {
                 self?.present(detailVC, animated: true, completion: nil)
 
             }).disposed(by: disposeBag)
-            
-            cell.todayCellCenterDelegate = self//center
+
             cell.deleteButtonTapHandler = {
                 self.todayViewModel.deleteToday(today)
                 self.todayViewModel.deleteImage(index: indexPath.row)
@@ -217,13 +224,7 @@ extension StudianTodayViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
-// MARK: - TodayCellCenterDelegate
-extension StudianTodayViewController : TodayCellCenterDelegate {
-    func doCollectionViewCenter(index:Int) {
-        self.collectionview.scrollToItem(at:IndexPath(item: index, section: 0), at: .centeredVertically, animated: true)
-        //이 코드가 아니라 scrollToItem(at:Indexpath(index:index),at: .left....) 이거로 하면안된다. 위의 것은 된다.
-    }
-}
+
 
 // MARK: - UIAnimatable
 extension StudianTodayViewController : UIAnimatable {

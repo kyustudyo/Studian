@@ -172,11 +172,7 @@ UINavigationControllerDelegate{
         } else if let possibleImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
             newImage = possibleImage.fixOrientation() // 원본 이미지가 있을 경우
         }
-        
-        
-        
-        
-        
+
         plusPhotoButton.setImage(newImage.withRenderingMode(.alwaysOriginal), for: .normal)
 
         plusPhotoButton.layer.borderColor = UIColor.white.cgColor

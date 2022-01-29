@@ -138,7 +138,6 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "TodayTableCell", for: indexPath) as? TodayTableCell else {return UITableViewCell()}
             
             cell.isInEditingMode = isInEditingMode
-            cell.centerDelegate = self
             cell.deleteButtonTapHandler = {//@@
                 guard let today = self.today else {return}
                 let todayIndex = self.viewModel.getIndex(today: today)
@@ -158,7 +157,7 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
             if let bigBtn = cell.contentView.viewWithTag(1) as? UIButton {
                 bigBtn.addTarget(self, action: #selector(checkBox(_:)),for: .touchUpInside)
             }
-
+            cell.indexRow = indexRow
             cell.toDoViewModel = ToDoViewModel(toDo: todo)
             cell.delegate = self
             return cell
@@ -179,13 +178,6 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
         else {
             return 10
         }
-    }
-}
-// MARK: - TableViewCenterDelegate
-
-extension TodayCellView : TableViewCenterDelegate {
-    func setViewCenter() {
-        self.todayCellCenterDelegate?.doCollectionViewCenter(index: indexRow ?? 0)
     }
 }
 
