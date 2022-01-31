@@ -20,7 +20,10 @@ class StudianTodayViewController: UIViewController {
     @IBOutlet weak var img: UIImageView!
     @IBOutlet weak var plusCellsBtn: UIButton!
     private let todayViewModel = TodayViewModel()
-
+    var selectedInt:Set<Int> = []
+    @IBOutlet var collectionview: UICollectionView!
+    lazy private var todayCellSizeViewModel = TodayCellSizeViewModel(collectionView:self.collectionview)
+    
     lazy var editButton: UIButton = {
       let button = UIButton(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
       button.setTitle("Edit", for: .normal)
@@ -71,7 +74,6 @@ class StudianTodayViewController: UIViewController {
         hideLoadingAnimation()
     }
  
-    @IBOutlet var collectionview: UICollectionView!
     
     func prepareDarkMode() {
         editButton.setTitleColor(DefaultStyle.Colors.tint, for: .normal)//dark mode
@@ -90,6 +92,7 @@ class StudianTodayViewController: UIViewController {
         prepareDarkMode()
         editButtonHidden()//많으면 추가 못하게.
         configureUI()
+        collectionview.contentInset = .init(top: 0, left: 0, bottom: 300, right: 0)
         todayViewModel.loadPurposes(completion:
                                         { [weak self] in
             guard let this = self else {return}
@@ -150,10 +153,26 @@ extension StudianTodayViewController : UICollectionViewDataSource {
                 self.collectionview.reloadData()
             }
             cell.isInEditingMode = isEditing
+            cell.checkIntRowObservable.subscribe(onNext:{ int in
+
+                self.selectedInt.insert(int)
+                cell.isExtended = self.selectedInt.contains(int) ? true : false
+                print("cell isExtended:",cell.isExtended)
+                collectionView.collectionViewLayout.invalidateLayout()
+            }).disposed(by: disposeBag)
+            
             return cell
         }
         else {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodayCell2, for: indexPath) as? TodayCellView else {return UICollectionViewCell()}
+            cell.indexRow = indexPath.row
+            cell.checkIntRowObservable.subscribe(onNext:{ int in
+                self.selectedInt = self.selectedInt.filter{$0 != (int-1) }
+                
+                collectionView.collectionViewLayout.invalidateLayout()
+                
+            }).disposed(by: disposeBag)
+            
             return cell
         }
     }
@@ -208,19 +227,12 @@ extension StudianTodayViewController : UIImagePickerControllerDelegate & UINavig
 
 extension StudianTodayViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width: CGFloat = (collectionView.bounds.width - (20 * 2))
-        if indexPath.row % 2 == 0 {
-            
-            let height: CGFloat = width/2.5
-            return CGSize(width: width, height: height)
-        }
-        else {
-            var height = 10
-            if indexPath.row == todayViewModel.todays.count-1 {
-                height = 300
-            }//마지막 셀의 아래에 큰 스페이스를 줘서 키보드 올라갈때 여유 생기게 한다.
-            return CGSize(width: width, height: CGFloat(height))
-        }
+        
+        self.todayCellSizeViewModel.indexPathRow = indexPath.row
+        self.todayCellSizeViewModel.selectedInt = self.selectedInt
+        self.todayCellSizeViewModel.todayViewModel = self.todayViewModel
+        return todayCellSizeViewModel.cellSize
+        
     }
 }
 

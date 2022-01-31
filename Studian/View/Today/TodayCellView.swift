@@ -9,17 +9,13 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-protocol TodayCellCenterDelegate : AnyObject {
-    func doCollectionViewCenter(index  :Int)
-}
-
 protocol GoToDetailDelegate : AnyObject {
     func gotoDetailVC(image:UIImage,index:Int)
 }
 
 class TodayCellView :
     UICollectionViewCell{
-    weak var todayCellCenterDelegate : TodayCellCenterDelegate?
+   
     
     private let imageAndIndexSubject = PublishSubject<(UIImage,Int)>()
     var imageAndIndex: Observable<(UIImage,Int)> {
@@ -29,11 +25,15 @@ class TodayCellView :
     var deleteButtonTapHandler: (() -> Void)?
     var indexRow : Int? {
         didSet{
-            today = viewModel.todays[indexRow ?? 0]
-            image = viewModel.images[indexRow ?? 0]
-            updateUI()
+            //짝수 셀 만. 아니면 updateUI에서 걸리므로.
+            if indexRow! % 2 == 0{
+                today = viewModel.todays[indexRow ?? 0]
+                image = viewModel.images[indexRow ?? 0]
+                updateUI()
+            }
         }
     }
+    
     private var viewModel = TodayViewModel()
     private var today : Today?
     private var image : UIImage?
@@ -50,7 +50,23 @@ class TodayCellView :
     @IBOutlet weak var TodayImg : UIImageView!
     @IBOutlet weak var plusBtn: UIButton!
     
+    @IBOutlet weak var cellBackButton: UIButton!
+    
+    private let disposeBag = DisposeBag()
+    private let checkIntRowSubject = PublishSubject<Int>()
+    var checkIntRowObservable : Observable<Int> {
+        return checkIntRowSubject.asObservable()
+    }
+    
+    var isExtended: Bool = false
+    
     //MARK: - Helpers
+    
+    @IBAction func cellBack(_ sender: UIButton) {
+//        cellBackButton.layer.opacity = 0
+        
+        checkIntRowSubject.onNext(indexRow ?? 0)
+    }
     
     func plusButtonHidden(){//6개 까지만 추가가능.
         guard let today = today else {return}
@@ -90,18 +106,25 @@ class TodayCellView :
         sender.isSelected = !sender.isSelected
         guard let tv = tv, let today = today else {return}
         let point = sender.convert(CGPoint.zero, to: tv)
-        guard let indxPath = tv.indexPathForRow(at: point) else {return}//거기에 해당하는 인덱스패스
+        guard let indxPath = tv.indexPathForRow(at: point) else {return}
+        print("before check box:", isExtended)
+        if isExtended == true{
         let todo = viewModel.getTodo(today: today, index: indxPath.row)
-        if selectedRows.contains(indxPath) {//그린 이야?
+        if selectedRows.contains(indxPath) {//green
             guard let index = selectedRows.firstIndex(of: indxPath) else { return }
             selectedRows.remove(at: index)
             viewModel.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: false))
         }
-        else {//빨강 이야?
+        else {//red
             selectedRows.append(indxPath)
             viewModel.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: true))
         }
+            
+        
         tv.reloadRows(at: [indxPath], with: .automatic)
+        }
+        checkIntRowSubject.onNext(indexRow ?? 0)
+        
     }
     
     @IBAction func removeCell(_ sender: UIButton) {

@@ -62,33 +62,33 @@
                                             <autoresizingMask key="autoresizingMask" flexibleMaxY="YES"/>
                                             <subviews>
                                                 <imageView clipsSubviews="YES" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" insetsLayoutMarginsFromSafeArea="NO" image="square.and.arrow.up" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="ObO-F0-8e5">
-                                                    <rect key="frame" x="0.0" y="-1" width="140" height="141"/>
+                                                    <rect key="frame" x="0.0" y="-1" width="20" height="21"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" secondItem="ObO-F0-8e5" secondAttribute="height" multiplier="1:1" id="rjl-8t-ENw"/>
                                                     </constraints>
                                                 </imageView>
                                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" estimatedSectionHeaderHeight="-1" sectionFooterHeight="28" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="hRs-pv-Lgg">
-                                                    <rect key="frame" x="160" y="0.0" width="175" height="140"/>
+                                                    <rect key="frame" x="40" y="0.0" width="295" height="140"/>
                                                     <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="8"/>
                                                     <inset key="separatorInset" minX="50" minY="0.0" maxX="50" maxY="0.0"/>
                                                     <prototypes>
                                                         <tableViewCell clipsSubviews="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="TodayTableCell" rowHeight="89" id="wp0-g6-n3h" customClass="TodayTableCell" customModule="Studian" customModuleProvider="target">
-                                                            <rect key="frame" x="0.0" y="44.5" width="175" height="89"/>
+                                                            <rect key="frame" x="0.0" y="44.5" width="295" height="89"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="wp0-g6-n3h" id="bBK-WR-LO8">
-                                                                <rect key="frame" x="0.0" y="0.0" width="175" height="89"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="295" height="89"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <subviews>
                                                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="6" translatesAutoresizingMaskIntoConstraints="NO" id="H7g-8d-RXN">
-                                                                        <rect key="frame" x="5" y="7.5" width="140" height="74"/>
+                                                                        <rect key="frame" x="5" y="7.5" width="260" height="74"/>
                                                                         <subviews>
                                                                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Wua-sV-gUb">
-                                                                                <rect key="frame" x="0.0" y="0.0" width="140" height="34"/>
+                                                                                <rect key="frame" x="0.0" y="0.0" width="260" height="34"/>
                                                                                 <fontDescription key="fontDescription" name="Jua-Regular" family="Jua" pointSize="19"/>
                                                                                 <textInputTraits key="textInputTraits" returnKeyType="done"/>
                                                                             </textField>
                                                                             <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0sn-Je-WuO">
-                                                                                <rect key="frame" x="0.0" y="40" width="140" height="34"/>
+                                                                                <rect key="frame" x="0.0" y="40" width="260" height="34"/>
                                                                                 <fontDescription key="fontDescription" name="NanumMyeongjo" family="NanumMyeongjo" pointSize="12"/>
                                                                                 <textInputTraits key="textInputTraits" returnKeyType="done"/>
                                                                             </textField>
@@ -100,7 +100,7 @@
                                                                         </constraints>
                                                                     </stackView>
                                                                     <button opaque="NO" tag="2" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" changesSelectionAsPrimaryAction="YES" hasAttributedTitle="YES" translatesAutoresizingMaskIntoConstraints="NO" id="u9Q-jx-1zG">
-                                                                        <rect key="frame" x="152.5" y="37" width="17.5" height="15.5"/>
+                                                                        <rect key="frame" x="272.5" y="37" width="17.5" height="15.5"/>
                                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <color key="tintColor" systemColor="systemRedColor"/>
                                                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -112,7 +112,7 @@
                                                                         </state>
                                                                     </button>
                                                                     <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Gp-kc-NsI">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="175" height="89"/>
+                                                                        <rect key="frame" x="0.0" y="0.0" width="295" height="89"/>
                                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -126,7 +126,7 @@
                                                                         </state>
                                                                     </button>
                                                                     <button opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jvM-fZ-AZi">
-                                                                        <rect key="frame" x="145" y="0.0" width="30" height="30"/>
+                                                                        <rect key="frame" x="265" y="0.0" width="30" height="30"/>
                                                                         <constraints>
                                                                             <constraint firstAttribute="width" constant="30" id="Neo-Rp-C0r"/>
                                                                             <constraint firstAttribute="height" constant="30" id="s2S-iQ-eh4"/>
@@ -176,10 +176,10 @@
                                                             </connections>
                                                         </tableViewCell>
                                                         <tableViewCell clipsSubviews="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="TodayTableCell2" id="ske-LS-Tgf" customClass="TodayTableCell" customModule="Studian" customModuleProvider="target">
-                                                            <rect key="frame" x="0.0" y="133.5" width="175" height="43.5"/>
+                                                            <rect key="frame" x="0.0" y="133.5" width="295" height="43.5"/>
                                                             <autoresizingMask key="autoresizingMask"/>
                                                             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="ske-LS-Tgf" id="s62-yC-LfB">
-                                                                <rect key="frame" x="0.0" y="0.0" width="175" height="43.5"/>
+                                                                <rect key="frame" x="0.0" y="0.0" width="295" height="43.5"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                             </tableViewCellContentView>
                                                         </tableViewCell>
@@ -190,7 +190,7 @@
                                                     </connections>
                                                 </tableView>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Lq6-zj-doF">
-                                                    <rect key="frame" x="106" y="4" width="30" height="30"/>
+                                                    <rect key="frame" x="-14" y="4" width="30" height="30"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="30" id="WLo-4O-pGd"/>
                                                     </constraints>
@@ -241,7 +241,7 @@
                                                 </button>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="ObO-F0-8e5" firstAttribute="width" relation="lessThanOrEqual" secondItem="olL-l2-ZRF" secondAttribute="width" multiplier="0.4" priority="750" id="1oK-fU-ogx"/>
+                                                <constraint firstItem="ObO-F0-8e5" firstAttribute="width" relation="lessThanOrEqual" secondItem="olL-l2-ZRF" secondAttribute="width" multiplier="0.4" id="1oK-fU-ogx"/>
                                                 <constraint firstAttribute="trailing" secondItem="hRs-pv-Lgg" secondAttribute="trailing" id="JGL-6L-cyv"/>
                                                 <constraint firstAttribute="bottom" secondItem="hRs-pv-Lgg" secondAttribute="bottom" id="OWG-Vk-j3F"/>
                                                 <constraint firstAttribute="bottom" secondItem="oGt-lQ-Bvp" secondAttribute="bottom" id="Qse-X8-YRE"/>
@@ -250,7 +250,6 @@
                                                 <constraint firstItem="hRs-pv-Lgg" firstAttribute="top" secondItem="olL-l2-ZRF" secondAttribute="top" id="eBD-3z-bot"/>
                                                 <constraint firstItem="ObO-F0-8e5" firstAttribute="leading" secondItem="olL-l2-ZRF" secondAttribute="leading" id="j4F-w1-0xG"/>
                                                 <constraint firstItem="Lq6-zj-doF" firstAttribute="width" secondItem="Lq6-zj-doF" secondAttribute="height" multiplier="1:1" id="kHB-LE-TQE"/>
-                                                <constraint firstAttribute="bottom" secondItem="ObO-F0-8e5" secondAttribute="bottom" id="m1n-5j-MVP"/>
                                                 <constraint firstItem="ObO-F0-8e5" firstAttribute="top" secondItem="olL-l2-ZRF" secondAttribute="top" id="tK3-JB-nOz"/>
                                                 <constraint firstAttribute="trailing" secondItem="oGt-lQ-Bvp" secondAttribute="trailing" id="ump-mi-Nqm"/>
                                                 <constraint firstItem="Lq6-zj-doF" firstAttribute="trailing" secondItem="ObO-F0-8e5" secondAttribute="trailing" constant="-4" id="v0A-Mg-iWk"/>
@@ -270,7 +269,34 @@
                                         <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="CLQ-SM-f5k">
                                             <rect key="frame" x="0.0" y="0.0" width="335" height="140"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="skY-ih-qXj">
+                                                    <rect key="frame" x="0.0" y="0.0" width="335" height="140"/>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <state key="normal" title="Button"/>
+                                                    <buttonConfiguration key="configuration" style="plain" title="Fold" cornerStyle="medium">
+                                                        <backgroundConfiguration key="background">
+                                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            <color key="strokeColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        </backgroundConfiguration>
+                                                        <color key="baseForegroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    </buttonConfiguration>
+                                                    <connections>
+                                                        <action selector="cellBack:" destination="GvT-Z0-18a" eventType="touchUpInside" id="kpN-St-z4c"/>
+                                                    </connections>
+                                                </button>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="skY-ih-qXj" firstAttribute="leading" secondItem="CLQ-SM-f5k" secondAttribute="leading" id="1yJ-gx-ggs"/>
+                                                <constraint firstAttribute="bottom" secondItem="skY-ih-qXj" secondAttribute="bottom" id="p2c-Zd-OgH"/>
+                                                <constraint firstAttribute="trailing" secondItem="skY-ih-qXj" secondAttribute="trailing" id="pq8-bK-K8G"/>
+                                                <constraint firstItem="skY-ih-qXj" firstAttribute="top" secondItem="CLQ-SM-f5k" secondAttribute="top" id="r2g-fR-hYn"/>
+                                            </constraints>
                                         </collectionViewCellContentView>
+                                        <connections>
+                                            <outlet property="cellBackButton" destination="skY-ih-qXj" id="ZTZ-fr-3Ky"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                                 <connections>
