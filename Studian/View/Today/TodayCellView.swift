@@ -66,6 +66,7 @@ class TodayCellView :
 //        cellBackButton.layer.opacity = 0
         
         checkIntRowSubject.onNext(indexRow ?? 0)
+        
     }
     
     func plusButtonHidden(){//6개 까지만 추가가능.
@@ -103,26 +104,30 @@ class TodayCellView :
     }
     
     @objc func checkBox(_ sender: UIButton){
+        
         sender.isSelected = !sender.isSelected
         guard let tv = tv, let today = today else {return}
         let point = sender.convert(CGPoint.zero, to: tv)
         guard let indxPath = tv.indexPathForRow(at: point) else {return}
         print("before check box:", isExtended)
         if isExtended == true{
-        let todo = viewModel.getTodo(today: today, index: indxPath.row)
-        if selectedRows.contains(indxPath) {//green
-            guard let index = selectedRows.firstIndex(of: indxPath) else { return }
-            selectedRows.remove(at: index)
-            viewModel.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: false))
-        }
-        else {//red
-            selectedRows.append(indxPath)
-            viewModel.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: true))
-        }
+            isExtended = false
+            let todo = viewModel.getTodo(today: today, index: indxPath.row)
+            if selectedRows.contains(indxPath) {//green
+                guard let index = selectedRows.firstIndex(of: indxPath) else { return }
+                selectedRows.remove(at: index)
+                viewModel.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: false))
+            }
+            else {//red
+                selectedRows.append(indxPath)
+                viewModel.updateTodo(today: today, todo: Todo(id: todo.id, todoName: todo.todoName, todoDetail: todo.todoDetail, doOrNot: true))
+            }
             
-        
-        tv.reloadRows(at: [indxPath], with: .automatic)
+            print(isExtended)
+            tv.reloadRows(at: [indxPath], with: .automatic)
         }
+        
+        
         checkIntRowSubject.onNext(indexRow ?? 0)
         
     }
@@ -159,7 +164,6 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
         if indexPath.row % 2 == 0 {
             let index = indexPath.row
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "TodayTableCell", for: indexPath) as? TodayTableCell else {return UITableViewCell()}
-            
             cell.isInEditingMode = isInEditingMode
             cell.deleteButtonTapHandler = {//@@
                 guard let today = self.today else {return}
