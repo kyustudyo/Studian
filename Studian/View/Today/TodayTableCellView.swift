@@ -52,10 +52,7 @@ class TodayTableCell : UITableViewCell {
             todoDetail.delegate = self
         }
     }
-    
-    
-    
-    
+
     // MARK: - Helpers
     
     func update(){
@@ -105,6 +102,5 @@ extension TodayTableCell : UITextFieldDelegate {
             textField.resignFirstResponder()
             return true
         }
-    
 }
 

@@ -21,6 +21,7 @@ class StudianTodayViewController: UIViewController {
     @IBOutlet weak var plusCellsBtn: UIButton!
     private let todayViewModel = TodayViewModel()
     var selectedInt:Set<Int> = []
+    var selectedCount: Int = 0
     @IBOutlet var collectionview: UICollectionView!
     lazy private var todayCellSizeViewModel = TodayCellSizeViewModel(width: collectionview.bounds.width - 20 * 2)
     
@@ -126,6 +127,8 @@ extension StudianTodayViewController : UICollectionViewDataSource {
             }
             cell.isExtended = selectedInt.contains(indexPath.row)//fold 했을 때 적용위해.
             let today = todayViewModel.todays[indexPath.row]
+            self.selectedCount =  self.todayViewModel.getNumberOfTodos(today: today)
+            print("sc:",selectedCount)
             cell.indexRow = indexPath.row
             cell.imageAndIndex.subscribe(onNext:{ [weak self] in
                 let storyboard = UIStoryboard(name: "Main", bundle: Bundle.main)
@@ -154,13 +157,11 @@ extension StudianTodayViewController : UICollectionViewDataSource {
             }
             cell.isInEditingMode = isEditing
             cell.checkIntRowObservable.subscribe(onNext:{ int in
-
+                
                 self.selectedInt.insert(int)
                 cell.isExtended = self.selectedInt.contains(int) ? true : false
+                self.reloadCell()
                 
-                print("cell isExtended:",cell.isExtended)
-                
-                collectionView.collectionViewLayout.invalidateLayout()
             }).disposed(by: disposeBag)
             return cell
         }
@@ -170,9 +171,12 @@ extension StudianTodayViewController : UICollectionViewDataSource {
             cell.checkIntRowObservable.subscribe(onNext:{ int in
                 print(int)
                 self.selectedInt = self.selectedInt.filter{$0 != (int-1) }
-                
-                print(self.selectedInt)
                 collectionView.reloadData()
+//                self.collectionview.reloadItems(at: [IndexPath(item:int-1,section: 0)])
+                print(self.selectedInt)
+                
+                
+                
 //                collectionView.collectionViewLayout.invalidateLayout()
             }).disposed(by: disposeBag)
             
@@ -231,9 +235,12 @@ extension StudianTodayViewController : UIImagePickerControllerDelegate & UINavig
 extension StudianTodayViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
+        
+            
         self.todayCellSizeViewModel.indexPathRow = indexPath.row
         self.todayCellSizeViewModel.selectedInt = self.selectedInt
         self.todayCellSizeViewModel.countOfToday = self.todayViewModel.todays.count
+//        self.todayCellSizeViewModel.selectedCount = self.selectedCount
         return todayCellSizeViewModel.cellSize
         
     }
