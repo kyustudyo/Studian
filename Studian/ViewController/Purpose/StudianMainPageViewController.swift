@@ -102,7 +102,7 @@ class StudianMainPageViewController: UIViewController {
     }
     
     // MARK: - Helpers
-    @IBAction func showSql(_ sender: UIButton) {
+//    @IBAction func showSql(_ sender: UIButton) {
 //        let newHeader = HeaderModel2(context: context)
 //        newHeader.headerImage = Data()
 //        newHeader.textFieldText1 = "hi"
@@ -113,9 +113,9 @@ class StudianMainPageViewController: UIViewController {
 //        } catch {
 //            print("Error saving category \(error)")
 //        }
-    }
+//    }
     
-    @IBAction func loadSql(_ sender: UIButton) {
+//    @IBAction func loadSql(_ sender: UIButton) {
 //        let request : NSFetchRequest<HeaderModel2> = HeaderModel2.fetchRequest()
 //        do{
 //            headerModels = try context.fetch(request)
@@ -123,7 +123,7 @@ class StudianMainPageViewController: UIViewController {
 //            print("Error loading categories \(error)")
 //        }
 //        print(headerModels.count)
-    }
+//    }
     
     
     @objc func editSelector(_ sender: UIButton) {

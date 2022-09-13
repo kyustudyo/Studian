@@ -203,7 +203,7 @@ extension TodayCellView : UITableViewDelegate, UITableViewDataSource {
             return 60
         }
         else {
-            return 5
+            return 10
         }
     }
 }

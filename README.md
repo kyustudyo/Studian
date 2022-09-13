@@ -7,5 +7,3 @@
 2. delegate, protocol을 이용한 data binding -> RxSwift
 
 3. 일부 스토리보드를 이용했던 UI구성 -> Programmatically
-
-4. cell resize
