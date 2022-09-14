@@ -1,10 +1,13 @@
-# Studian
+# App Name: Studian (공부하는 사람들)
 
+## 📌 Features
 Contents: 이미지를 이용해 미래 목표와 계획표 작성.
 
+## ✨ Skills & Tech Stack
 Skill: UIKit, RxSwift, Autolayout(Snapkit, Programatically, Storyboard), Filemanager, CompletionHandler.
 
-App Store: https://apps.apple.com/kr/app/studian/id1594552833
+## 📚 App Store
+https://apps.apple.com/kr/app/studian/id1594552833
 
 ## 🌃 Screenshots
 
