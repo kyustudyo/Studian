@@ -25,4 +25,6 @@ https://apps.apple.com/kr/app/studian/id1594552833
 
 2. delegate, protocol을 이용한 data binding -> RxSwift
 
-3. 일부 UI는 스토리보드로  -> Programmatically 
+3. 일부 UI는 스토리보드로  -> Programmatically, Snapkit
+4. 
+## 🧩 ETC
